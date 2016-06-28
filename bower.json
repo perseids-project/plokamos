@@ -1,0 +1,14 @@
+{
+  "name": "annotator-plugin",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Frederik Baumgardt <baumgardt@informatik.uni-leipzig.de>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "dependencies": {
+    "jQuery": "^3.0.0",
+    "lodash": "^4.13.0"
+  }
+}
