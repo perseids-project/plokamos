@@ -9,18 +9,23 @@ export default {
         json(),
         babel({
             exclude: [
-                'bower_components/**',
+                'bower_components/lodash/**',
+                'bower_components/jQuery/**',
                 'node_modules/**'
                 ]
         }),
         bowerResolve({
+            skip: ['rdfstore'],
             override: {
                 jQuery: 'dist/jquery.js',
-                lodash: 'dist/lodash.fp.js'
+                lodash: 'dist/lodash.js'
             }
         }),
         commonjs()
     ],
+    globals: {
+        rdfstore: 'rdfstore'
+    },
     moduleName: 'annotatorPlugin',
     targets: [
         {
