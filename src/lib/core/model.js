@@ -35,6 +35,7 @@ class Model {
     }
 
     load(endpoint, urn, user) {
+        // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return oaByUrnRetriever(endpoint, urn)
             .then((data) => {
                 var deferred = $.Deferred()
@@ -70,8 +71,18 @@ class Model {
             })
             .then((data) => {
                 this.namedDataset = _.uniq(_.map(data,(x) => x.nominalValue))
-                this.defaultDataset = this.namedDataset.head
+                this.defaultDataset = this.namedDataset[0]
             })
+    }
+    
+    execute(sparql) {
+        var deferred = $.Deferred()
+        this.store.executeWithEnvironment(sparql,this.defaultDataset,this.namedDataset,(error, graph) => deferred.resolve(graph))
+        return deferred.promise()
+    }
+
+    update(triple) {
+
     }
 
     save(endpoint) {
