@@ -1,4 +1,4 @@
-import $ from 'jQuery'
+import $ from 'jquery'
 
 var sparqlQuery = (endpoint, query, mime) => {
     query = query || "SELECT * WHERE { GRAPH ? {?s ?p ?o}} LIMIT 1000"
