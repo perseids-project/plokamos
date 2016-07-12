@@ -46,9 +46,7 @@ class Model {
                 return deferred.promise()
             })
             .then((data) => this.bindings2insert(data.results.bindings))
-            .then()
             .then((data) => {
-                console.log(data)
                 var start = $.Deferred()
                 var end = $.Deferred()
                 var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
