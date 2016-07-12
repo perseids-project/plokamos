@@ -13,9 +13,9 @@
                     <div class="form-group">
                         <label for="create_subject">Subject:</label>
                         <div class="input-group">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http:// <span class="caret"></span></button>
-                                <ul class="dropdown-menu" id="subject_prefixes"></ul>
+                            <div class="input-group-btn" id="subject_prefixes">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
+                                <ul class="dropdown-menu"></ul>
                             </div>
                             <input type="text" class="form-control typeahead" name="create_subject" id="create_subject" placeholder="Start typing something to search...">
                         </div>
@@ -25,7 +25,10 @@
                     <div class="form-group">
                         <label for="create_predicate">Predicate:</label>
                         <div class="input-group">
-                            <span class="input-group-addon">$</span>
+                            <div class="input-group-btn" id="predicate_prefixes">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
                             <input type="text" class="form-control typeahead" name="create_predicate" id="create_predicate" placeholder="Start typing something to search...">
                         </div>
                     </div>
@@ -34,7 +37,10 @@
                     <div class="form-group">
                         <label for="create_object">Object:</label>
                         <div class="input-group">
-                            <span class="input-group-addon">$</span>
+                            <div class="input-group-btn" id="object_prefixes">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
                             <input type="text" class="form-control typeahead" name="create_object" id="create_object" placeholder="Start typing something to search...">
                         </div>
                     </div>
