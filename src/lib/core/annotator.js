@@ -46,7 +46,7 @@ class Annotator {
         .then(() => $.getJSON('namespaces.json'))
         .then((json) => {
             // NOTE: PARSE AND INSERT PREFIXES
-            // NOTE: (OBJECTS)
+            // NOTE: (RDF OBJECTS)
             var ks = _.keys(json.entities);
             json.entities["http:"]["resources"] = _.reduce(json.entities,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
             ks.forEach((k) => {
@@ -62,7 +62,7 @@ class Annotator {
                     $('#create_object').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
                 }).appendTo('#object_prefixes > ul');
             });
-            // NOTE: (PROPERTIES)
+            // NOTE: (RDF PROPERTIES)
             var ks = _.keys(json.properties);
             json.properties["http:"]["resources"] = _.reduce(json.properties,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
             ks.forEach((k) => {
@@ -76,8 +76,14 @@ class Annotator {
             return json;
         })
         .then((json) => {
-            // todo: refactor, intialize: typeahead & onclick
+            ['#create_predicate'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties[k].resources)}))
+            ['#create_subject','#create_object'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)}))
+            // todo: refactor
         })
+    }
+    
+    save (model, bindings) {
+        
     }
 }
 
