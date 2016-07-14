@@ -1,6 +1,7 @@
 import oaByUrnRetriever from '../io/oaByUrnRetriever'
 import rdfstore from 'rdfstore'
 import _ from 'lodash'
+import $ from 'jquery'
 
 class Model {
 
@@ -35,8 +36,9 @@ class Model {
     }
 
     load(endpoint, urn, user) {
+        var promise = endpoint.slice(-5)==='.json' ? $.getJSON(endpoint) : oaByUrnRetriever(endpoint, urn)
         // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
-        return oaByUrnRetriever(endpoint, urn)
+        return promise
             .then((data) => {
                 var deferred = $.Deferred()
                 rdfstore.create((err,store) => {
