@@ -12,6 +12,7 @@ export default {
             exclude: [
                 'bower_components/lodash/**',
                 'bower_components/jquery/**',
+                'bower_components/jsonld/**',
                 'node_modules/**'
                 ]
         }),

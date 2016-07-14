@@ -9,6 +9,7 @@
   "homepage": "",
   "dependencies": {
     "jquery": "^1.11.0",
+    "jsonld":"^0.4.11",
     "lodash": "^4.13.0",
     "rdfstore": "^0.9.0",
     "typeahead.js": "^0.11.0"
