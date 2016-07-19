@@ -12,26 +12,18 @@ window._ = _
 import 'typeahead.js'
 
 
-var applicator = new Applicator();
-var annotator = new Annotator();
+var model = new Model();
+var applicator = new Applicator(model);
+var annotator = new Annotator(model);
 
 var initialize = () => {
     var getEndpoint = () => $('#annotator-main').data().sparqlEndpoint
     var getUrn = () => $('#annotator-main').data().urn
     var getUser = () => undefined // $('#annotator-main').dataset.user
-    var model = new Model();
     var results = model
         .load( getEndpoint(), getUrn(),getUser() )
-        .then( (success) => applicator.load(model) )
-        .then( (success) => annotator.load(model,getUrn()) )
-    
-    // have document with urn, config
-    // get urn & endpoint
-    // query endpoint for urn annotations
-    // insert annotations into rdfstore
-    // retrieve selectors+ids from rdfstore and
-    // create annotation markers in document
-    // add triples to markers
+        .then( (success) => applicator.load() )
+        .then( (success) => annotator.load(getUrn()) )
 
     return [model, applicator, annotator]
 }
@@ -43,5 +35,5 @@ export default {
     initialize: initialize,
     applicator: applicator,
     annotator: annotator,
-    tqa: TextQuoteAnchor
+    model: model
 }

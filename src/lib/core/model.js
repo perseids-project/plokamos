@@ -1,4 +1,5 @@
 import oaByUrnRetriever from '../io/oaByUrnRetriever'
+import sparql from './sparql'
 import rdfstore from 'rdfstore'
 import _ from 'lodash'
 import $ from 'jquery'
@@ -9,30 +10,6 @@ class Model {
         this.defaultDataset = []
         this.namedDataset = []
         this.store = {};
-        this.bindings2insert = (bindings) => {
-            // check head length, decide whether everything goes into default or split for named graphs
-            // if named graphs,
-            // groupBy named graphs
-            var grouped = _.groupBy( bindings, (triple) => triple.g.value );
-            // mapped bindings to triples
-            var mapped = _.mapValues( grouped, (graph) => graph.map((triple) => {
-                    _.unset(triple, 'g');
-                    var simple_triple = _.mapValues(triple, (element) => {
-                        switch (element.type) {
-                            case "uri": return "<"+element.value+">";
-                            case "bnode": return "<_:"+element.value+">";
-                            case "literal": return element.datatype ? "\""+element.value+"\"^^<"+element.datatype+">" : "\""+element.value+"\"";
-                        }
-                    });
-                    return simple_triple.s+" "+simple_triple.p+" "+simple_triple.o+" .";
-                })
-            );
-            // return SPARQL INSERT queries
-            return _.map(_.keys(mapped),(k) => {
-                var graph = k.indexOf(":")+1 ? k : "_:"+k
-                return "INSERT DATA { GRAPH <"+graph+"> {\n" + mapped[k].join("\n") + "\n}}";
-            });
-        }
     }
 
     load(endpoint, urn, user) {
@@ -47,7 +24,7 @@ class Model {
                 })
                 return deferred.promise()
             })
-            .then((data) => this.bindings2insert(data.results.bindings))
+            .then((data) => sparql.bindings2insert(data.results.bindings))
             .then((data) => {
                 var start = $.Deferred()
                 var end = $.Deferred()
@@ -74,6 +51,8 @@ class Model {
                 this.defaultDataset = this.namedDataset[0]
             })
     }
+
+
     
     execute(sparql) {
         var deferred = $.Deferred()
@@ -86,6 +65,10 @@ class Model {
     }
 
     save(endpoint) {
+
+    }
+
+    persist(endpoint) {
 
     }
 

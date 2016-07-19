@@ -6,7 +6,8 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 // I have a list of functions to apply
 class Applicator {
     
-    constructor () {
+    constructor (model) {
+        this.model = model;
         this.escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
         this.graph = {
             "http://www.w3.org/ns/oa#hasBody": (id) => [
@@ -51,15 +52,15 @@ class Applicator {
         };
     }
 
-    load (model, id)  {
+    load (id)  {
             // get TextSelectors
-        model.execute(this.selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
+        this.model.execute(this.selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
             // mark positions in HTML
             .then((data) => {
                 data.map((x) => this.mark["http://www.w3.org/ns/oa#TextQuoteSelector"](x))
             })
             // get triples
-            .then((data) => model.execute(this.graph["http://www.w3.org/ns/oa#hasBody"](id)))
+            .then((data) => this.model.execute(this.graph["http://www.w3.org/ns/oa#hasBody"](id)))
 
             .then((data) => data.forEach((x) => {
                 var element = $(document.getElementById(x.id.value))
