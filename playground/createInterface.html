@@ -17,8 +17,8 @@
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
                                 <ul class="dropdown-menu"></ul>
                             </div>
-                            <input type="text" class="form-control typeahead" name="create_subject" id="create_subject" placeholder="Start typing something to search...">
-                        </div>
+                            <div id="create_subject"><input type="text" class="form-control typeahead" name="create_subject" placeholder="Start typing something to search...">
+                        </div></div>
                     </div>
                 </fieldset>
                 <fieldset>
@@ -29,8 +29,8 @@
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
                                 <ul class="dropdown-menu"></ul>
                             </div>
-                            <input type="text" class="form-control typeahead" name="create_predicate" id="create_predicate" placeholder="Start typing something to search...">
-                        </div>
+                            <div id="create_predicate"><input type="text" class="form-control typeahead" name="create_predicate" placeholder="Start typing something to search...">
+                        </div></div>
                     </div>
                 </fieldset>
                 <fieldset>
@@ -41,8 +41,8 @@
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">http: <span class="caret"></span></button>
                                 <ul class="dropdown-menu"></ul>
                             </div>
-                            <input type="text" class="form-control typeahead" name="create_object" id="create_object" placeholder="Start typing something to search...">
-                        </div>
+                            <div id="create_object"><input type="text" class="form-control typeahead" name="create_object" placeholder="Start typing something to search...">
+                        </div></div>
                     </div>
                 </fieldset>
             </form>
@@ -52,7 +52,7 @@
             <div class="alert alert-warning" id="create_range">some text with a <u>highlight</u>, wouldn't you think.</div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Create</button>
+            <button type="button" class="btn btn-success" onclick="perseids.annotator.save()">Create</button>
             <button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
         </div>
     </div>
