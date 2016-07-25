@@ -2,17 +2,25 @@ import $ from 'jquery';
 import TextQuoteAnchor from 'dom-anchor-text-quote';
 import sparql from './sparql'
 
+
+/**
+ * Class for creation of annotations
+ *
+ */
 class Annotator {
 
-    constructor(model) {
+    constructor(model,id) {
 
         this.model = model;
-
         this.hash = (str) => str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
+        /**
+         * Acquire variables for Open Annotations
+         * @type {{cite: ((p1?:*, p2?:*)=>string), user: (()=>string), urn: (()), date: (()=>string), triple: (()), selector: (()=>(any))}}
+         */
         this.acquire = {
             "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post),
-            "user": () => "http://data.perseus.org/sosol/users/Nate%20Krantz", // TODO: implement
+            "user": () => $('#annotator-main').data().user, // TODO: implement
             "urn": () => $('#annotator-main').data().urn,
             "date": () => (new Date()).toISOString(),
             "triple": () => {
@@ -26,6 +34,10 @@ class Annotator {
             "selector": () => $('#create_range').data('selector')
         }
 
+        /**
+         * Namespaces for resource URIs
+         * @type {string[]}
+         */
         this.prefixes = ['http://','oa:','snap:','perseidsrdf:','smith:'];
 
         this.selector = {
@@ -34,6 +46,11 @@ class Annotator {
                 return TextQuoteAnchor.fromRange(document.getElementById("annotator-main"),selection.getRangeAt(0)).toSelector()
             }
         };
+        /**
+         * Event handlers for processing selections and showing/hiding starter button,
+         *
+         * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*))}}
+         */
         this.starter = {
             "http://www.w3.org/ns/oa#TextQuoteSelector" : (event) => {
                 var selection = document.getSelection();
@@ -49,67 +66,71 @@ class Annotator {
             }
 
         };
-    }
 
-    load (id) {
-        var substringMatcher = function(strs) {
-            return function findMatches(q, cb) {
-                var matches, substrRegex;
-                matches = [];
-                substrRegex = new RegExp(q, 'i');
-                $.each(strs, function(i, str) { if (substrRegex.test(str)) { matches.push(str); } });
-                cb(matches);
+        this.init = (id) => {
+            var id = id ? id : this.acquire.urn();
+            // TODO: switch to mustache.js templating
+            var substringMatcher = function(strs) {
+                return function findMatches(q, cb) {
+                    var matches, substrRegex;
+                    matches = [];
+                    substrRegex = new RegExp(q, 'i');
+                    $.each(strs, function(i, str) { if (substrRegex.test(str)) { matches.push(str); } });
+                    cb(matches);
+                };
             };
-        };
-        var app = $('[data-urn="'+id+'"]');
-        $.get('createInterface.html')
+            var app = $('[data-urn="'+id+'"]');
+            $.get('/annotator-assets/html/createInterface.html')
             // then inject user interface html
-        .then((html) => app.append(html))
-            // then inject selection event listener
-        .then(app.mouseup(perseids.annotator.starter["http://www.w3.org/ns/oa#TextQuoteSelector"]))
-            // then get namespaces
-        .then(() => $.getJSON('namespaces.json'))
-            // then inject typeahead for namespaces
-        .then((json) => {
-            // NOTE: PARSE AND INSERT PREFIXES
-            // NOTE: (RDF OBJECTS)
-            var ks = _.keys(json.entities);
-            json.entities["http:"]["resources"] = _.reduce(json.entities,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
-            ks.forEach((k) => {
-                var l = json.entities[k];
-                $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                    $('#subject_prefixes > button').html(k+' <span class="caret"/>');
-                    $('#subject_prefixes').data('url',event.target.dataset.url || "");
-                    $('#create_subject > input').typeahead('destroy');
-                    $('#create_subject > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
-                }).appendTo('#subject_prefixes > ul');
-                $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                    $('#object_prefixes > button').html(k+' <span class="caret"/>');
-                    $('#object_prefixes').data('url',event.target.dataset.url || "");
-                    $('#create_object > input').typeahead('destroy');
-                    $('#create_object > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
-                }).appendTo('#object_prefixes > ul');
-            });
-            // NOTE: (RDF PROPERTIES)
-            var ks = _.keys(json.properties);
-            json.properties["http:"]["resources"] = _.reduce(json.properties,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
-            ks.forEach((k) => {
-                var l = json.properties[k];
-                $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                    $('#predicate_prefixes > button').html(k+' <span class="caret"/>');
-                    $('#predicate_prefixes').data('url',event.target.dataset.url || "");
-                    $('#create_predicate > input').typeahead('destroy');
-                    $('#create_predicate > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties[k].resources)})
-                }).appendTo('#predicate_prefixes > ul');
-            });
-            return json;
-        })
-            // then initialize typeahead
-        .then((json) => {
-            ['#create_predicate'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties[k].resources)}))
-            ['#create_subject','#create_object'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)}))
-            // todo: fix 'k' error and refactor
-        })
+                .then((html) => app.append(html))
+                // then inject selection event listener
+                .then(app.mouseup(this.starter["http://www.w3.org/ns/oa#TextQuoteSelector"]))
+                // then get namespaces
+                .then(() => $.getJSON('/annotator-assets/json/namespaces.json'))
+                // then inject typeahead for namespaces
+                .then((json) => {
+                    // NOTE: PARSE AND INSERT PREFIXES
+                    // NOTE: (RDF OBJECTS)
+                    var ks = _.keys(json.entities);
+                    json.entities["http:"]["resources"] = _.reduce(json.entities,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
+                    ks.forEach((k) => {
+                        var l = json.entities[k];
+                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
+                            $('#subject_prefixes > button').html(k+' <span class="caret"/>');
+                            $('#subject_prefixes').data('url',event.target.dataset.url || "");
+                            $('#create_subject > input').typeahead('destroy');
+                            $('#create_subject > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
+                        }).appendTo('#subject_prefixes > ul');
+                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
+                            $('#object_prefixes > button').html(k+' <span class="caret"/>');
+                            $('#object_prefixes').data('url',event.target.dataset.url || "");
+                            $('#create_object > input').typeahead('destroy');
+                            $('#create_object > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
+                        }).appendTo('#object_prefixes > ul');
+                    });
+                    // NOTE: (RDF PROPERTIES)
+                    var ks = _.keys(json.properties);
+                    json.properties["http:"]["resources"] = _.reduce(json.properties,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
+                    ks.forEach((k) => {
+                        var l = json.properties[k];
+                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
+                            $('#predicate_prefixes > button').html(k+' <span class="caret"/>');
+                            $('#predicate_prefixes').data('url',event.target.dataset.url || "");
+                            $('#create_predicate > input').typeahead('destroy');
+                            $('#create_predicate > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties[k].resources)})
+                        }).appendTo('#predicate_prefixes > ul');
+                    });
+                    return json;
+                })
+                // then initialize typeahead
+                .then((json) => {
+                    ['#create_predicate'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties["http:"].resources)}));
+                    ['#create_subject','#create_object'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities["http:"].resources)}));
+                    // todo: fix 'k' error and refactor
+                })
+        }
+
+        this.init(id);
     }
     
     save () {
@@ -224,7 +245,7 @@ class Annotator {
 
         var insert = sparql.bindings2insert(bindings.results.bindings);
 
-        insert.map((sparql) => this.model.execute(sparql))
+        insert.map((sparql) => this.model.execute(sparql)).then()
     }
 }
 

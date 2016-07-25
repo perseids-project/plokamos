@@ -4,6 +4,10 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 // I have a list of selector types
 // I have a list of queries to get selector data
 // I have a list of functions to apply
+/**
+ * Class for visualization of annotations.
+ *
+ */
 class Applicator {
     
     constructor (model) {
@@ -18,6 +22,11 @@ class Applicator {
                 "}"
             ].join("\n")
         }
+
+        /**
+         * Mark selector positions with triples
+         * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
+         */
         this.mark = {
             "http://www.w3.org/ns/oa#TextQuoteSelector": (selector, triple) => {
                 var prefix = selector.prefix ? selector.prefix.value : ''
@@ -37,6 +46,11 @@ class Applicator {
                 })
             }
         };
+
+        /**
+         * SPARQL Queries to retrieve
+         * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1?:*)=>string)}}
+         */
         this.selectors = {
             "http://www.w3.org/ns/oa#TextQuoteSelector": (id) => [
                 "SELECT ?id ?prefix ?exact ?suffix",
@@ -50,25 +64,60 @@ class Applicator {
                 "}}"
             ].join("\n")
         };
+
+        /**
+         * Load annotations and add markers to frontend
+         * id is optional, loads all annotations if undefined
+         * @private
+         * @param id (optional) annotation id to query
+         */
+        this.load = (id) => {
+            // get TextSelectors
+            this.model.execute(this.selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
+            // mark positions in HTML
+                .then((selectors) => _.last(selectors).result.map((x) => this.mark["http://www.w3.org/ns/oa#TextQuoteSelector"](x)))
+                // get triples
+                .then((data) => this.model.execute(this.graph["http://www.w3.org/ns/oa#hasBody"](id)))
+
+                .then((data) => _.last(data).result.forEach((x) => {
+                    var element = $(document.getElementById(x.id.value))
+                    var array = element.data(x.graph.value) || []
+                    element.data(x.graph.value,_.concat(array,{subject:x.subject.value, predicate:x.predicate.value,object:x.object.value}))
+                }))
+                .then((data) => $.getScript('js/marginotes.js'))
+                .then((data) => $('.perseids-annotation').marginotes({field:'id'})) // map data or get perseids-annotation class ?
+        };
+
+        /**
+         * Remove annotation markers from frontend
+         * id is optional, unloads all annotations if undefined
+         * @param id
+         */
+        this.unload = (id) => {
+            var p = id ? [document.getElementById(id)] : document.getElementsByClassName('perseids-annotation');
+            while(p.length) {
+                var parent = p[ 0 ].parentNode;
+                while( p[ 0 ].firstChild ) {
+                    parent.insertBefore(  p[ 0 ].firstChild, p[ 0 ] );
+                }
+                if (parent) parent.removeChild( p[ 0 ] );
+            }
+        }
+
+        this.load();
     }
 
     load (id)  {
-            // get TextSelectors
-        this.model.execute(this.selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
-            // mark positions in HTML
-            .then((data) => {
-                data.map((x) => this.mark["http://www.w3.org/ns/oa#TextQuoteSelector"](x))
-            })
-            // get triples
-            .then((data) => this.model.execute(this.graph["http://www.w3.org/ns/oa#hasBody"](id)))
+        this.load(id);
+    }
 
-            .then((data) => data.forEach((x) => {
-                var element = $(document.getElementById(x.id.value))
-                var array = element.data(x.graph.value) || []
-                    element.data(x.graph.value,_.concat(array,{subject:x.subject.value, predicate:x.predicate.value,object:x.object.value}))
-            }))
-            .then((data) => $.getScript('js/marginotes.js'))
-            .then((data) => $('.perseids-annotation').marginotes({field:'id'})) // map data or get perseids-annotation class ?
+    unload(id) {
+        this.unload(id);
+    }
+
+    reset() {
+        this.unload();
+        this.load();
     }
     
 }

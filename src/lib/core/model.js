@@ -10,6 +10,33 @@ class Model {
         this.defaultDataset = []
         this.namedDataset = []
         this.store = {};
+        /**
+         * Runs one or more sparql queries (in order) against the local rdfstore
+         * and returns an array with result of the shape
+         * [{sparql:"original query",error:"error or undefined",result:"result or undefined"},...]
+         * @param sparql
+         * @returns {*} promise for ordered list
+         */
+        this.execute = (sparql) => {
+            var data = sparql.constructor === Array ? sparql : [sparql]
+            var start = $.Deferred()
+            var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
+            _.reduce(
+                seq,
+                (previous,current) => {
+                    previous.then((acc) => {
+                            this.store.executeWithEnvironment(current.sparql,this.defaultDataset,this.namedDataset,(e,r) => {
+                                acc.push({sparql:current.sparql,error:e,result:r})
+                                current.deferred.resolve(acc)
+                            })
+                    });
+                    return current.deferred.promise()},
+                start.promise()
+            )
+            start.resolve([])
+            seq.slice
+            return _.last(seq).deferred.promise()
+        }
     }
 
     load(endpoint, urn, user) {
@@ -25,40 +52,21 @@ class Model {
                 return deferred.promise()
             })
             .then((data) => sparql.bindings2insert(data.results.bindings))
+            .then((data) => this.execute(data))
             .then((data) => {
-                var start = $.Deferred()
-                var end = $.Deferred()
-                var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
-                seq.push({sparql:undefined,deferred:end})
-                _.reduce(
-                    seq,
-                    (previous,current) => {
-                        previous.then(() => {
-                            if (current.sparql) {
-                                this.store.execute(current.sparql,current.deferred.resolve)
-                            } else {
-                                this.store.registeredGraphs((e,g) => current.deferred.resolve(g))
-                            }
-                        });
-                        return current.deferred.promise()},
-                    start.promise()
-                )
-                start.resolve()
-                return end.promise()
+                var deferred = $.Deferred()
+                this.store.registeredGraphs((e,g) => deferred.resolve(g))
+                return deferred.promise()
             })
             .then((data) => {
                 this.namedDataset = _.uniq(_.map(data,(x) => x.nominalValue))
-                this.defaultDataset = this.namedDataset[0]
+                this.defaultDataset = this.namedDataset
             })
     }
 
 
     
-    execute(sparql) {
-        var deferred = $.Deferred()
-        this.store.executeWithEnvironment(sparql,this.defaultDataset,this.namedDataset,(error, graph) => deferred.resolve(graph))
-        return deferred.promise()
-    }
+    execute(sparql) { return this.execute(sparql) }
 
     update(triple) {
 
