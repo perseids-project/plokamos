@@ -13,17 +13,18 @@ import 'typeahead.js'
 
 
 var model = new Model();
-var applicator = new Applicator(model);
-var annotator = new Annotator(model);
+var applicator = undefined;
+var annotator = undefined;
 
 var initialize = () => {
     var getEndpoint = () => $('#annotator-main').data().sparqlEndpoint
     var getUrn = () => $('#annotator-main').data().urn
     var getUser = () => undefined // $('#annotator-main').dataset.user
+
     var results = model
         .load( getEndpoint(), getUrn(),getUser() )
-        .then( (success) => applicator.load() )
-        .then( (success) => annotator.load(getUrn()) )
+        .then( (success) => applicator = new Applicator(model) )
+        .then( (success) => annotator = new Annotator(model) )
 
     return [model, applicator, annotator]
 }
