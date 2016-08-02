@@ -4,17 +4,16 @@ import _ from 'lodash'
 import Model from './lib/core/model.js'
 import Applicator from './lib/core/applicator.js'
 import Annotator from './lib/core/annotator.js'
-import TextQuoteAnchor from 'dom-anchor-text-quote'
+import History from './lib/core/history'
+import Mustache from 'mustache.js'
 window.$ = $
 window.jQuery = jquery
 window.jquery = jquery
 window._ = _
+window.Mustache = Mustache
 import 'typeahead.js'
 
-
 var model = new Model();
-var applicator = undefined;
-var annotator = undefined;
 
 var initialize = () => {
     var getEndpoint = () => $('#annotator-main').data().sparqlEndpoint
@@ -23,18 +22,14 @@ var initialize = () => {
 
     var results = model
         .load( getEndpoint(), getUrn(),getUser() )
-        .then( (success) => applicator = new Applicator(model) )
-        .then( (success) => annotator = new Annotator(model) )
-
-    return [model, applicator, annotator]
+        .then( (success) => window.perseids.applicator = new Applicator(model) )
+        .then( (success) => window.perseids.history = new History(model, window.perseids.applicator) )
+        .then( (success) => window.perseids.annotator = new Annotator(model,window.perseids.applicator, window.perseids.history) )
 }
 
 // TODO: define clean interface for plugin, Annotator & Applicator
-// TODO: RIP marginotes
 
 export default {
     initialize: initialize,
-    applicator: applicator,
-    annotator: annotator,
     model: model
 }
