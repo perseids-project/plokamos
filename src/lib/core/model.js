@@ -10,6 +10,7 @@ class Model {
         this.defaultDataset = []
         this.namedDataset = []
         this.store = {};
+        this.upstream = []
         /**
          * Runs one or more sparql queries (in order) against the local rdfstore
          * and returns an array with result of the shape
@@ -37,30 +38,34 @@ class Model {
             seq.slice
             return _.last(seq).deferred.promise()
         }
+        this.reset = () => {
+            var outer = $.Deferred();
+            var inner = $.Deferred();
+            rdfstore.create((err,store) => {
+                this.store = store;
+                inner.resolve();
+            })
+            inner.promise()
+                .then(() => this.execute(this.upstream))
+                .then(() => this.store.registeredGraphs(
+                    (e,g) => {
+                        this.namedDataset = _.uniq(_.map(g,(x) => x.nominalValue))
+                        this.defaultDataset = this.namedDataset
+                        outer.resolve()
+                    }
+                ))
+            return outer.promise();
+        }
     }
 
     load(endpoint, urn, user) {
         var promise = endpoint.slice(-5)==='.json' ? $.getJSON(endpoint) : oaByUrnRetriever(endpoint, urn)
         // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return promise
-            .then((data) => {
-                var deferred = $.Deferred()
-                rdfstore.create((err,store) => {
-                    this.store = store
-                    deferred.resolve(data)
-                })
-                return deferred.promise()
-            })
             .then((data) => sparql.bindings2insert(data.results.bindings))
-            .then((data) => this.execute(data))
             .then((data) => {
-                var deferred = $.Deferred()
-                this.store.registeredGraphs((e,g) => deferred.resolve(g))
-                return deferred.promise()
-            })
-            .then((data) => {
-                this.namedDataset = _.uniq(_.map(data,(x) => x.nominalValue))
-                this.defaultDataset = this.namedDataset
+                this.upstream = data
+                return this.reset()
             })
     }
 
@@ -78,6 +83,10 @@ class Model {
 
     persist(endpoint) {
 
+    }
+
+    reset() {
+        this.reset();
     }
 
 }
