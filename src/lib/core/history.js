@@ -1,7 +1,9 @@
-
+import $ from 'jquery'
 
 class History {
     constructor(model,applicator) {
+        this.model = model;
+        this.applicator = applicator;
         this.commands = [];
         this.index = 0
     }
@@ -27,6 +29,7 @@ class History {
     reset() {
         this.commands = [];
         this.index = 0
+        return this.model.reset().then(() => this.applicator.reset())
     }
 }
 export default History
