@@ -9,9 +9,12 @@ import sparql from './sparql'
  */
 class Annotator {
 
-    constructor(model,id) {
+    constructor(model,applicator,history) {
 
         this.model = model;
+        this.applicator = applicator;
+        this.history = history;
+        this.currentRange = undefined;
         this.hash = (str) => str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
         /**
@@ -246,7 +249,38 @@ class Annotator {
 
         var insert = sparql.bindings2insert(bindings.results.bindings);
 
-        insert.map((sparql) => this.model.execute(sparql)).then()
+        insert.forEach((sparql) => this.model.execute(sparql).then(
+            (r) => {
+
+                // clear inputs
+
+                $('#create_subject > span > input').last().val('');
+                $('#create_predicate > span > input').last().val('');
+                $('#create_object > span > input').last().val('');
+
+                // remove modal
+                $('#create_modal').toggle();
+                $('body').removeClass('modal-open');
+                $('.modal-backdrop').remove();
+                $('#create_modal').removeClass('in');
+
+                // add span
+                var span = document.createElement('span');
+                span.setAttribute('class','perseids-annotation');
+                span.setAttribute('id',cite);
+                this.currentRange.surroundContents(span);
+                var annotation_body = [
+                    {s:cite+"#bond-1",p:"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",o:triple.p},
+                    {s:triple.s,p:"snap:has-bond",o:cite+"#bond-1"},
+                    {s:cite+"#bond-1",p:"snap:bond-with",o:triple.o}
+                ]
+                $(span).data(cite,annotation_body)
+                // applicator.load(id)
+                this.applicator.tooltip($(span))
+                // add command to history
+
+            }
+        ));
     }
 }
 
