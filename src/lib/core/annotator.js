@@ -24,12 +24,10 @@ class Annotator {
             "urn": () => $('#annotator-main').data().urn,
             "date": () => (new Date()).toISOString(),
             "triple": () => {
-                var subject_url = $("#subject_prefixes").data('url');
-                var subject_val = $("#create_subject > span > input").last().val();
                 return {
-                subject: subject_url+subject_val,
-                    predicate: $("#predicate_prefixes > button").data('url')+$("#create_predicate > input").val(),
-                    object: $("#object_prefixes > button").data('url')+$("#create_object > input").val()
+                    subject: ($("#subject_prefixes").data('url')|"")+$("#create_subject > span > input").last().val(),
+                    predicate: ($("#predicate_prefixes").data('url')|"")+$("#create_predicate > span > input").last().val(),
+                    object: ($("#object_prefixes").data('url')|"")+$("#create_object > span > input").last().val()
             }},
             "selector": () => $('#create_range').data('selector')
         }
@@ -56,11 +54,15 @@ class Annotator {
                 var selection = document.getSelection();
                 var starter = $('#starter');
                 if (selection && !selection.isCollapsed && starter.css('display')==='none') {
+                    this.currentRange = selection.getRangeAt(0).cloneRange();
                     var selector = this.selector["http://www.w3.org/ns/oa#TextQuoteSelector"]();
 
                     $('#create_range').html(selector.prefix+"<u>"+selector.exact+"</u>"+selector.suffix);
                     $('#create_range').data('selector',selector)
-                    starter.css({display:"block",position:"absolute",left:event.clientX+10,top:event.clientY+15});
+                    var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
+                    var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
+                    var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
+                    starter.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
                     
                 } else starter.css({display:"none"});
             }
@@ -124,13 +126,12 @@ class Annotator {
                 })
                 // then initialize typeahead
                 .then((json) => {
-                    ['#create_predicate'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties["http:"].resources)}));
-                    ['#create_subject','#create_object'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities["http:"].resources)}));
-                    // todo: fix 'k' error and refactor
+                    ['#create_predicate > input'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties["http:"].resources)}));
+                    ['#create_subject > input','#create_object > input'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities["http:"].resources)}));
                 })
         }
 
-        this.init(id);
+        this.init();
     }
     
     save () {
