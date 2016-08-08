@@ -1,4 +1,4 @@
-import oaByUrnRetriever from '../io/oaByUrnRetriever'
+import oaByUrnRetriever from './io/oaByUrnRetriever'
 import sparql from './sparql'
 import rdfstore from 'rdfstore'
 import _ from 'lodash'

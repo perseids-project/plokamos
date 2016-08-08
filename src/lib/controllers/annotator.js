@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import TextQuoteAnchor from 'dom-anchor-text-quote';
-import sparql from './sparql'
+import sparql from '../models/sparql'
 
 
 /**

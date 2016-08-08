@@ -171,8 +171,17 @@ class Applicator {
             }
         };
 
-        $('body').append('<div class="margintooltip" style="display: none;"></div>')
-        this.load();
+        var body = $('body');
+        var margintooltip = $('<div class="margintooltip" style="display: none;"></div>')
+        var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black;"/>')
+        var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000; display:none;"/>');
+        body.append(margintooltip);
+        body.append(globalViewBtn);
+        body.append(globalView);
+        globalViewBtn.mouseleave(function(e) {$('#global-view').css('display','none')});
+        globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
+         $.getScript('/annotator-assets/js/pagegrid.js',() => deferred.resolve());
+        deferred.promise().then(this.load());
     }
 
     load (id)  {
