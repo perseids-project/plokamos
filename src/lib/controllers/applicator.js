@@ -1,6 +1,9 @@
 import $ from 'jquery'
 import _ from 'lodash'
+import Selectors from '../models/queries/oa_selectors'
+import Graph from '../models/queries/oa_bodies'
 import TextQuoteAnchor from 'dom-anchor-text-quote'
+import wrapRangeText from 'wrap-range-text'
 
 // I have a list of selector types
 // I have a list of queries to get selector data
@@ -14,56 +17,27 @@ class Applicator {
     constructor (model) {
         this.model = model;
         this.escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
-        this.graph = {
-            "http://www.w3.org/ns/oa#hasBody": (id) => [
-                "SELECT ?id ?subject ?predicate ?object ?graph",
-                "WHERE {",
-                "GRAPH ?g {?id <http://www.w3.org/ns/oa#hasBody> ?graph } .",
-                "GRAPH ?graph {?subject ?predicate ?object}",
-                "}"
-            ].join("\n")
-        }
 
         /**
          * Mark selector positions with triples
          * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
          */
         this.mark = {
-            "http://www.w3.org/ns/oa#TextQuoteSelector": (selector, triple) => {
-                var prefix = selector.prefix ? selector.prefix.value : ''
-                var exact = selector.exact ? selector.exact.value : ''
-                var suffix = selector.suffix ? selector.suffix.value : ''
-                // covering for trimmed pre-/suffixes
-                prefix = prefix[-1]===' ' ? prefix : prefix+' '
-                suffix = [',','.',';',':'].indexOf(suffix[0])+1 ? suffix : ' '+suffix
-                $(`:contains('${prefix+exact+suffix}')`).last().html(function (i, o) {
-                    // TODO: REPLACE IS STILL TO SLOW [much better with last()]
-                    // TODO: NOT ROBUST IN CASE OF N-1 : ANNOTATIONS-TOKEN
-                    // TODO: -> USE TEXTQUOTEANNOTATOR ?
-                    return o.replace(
-                        prefix+exact+suffix,
-                        `${prefix}<span class ='perseids-annotation' id='${selector.id.value}'>${exact}</span>${suffix}`
-                    );
-                })
-            }
-        };
+            "http://www.w3.org/ns/oa#TextQuoteSelector": (sel, triple) => {
+                var selector = {}
+                if(sel.prefix) selector.prefix = sel.prefix.value
+                if (sel.exact) selector.exact = sel.exact.value
+                if (sel.suffix) selector.suffix = sel.suffix.value
 
-        /**
-         * SPARQL Queries to retrieve
-         * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1?:*)=>string)}}
-         */
-        this.selectors = {
-            "http://www.w3.org/ns/oa#TextQuoteSelector": (id) => [
-                "SELECT ?id ?prefix ?exact ?suffix",
-                "WHERE {",
-                "GRAPH ?g {",
-                `${id || "?id"} <http://www.w3.org/ns/oa#hasTarget> ?target .`,
-                "?target <http://www.w3.org/ns/oa#hasSelector> ?selector .",
-                "?selector <http://www.w3.org/ns/oa#prefix> ?prefix .",
-                "?selector <http://www.w3.org/ns/oa#exact> ?exact .",
-                "?selector <http://www.w3.org/ns/oa#suffix> ?suffix .",
-                "}}"
-            ].join("\n")
+                var span = document.createElement('span')
+                span.setAttribute("id",sel.id.value)
+                    span.classList.add("perseids-annotation")
+
+                var textquote = TextQuoteAnchor.fromSelector(document.getElementById("annotator-main"),selector)
+                var range = textquote.toRange()
+
+                wrapRangeText(span,range)
+            }
         };
 
         this.tooltip = (jqElement) => {
@@ -141,11 +115,11 @@ class Applicator {
          */
         this.load = (id) => {
             // get TextSelectors
-            this.model.execute(this.selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
+            this.model.execute(Selectors["http://www.w3.org/ns/oa#TextQuoteSelector"](id))
             // mark positions in HTML
                 .then((selectors) => _.last(selectors).result.map((x) => this.mark["http://www.w3.org/ns/oa#TextQuoteSelector"](x)))
                 // get triples
-                .then((data) => this.model.execute(this.graph["http://www.w3.org/ns/oa#hasBody"](id)))
+                .then((data) => this.model.execute(Graph["http://www.w3.org/ns/oa#hasBody"](id)))
 
                 .then((data) => _.last(data).result.forEach((x) => {
                     var element = $(document.getElementById(x.id.value))
@@ -180,8 +154,8 @@ class Applicator {
         body.append(globalView);
         globalViewBtn.mouseleave(function(e) {$('#global-view').css('display','none')});
         globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
-         $.getScript('/annotator-assets/js/pagegrid.js',() => deferred.resolve());
-        deferred.promise().then(this.load());
+         // $.getScript('/annotator-assets/js/pagegrid.js');
+        this.load();
     }
 
     load (id)  {

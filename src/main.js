@@ -1,16 +1,17 @@
 import $ from 'jquery'
 import jquery from 'jquery'
 import _ from 'lodash'
-import Model from './lib/core/model.js'
-import Applicator from './lib/core/applicator.js'
-import Annotator from './lib/core/annotator.js'
-import History from './lib/core/history'
+import Model from './lib/models/model.js'
+import Applicator from './lib/controllers/applicator.js'
+import Annotator from './lib/controllers/annotator.js'
+import History from './lib/models/history'
 import Mustache from 'mustache.js'
 window.$ = $
 window.jQuery = jquery
 window.jquery = jquery
 window._ = _
-window.Mustache = Mustache
+import TextQuoteAnchor from 'dom-anchor-text-quote'
+import wrapRangeText from 'wrap-range-text'
 import 'typeahead.js'
 
 var model = new Model();
@@ -31,5 +32,7 @@ var initialize = () => {
 
 export default {
     initialize: initialize,
-    model: model
+    model: model,
+    tqa: TextQuoteAnchor,
+    wrapRangeText:wrapRangeText
 }

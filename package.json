@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "rdfstore": "^0.9.13",
-    "dom-anchor-text-quote":"^2.0.1"
+    "dom-anchor-text-quote":"^2.0.1",
+    "wrap-range-text":"^1.0.1"
   }
 }
