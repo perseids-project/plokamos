@@ -13,6 +13,7 @@ export default {
                 'bower_components/lodash/**',
                 'bower_components/jquery/**',
                 'bower_components/jsonld/**',
+                'bower_components/d3/**',
                 'node_modules/**'
                 ]
         }),
@@ -38,6 +39,7 @@ export default {
     targets: [
         {
             dest: 'build/js/annotator.js',
+            useStrict: false,
             format: 'iife'
         }
     ]
