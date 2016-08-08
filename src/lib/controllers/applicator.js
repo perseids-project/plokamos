@@ -4,6 +4,7 @@ import Selectors from '../models/queries/oa_selectors'
 import Graph from '../models/queries/oa_bodies'
 import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
+import NodeLink from '../views/applicator/NodeLink'
 
 // I have a list of selector types
 // I have a list of queries to get selector data
@@ -23,7 +24,7 @@ class Applicator {
          * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
          */
         this.mark = {
-            "http://www.w3.org/ns/oa#TextQuoteSelector": (sel, triple) => {
+            "http://www.w3.org/ns/oa#TextQuoteSelector": (sel) => {
                 var selector = {}
                 if(sel.prefix) selector.prefix = sel.prefix.value
                 if (sel.exact) selector.exact = sel.exact.value
@@ -121,12 +122,14 @@ class Applicator {
                 // get triples
                 .then((data) => this.model.execute(Graph["http://www.w3.org/ns/oa#hasBody"](id)))
 
-                .then((data) => _.last(data).result.forEach((x) => {
+                .then((data) => _.last(data).result.map((x) => {
                     var element = $(document.getElementById(x.id.value))
                     var array = element.data(x.graph.value) || []
                     element.data(x.graph.value,_.concat(array,{s:x.subject.value, p:x.predicate.value,o:x.object.value}))
                     this.tooltip(element);
+                    return {g: x.graph.value, s:x.subject.value, p:x.predicate.value,o:x.object.value}
                 }))
+            // then add global view
         };
 
         /**
@@ -154,7 +157,10 @@ class Applicator {
         body.append(globalView);
         globalViewBtn.mouseleave(function(e) {$('#global-view').css('display','none')});
         globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
+        // prepare empty visualization
+        // node links into model
          // $.getScript('/annotator-assets/js/pagegrid.js');
+        nodelink = new NodeLink(globalView.get(0))
         this.load();
     }
 
