@@ -155,12 +155,16 @@ class Applicator {
         body.append(margintooltip);
         body.append(globalViewBtn);
         body.append(globalView);
-        globalViewBtn.mouseleave(function(e) {$('#global-view').css('display','none')});
+        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep)$('#global-view').css('display','none')});
         globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
+        globalViewBtn.click(function(e) {
+            globalViewBtn.keep = !globalViewBtn.keep
+            $('#global-view').css('display','block')})
+        globalViewBtn.keep = false;
         // prepare empty visualization
         // node links into model
          // $.getScript('/annotator-assets/js/pagegrid.js');
-        nodelink = new NodeLink(globalView.get(0))
+        this.nodelink = new NodeLink(globalView.get(0))
         this.load();
     }
 
@@ -179,6 +183,10 @@ class Applicator {
 
     tooltip(element) {
         this.tooltip(element)
+    }
+
+    nodelink() {
+        return this.nodelink
     }
 }
 
