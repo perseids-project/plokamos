@@ -15,6 +15,8 @@ class NodeLink {
         
         this.vis = d3.select(parent).append("svg:svg").attr("width",this.width).attr("height",this.height)
 
+        this.node={}
+        this.link={}
         this.nodes = []
         this.links = []
         this.force = d3.layout.force().size([this.width, this.height]).nodes(this.nodes).links(this.links).gravity(1).linkDistance(function(d){return (1-d.weight)*100}).charge(-3000).linkStrength(function(x) {
@@ -22,19 +24,19 @@ class NodeLink {
         });
 
         this.updateLink = function() {
-            this.attr("x1", function(d) {
+            this.attr("x1", (d) => {
                 return d.source.screenX;
-            }).attr("y1", function(d) {
+            }).attr("y1", (d) => {
                 return d.source.screenY;
-            }).attr("x2", function(d) {
+            }).attr("x2", (d) => {
                 return d.target.screenX;
-            }).attr("y2", function(d) {
+            }).attr("y2", (d) => {
                 return d.target.screenY;
             });
         }
 
         this.updateNode = function() {
-            this.attr("transform", function(d) {
+            this.attr("transform", (d) => {
                 if(self.USE_GRID) {
                     var gridpoint = self.grid.occupyNearest(d);
 
@@ -91,11 +93,9 @@ class NodeLink {
                     };
                 },
 
-                sqdist : function(a, b) {
-                    return Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2);
-                },
+                sqdist : function(a, b) {return Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)},
 
-                occupyNearest : function(p) {
+                occupyNearest : function (p) {
                     var minDist = 1000000;
                     var d;
                     var candidate = null;
@@ -113,35 +113,60 @@ class NodeLink {
             }
         }(this.width, this.height);
 
-        this.force.on("tick", function() {
+        this.update_graph = () => {
+            self.link = self.vis.selectAll("line.link").data(
+                self.force.links(),
+                (d) => d.source.id + "-" + d.target.id
+            );
+            self.link.enter()
+                .insert("svg:line", ".node")
+                .attr("class", "link")
+                .on("click",(d,i)=>{})
+                .on("hover",(d,i)=>{});
+            self.link.exit()
+                .remove();
+            self.node = self.vis.selectAll("circle.node").data(
+                self.force.nodes(),
+                (d) => d.id
+            );
+            self.node.enter()
+                .append("svg:circle")
+                .attr("class", (d) => d.id)
+                .attr("r", 7)
+                .call(self.force.drag)
+                .on("click",(d,i)=>{})
+                .on("hover",(d,i)=>{});
+            // add event listeners
+            self.node.exit()
+                .remove();
+            self.force.start();
+        }
+
+        this.add = (nodes,links) => {
+            self.nodes = this.nodes.concat(nodes)
+            self.links = this.links.concat(links)
+            self.force.nodes(self.nodes).links(self.links)
+            this.update_graph()
+            this.update_graph()
+        }
+
+        this.update_graph()
+
+        this.force.on("tick", () => {
             self.vis.select("g.gridcanvas").remove();
             if(self.USE_GRID) {
                 self.grid.init();
                 var gridCanvas = self.vis.append("svg:g").attr("class", "gridcanvas").attr("width", self.width).attr("height", self.height);
-                _.each(self.grid.cells, function(c) {
-                    gridCanvas.append("svg:circle").attr("cx", c.x).attr("cy", c.y).attr("r", 2).style("fill", "#555").style("opacity", .3);
-                });
+                _.each(self.grid.cells, (c) => gridCanvas.append("svg:circle").attr("cx", c.x).attr("cy", c.y).attr("r", 2).style("fill", "#555").style("opacity", .3));
             }
 
             self.node.call(self.updateNode);
             self.link.call(self.updateLink);
         });
 
-        this.link = this.vis.selectAll("line.link").data(self.links).enter().append("svg:line").attr("class", "link");
-        this.link.on("click", function(d,i) {
-            console.log(d);
-        })
-        this.node = this.vis.selectAll("g.node").data(self.force.nodes()).enter().append("svg:g").attr("class", "node");
-        this.node.append("svg:circle").attr("r", 7);
-        this.node.call(self.force.drag);
-        this.node.on("click", function(d,i) {
-            console.log(d);
-            console.log(i);
-        })
+        this.grid.init()
         this.force.start()
     }
-
-
 }
 
 export default NodeLink
