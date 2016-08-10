@@ -3,60 +3,35 @@ import $ from 'jquery'
 import _ from 'lodash'
 
 class NodeLink {
-    constructor(parent) {
+    constructor(body) {
         var self = this
-        this.parent = parent
-        this.width = $(parent).width()
-        this.height = $(parent).height()
+        var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black;"/>')
+        var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000; display:none;"/>');
+        body.append(globalViewBtn);
+        body.append(globalView);
+        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep)$('#global-view').css('display','none')});
+        globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
+        globalViewBtn.click(function(e) {
+            globalViewBtn.keep = !globalViewBtn.keep
+            $('#global-view').css('display','block')})
+        globalViewBtn.keep = false;
+        this.parent = globalView.get(0)
+        this.width = globalView.width()
+        this.height = globalView.height()
 
         this.USE_GRID = true;
         this.GRID_SIZE = 60;
         this.GRID_TYPE = "HEXA";
-        
-        this.vis = d3.select(parent).append("svg:svg").attr("width",this.width).attr("height",this.height)
 
         this.node={}
         this.link={}
         this.nodes = []
         this.links = []
+
+        this.vis = d3.select(this.parent).append("svg:svg").attr("width",this.width).attr("height",this.height)
         this.force = d3.layout.force().size([this.width, this.height]).nodes(this.nodes).links(this.links).gravity(1).linkDistance(function(d){return (1-d.weight)*100}).charge(-3000).linkStrength(function(x) {
             return x.weight * 5
         });
-
-        this.updateLink = function() {
-            this.attr("x1", (d) => {
-                return d.source.screenX;
-            }).attr("y1", (d) => {
-                return d.source.screenY;
-            }).attr("x2", (d) => {
-                return d.target.screenX;
-            }).attr("y2", (d) => {
-                return d.target.screenY;
-            });
-        }
-
-        this.updateNode = function() {
-            this.attr("transform", (d) => {
-                if(self.USE_GRID) {
-                    var gridpoint = self.grid.occupyNearest(d);
-
-                    if(gridpoint) {
-                        d.screenX = d.screenX || gridpoint.x;
-                        d.screenY = d.screenY || gridpoint.y;
-                        d.screenX += (gridpoint.x - d.screenX) * .2;
-                        d.screenY += (gridpoint.y - d.screenY) * .2;
-
-                        d.x += (gridpoint.x - d.x) * .05;
-                        d.y += (gridpoint.y - d.y) * .05;
-                    }
-                } else {
-                    d.screenX = d.x;
-                    d.screenY = d.y;
-                }
-                return "translate(" + d.screenX + "," + d.screenY + ")";
-            });
-        };
-        
         this.grid = function(width, height) {
             return {
                 cells : [],
@@ -113,6 +88,38 @@ class NodeLink {
             }
         }(this.width, this.height);
 
+        this.updateLink = function() {
+            this.attr("x1", (d) => {
+                return d.source.screenX;
+            }).attr("y1", (d) => {
+                return d.source.screenY;
+            }).attr("x2", (d) => {
+                return d.target.screenX;
+            }).attr("y2", (d) => {
+                return d.target.screenY;
+            });
+        }
+        this.updateNode = function() {
+            this.attr("transform", (d) => {
+                if(self.USE_GRID) {
+                    var gridpoint = self.grid.occupyNearest(d);
+
+                    if(gridpoint) {
+                        d.screenX = d.screenX || gridpoint.x;
+                        d.screenY = d.screenY || gridpoint.y;
+                        d.screenX += (gridpoint.x - d.screenX) * .2;
+                        d.screenY += (gridpoint.y - d.screenY) * .2;
+
+                        d.x += (gridpoint.x - d.x) * .05;
+                        d.y += (gridpoint.y - d.y) * .05;
+                    }
+                } else {
+                    d.screenX = d.x;
+                    d.screenY = d.y;
+                }
+                return "translate(" + d.screenX + "," + d.screenY + ")";
+            });
+        };
         this.update_graph = () => {
             self.link = self.vis.selectAll("line.link").data(
                 self.force.links(),
@@ -136,22 +143,23 @@ class NodeLink {
                 .call(self.force.drag)
                 .on("click",(d,i)=>{})
                 .on("hover",(d,i)=>{});
-            // add event listeners
             self.node.exit()
                 .remove();
             self.force.start();
         }
-
         this.add = (nodes,links) => {
-            self.nodes = this.nodes.concat(nodes)
-            self.links = this.links.concat(links)
+            self.nodes = this.nodes.concat(nodes||[])
+            self.links = this.links.concat(links||[])
             self.force.nodes(self.nodes).links(self.links)
             this.update_graph()
             this.update_graph()
         }
+        this.remove = (nodes, links) => {}
+        this.update = (nodes,links) => {
+
+        }
 
         this.update_graph()
-
         this.force.on("tick", () => {
             self.vis.select("g.gridcanvas").remove();
             if(self.USE_GRID) {
@@ -163,7 +171,6 @@ class NodeLink {
             self.node.call(self.updateNode);
             self.link.call(self.updateLink);
         });
-
         this.grid.init()
         this.force.start()
     }
