@@ -23,7 +23,7 @@ class Annotator {
          */
         this.acquire = {
             "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post),
-            "user": () => $('#annotator-main').data().user, // TODO: implement
+            "user": () => $('#annotator-main').data().user,
             "urn": () => $('#annotator-main').data().urn,
             "date": () => (new Date()).toISOString(),
             "triple": () => {
