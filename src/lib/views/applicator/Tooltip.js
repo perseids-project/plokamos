@@ -27,7 +27,8 @@ class Tooltip {
                         return expressions.join(";\n")
                     })).join("\n\n")
                 }
-                var description = stringify($(this).data())//attr(field)
+                var graphs = _.pickBy($(this).data(),(v,k)=>k.startsWith('http://'))
+                var description = stringify(graphs)//attr(field)
                 var tooltip = $('.margintooltip')
 
                 var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
