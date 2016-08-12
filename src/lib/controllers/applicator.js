@@ -6,6 +6,7 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
+import Delete from '../views/applicator/Delete'
 
 // I have a list of selector types
 // I have a list of queries to get selector data
@@ -61,6 +62,7 @@ class Applicator {
                     var array = element.data(x.graph.value) || []
                     element.data(x.graph.value,_.concat(array,{s:x.subject.value, p:x.predicate.value,o:x.object.value}))
                     this.tooltip.register(element);
+                    this.delete.register(element);
                     return {g: x.graph.value, s:x.subject.value, p:x.predicate.value,o:x.object.value}
                 }))
             // then add global view
@@ -84,6 +86,7 @@ class Applicator {
 
         var body = $('body');
         this.tooltip = new Tooltip(body)
+        this.delete = new Delete(body)
         this.nodelink = new NodeLink(body)
         this.load();
     }
