@@ -7,6 +7,7 @@ import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
 import Delete from '../views/applicator/Delete'
+import SNAP from '../models/ontologies/SNAP'
 
 // I have a list of selector types
 // I have a list of queries to get selector data
@@ -34,7 +35,10 @@ class Applicator {
 
                 var span = document.createElement('span')
                 span.setAttribute("id",sel.id.value)
-                    span.classList.add("perseids-annotation")
+                span.classList.add("perseids-annotation")
+                span.setAttribute('data-prefix',selector.prefix)
+                span.setAttribute('data-exact',selector.exact)
+                span.setAttribute('data-suffix',selector.suffix)
 
                 var textquote = TextQuoteAnchor.fromSelector(document.getElementById("annotator-main"),selector)
                 var range = textquote.toRange()
@@ -65,7 +69,12 @@ class Applicator {
                     this.delete.register(element);
                     return {g: x.graph.value, s:x.subject.value, p:x.predicate.value,o:x.object.value}
                 }))
-            // then add global view
+                // then add global view
+                .then((data) => {
+                    var snap = SNAP.simplify(_.groupBy(data,'g'))
+                    var input = _.flatMap(snap,(v,k)=>v.map((o) => Object.assign(o,{g:k})))
+                    this.nodelink.add(input)
+                })
         };
 
         /**
