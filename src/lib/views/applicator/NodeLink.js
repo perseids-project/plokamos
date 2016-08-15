@@ -147,15 +147,27 @@ class NodeLink {
                 .remove();
             self.force.start();
         }
-        this.add = (nodes,links) => {
-            self.nodes = this.nodes.concat(nodes||[])
-            self.links = this.links.concat(links||[])
+        this.add = (triples) => {
+            triples.forEach((t) => {
+                var subjectIdx = _.findIndex(self.nodes,['id',t.s])
+                var objectIdx = _.findIndex(self.nodes,['id',t.o])
+                var predicateIdx = (subjectIdx+1 && objectIdx+1) ? _.findIndex(self.links,{source:subjectIdx,target:objectIdx}) : -1
+                if (subjectIdx+1) {self.nodes[subjectIdx].graphs.push(t.g)} else {subjectIdx = self.nodes.push({id:t.s,graphs:[t.g],x:Math.floor(self.width*Math.random()),y:Math.floor(self.height*Math.random())})-1}
+                if (objectIdx+1) {self.nodes[objectIdx].graphs.push(t.g)} else {objectIdx = self.nodes.push({id:t.o,graphs:[t.g],x:Math.floor(self.width*Math.random()),y:Math.floor(self.height*Math.random())})-1}
+                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:1})-1}
+            })
+            // todo
+            // todo: take in triples instead of node/links and convert them with self.node indices
+            // todo: remember that removing may require re-indexing!
+            // todo
+            // self.nodes = this.nodes.concat(nodes||[])
+            // self.links = this.links.concat(links||[])
             self.force.nodes(self.nodes).links(self.links)
             this.update_graph()
             this.update_graph()
         }
-        this.remove = (nodes, links) => {}
-        this.update = (nodes,links) => {
+        this.remove = (triples) => {}
+        this.update = (triples) => {
 
         }
 
