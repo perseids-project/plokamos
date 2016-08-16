@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css">
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
+    <style>
+        .group {
+            position:relative;
+            overflow: hidden;
+            margin:20px;
+            height:40px;
+            border-radius:5px;
+            border:1px solid lightgrey;
+            z-index:2;
+            box-sizing: border-box;
+        }
+        .component {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        div.up, div.delete {
+            width: 50px;
+            padding: 5px;
+            text-align: center;
+            font-size: 2em;
+            cursor: pointer;
+        }
+        div.content, div.display, div.edit, div.sentence, div.accept {
+            left: 0px;
+        }
+        input.component {
+            left: 50px;
+        }
+        div.delete {
+            right:0;
+            background-color:orangered;
+        }
+        div.accept {
+            background-color: limegreen;
+        }
+        div.discard {
+            right:0px;
+            background-color: gold;
+        }
+    </style>
+</head>
+<body>
+<div class="well" id="modal">
+    <div class="group" title="http://data.perseids.org/ns/smith#A.Ajax_1 http://data.perseids.org/ns/snap#friendOf http://data.perseids.org/ns/smith#A.Ajax_1">
+
+    <div class="content component" style="height:80px;">
+
+        <!-- note: display element with buttons for editing and deleting -->
+        <!-- done: fix glyphicon position -->
+        <!-- todo: add data attributes -->
+        <div class="display component" style="height:40px;">
+            <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1">
+                <a href="#" class="triple subject down" title="Change subject">Ajax is avery long name for a person</a>
+                <a href="#" class="triple predicate down"> but apparently he or she is friends with </a>
+                <a href="#" class="triple object down">Apollon which is an even longer name, let's see if this is long enough</a>        <!--input type="text" class="form-control typeahead" style="height:100%; border-bottom-right-radius: 0px; border-top-right-radius: 0px" name="create_subject" placeholder="Start typing something to search..."-->
+            </div>
+            <div class="delete component"><span class="glyphicon glyphicon-minus-sign" style="color:white;"></span></div>
+        </div>
+
+        <!-- done: editor element with typeahead auto-completion -->
+        <!-- todo: align glyphicons -->
+        <!-- todo: replace input with typeahead -->
+        <!-- todo: fix input size -->
+        <!-- todo: add titles -->
+        <div class="edit component" style="top:40px; height:40px;">
+            <div class="accept up component"><span class="glyphicon glyphicon-ok" style="color:white;"></span></div>
+            <input class="component" type="text" placeholder="http://data.perseids.org/graph/persons#A.Ajax_1">
+            <div class="discard up component"><span class="glyphicon glyphicon-remove"></span></div>
+        </div>
+
+    </div>
+</div>
+    <div class="group" title="http://data.perseids.org/ns/smith#A.Ajax_1 http://data.perseids.org/ns/snap#friendOf http://data.perseids.org/ns/smith#A.Ajax_1">
+
+        <div class="content component" style="height:80px;">
+
+            <!-- note: display element with buttons for editing and deleting -->
+            <!-- done: fix glyphicon position -->
+            <!-- todo: add data attributes -->
+            <div class="display component" style="height:40px;">
+                <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1">
+                    <a href="#" class="triple subject down" title="Change subject">Ajax is avery long name for a person</a>
+                    <a href="#" class="triple predicate down"> but apparently he or she is friends with </a>
+                    <a href="#" class="triple object down">Apollon which is an even longer name, let's see if this is long enough</a>        <!--input type="text" class="form-control typeahead" style="height:100%; border-bottom-right-radius: 0px; border-top-right-radius: 0px" name="create_subject" placeholder="Start typing something to search..."-->
+                </div>
+                <div class="delete component"><span class="glyphicon glyphicon-minus-sign" style="color:white;"></span></div>
+            </div>
+
+            <!-- done: editor element with typeahead auto-completion -->
+            <!-- todo: align glyphicons -->
+            <!-- todo: replace input with typeahead -->
+            <!-- todo: fix input size -->
+            <!-- todo: add titles -->
+            <div class="edit component" style="top:40px; height:40px;">
+                <div class="accept up component"><span class="glyphicon glyphicon-ok" style="color:white;"></span></div>
+                <input class="component" type="text" placeholder="http://data.perseids.org/graph/persons#A.Ajax_1">
+                <div class="discard up component"><span class="glyphicon glyphicon-remove"></span></div>
+            </div>
+
+        </div>
+    </div>
+    <span style="left: 50%;" class="glyphicon glyphicon-link"></span>
+    <div class="group" title="http://data.perseids.org/ns/smith#A.Ajax_1 http://data.perseids.org/ns/snap#friendOf http://data.perseids.org/ns/smith#A.Ajax_1">
+
+        <div class="content component" style="height:80px;">
+
+            <!-- note: display element with buttons for editing and deleting -->
+            <!-- done: fix glyphicon position -->
+            <!-- todo: add data attributes -->
+            <div class="display component" style="height:40px;">
+                <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1">
+                    <a href="#" class="triple subject down" title="Change subject">Ajax is avery long name for a person</a>
+                    <a href="#" class="triple predicate down"> but apparently he or she is friends with </a>
+                    <a href="#" class="triple object down">Apollon which is an even longer name, let's see if this is long enough</a>        <!--input type="text" class="form-control typeahead" style="height:100%; border-bottom-right-radius: 0px; border-top-right-radius: 0px" name="create_subject" placeholder="Start typing something to search..."-->
+                </div>
+                <div class="delete component"><span class="glyphicon glyphicon-minus-sign" style="color:white;"></span></div>
+            </div>
+
+            <!-- done: editor element with typeahead auto-completion -->
+            <!-- todo: align glyphicons -->
+            <!-- todo: replace input with typeahead -->
+            <!-- todo: fix input size -->
+            <!-- todo: add titles -->
+            <div class="edit component" style="top:40px; height:40px;">
+                <div class="accept up component"><span class="glyphicon glyphicon-ok" style="color:white;"></span></div>
+                <input class="component" type="text" placeholder="http://data.perseids.org/graph/persons#A.Ajax_1">
+                <div class="discard up component"><span class="glyphicon glyphicon-remove"></span></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.group').hover(
+            (e) => {
+                $(e.currentTarget).find('.sentence').animate({'width':'-=50'},{duration:600})
+            },
+            (e) => {
+                $(e.currentTarget).find('.sentence').animate({'width':'100%'},{duration:600})
+            }
+    )
+    $('a.down').click((e) => {
+        // todo: update placeholder
+        $(e.target).closest('.content').animate({'top':'-40px'},{duration:400})
+    })
+    $('.up').click((e) => {
+        $(e.target).closest('.content').animate({'top':'0px'},{duration:400})
+    })
+    $('div.delete').click((e) => {
+        // todo: remove graph from
+        $(e.target).closest('.group').animate({'height':'0px', 'margin-top':'0px', 'margin-bottom':'0px' },{duration:150, complete:() =>{$(e.target).closest('.group').remove()}})
+    })
+    $('.accept').click((e) => {
+        // todo: update triple
+        $(e.target)
+    })
+    $('#modal').click((e) => {
+        var p =e;
+    })
+</script>
+</body>
+</html>
