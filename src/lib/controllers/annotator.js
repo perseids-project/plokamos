@@ -21,6 +21,7 @@ class Annotator {
          * Acquire variables for Open Annotations
          * @type {{cite: ((p1?:*, p2?:*)=>string), user: (()=>string), urn: (()), date: (()=>string), triple: (()), selector: (()=>(any))}}
          */
+        // TODO: FIX ACQUIRE WITH NEW SELECTORS
         this.acquire = {
             "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post),
             "user": () => $('#annotator-main').data().user,
@@ -34,12 +35,6 @@ class Annotator {
             }},
             "selector": () => $('#create_range').data('selector')
         }
-
-        /**
-         * Namespaces for resource URIs
-         * @type {string[]}
-         */
-        this.prefixes = ['http://','oa:','snap:','perseidsrdf:','smith:'];
 
         this.selector = {
             "http://www.w3.org/ns/oa#TextQuoteSelector" : () => {
@@ -59,14 +54,14 @@ class Annotator {
                 if (selection && !selection.isCollapsed && starter.css('display')==='none') {
                     this.currentRange = selection.getRangeAt(0).cloneRange();
                     var selector = this.selector["http://www.w3.org/ns/oa#TextQuoteSelector"]();
-
-                    $('#create_range').html(selector.prefix+"<u>"+selector.exact+"</u>"+selector.suffix);
-                    $('#create_range').data('selector',selector)
                     var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
                     var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
                     var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
                     starter.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
-                    
+
+                    // TODO: USE TEMPLATE
+                    // TODO: MAKE STARTER OPEN TEMPLATE (data-target)
+                    // TODO: template.init() with selector
                 } else starter.css({display:"none"});
             }
 
@@ -74,64 +69,10 @@ class Annotator {
 
         this.init = (id) => {
             var id = id ? id : this.acquire.urn();
-            // TODO: switch to mustache.js templating
-            var substringMatcher = function(strs) {
-                return function findMatches(q, cb) {
-                    var matches, substrRegex;
-                    matches = [];
-                    substrRegex = new RegExp(q, 'i');
-                    $.each(strs, function(i, str) { if (substrRegex.test(str)) { matches.push(str); } });
-                    cb(matches);
-                };
-            };
             var app = $('[data-urn="'+id+'"]');
-            $.get('/annotator-assets/html/createInterface.html')
-            // then inject user interface html
-                .then((html) => app.append(html))
+            app.append('<div class="btn btn-circle" id="starter" style="display:none;" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-paperclip"></span></div>')
                 // then inject selection event listener
-                .then(app.mouseup(this.starter["http://www.w3.org/ns/oa#TextQuoteSelector"]))
-                // then get namespaces
-                .then(() => $.getJSON('/annotator-assets/json/namespaces.json'))
-                // then inject typeahead for namespaces
-                .then((json) => {
-                    // NOTE: PARSE AND INSERT PREFIXES
-                    // NOTE: (RDF OBJECTS)
-                    var ks = _.keys(json.entities);
-                    json.entities["http:"]["resources"] = _.reduce(json.entities,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
-                    ks.forEach((k) => {
-                        var l = json.entities[k];
-                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                            $('#subject_prefixes > button').html(k+' <span class="caret"/>');
-                            $('#subject_prefixes').data('url',event.target.dataset.url || "");
-                            $('#create_subject > input').typeahead('destroy');
-                            $('#create_subject > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
-                        }).appendTo('#subject_prefixes > ul');
-                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                            $('#object_prefixes > button').html(k+' <span class="caret"/>');
-                            $('#object_prefixes').data('url',event.target.dataset.url || "");
-                            $('#create_object > input').typeahead('destroy');
-                            $('#create_object > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities[k].resources)})
-                        }).appendTo('#object_prefixes > ul');
-                    });
-                    // NOTE: (RDF PROPERTIES)
-                    var ks = _.keys(json.properties);
-                    json.properties["http:"]["resources"] = _.reduce(json.properties,(acc,e) => _.concat(acc,e.resources.map((x) => e.uri+x)),[]);
-                    ks.forEach((k) => {
-                        var l = json.properties[k];
-                        $(`<li><a href="#" data-url="${l.uri}" >${k}</a></li>`).on('click',(event) => {
-                            $('#predicate_prefixes > button').html(k+' <span class="caret"/>');
-                            $('#predicate_prefixes').data('url',event.target.dataset.url || "");
-                            $('#create_predicate > input').typeahead('destroy');
-                            $('#create_predicate > input').typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties[k].resources)})
-                        }).appendTo('#predicate_prefixes > ul');
-                    });
-                    return json;
-                })
-                // then initialize typeahead
-                .then((json) => {
-                    ['#create_predicate > input'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.properties["http:"].resources)}));
-                    ['#create_subject > input','#create_object > input'].forEach((id) => $(id).typeahead({minLength:3,highlight:true},{source:substringMatcher(json.entities["http:"].resources)}));
-                })
+            app.mouseup(this.starter["http://www.w3.org/ns/oa#TextQuoteSelector"])
         }
 
         this.init();
