@@ -254,9 +254,9 @@ class Templates {
                           <div class="content component" style="height:80px;">
                               <div class="display component" style="height:40px;">
                                   <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1 text-align: center;">
-                                      <a href="#" class="object down" title="Change object">{{#label}}{{o}}{{/label}}</a>
-                                      <a href="#" class="predicate down" title="Change predicate">{{#label}}{{p}}{{/label}}</a>
-                                      <a href="#" class="subject down" title="Change subject">{{#label}}{{s}}{{/label}}</a>
+                                      <a href="#" class="object down" title="Change object" data-token="object">{{#label}}{{o}}{{/label}}</a>
+                                      <a href="#" class="predicate down" title="Change predicate" data-token="predicate">{{#label}}{{p}}{{/label}}</a>
+                                      <a href="#" class="subject down" title="Change subject" data-token="subject">{{#label}}{{s}}{{/label}}</a>
                                   </div>
                                   <div class="btn-delete component"><span class="glyphicon glyphicon-minus-sign" style="color:white;"></span></div>
                               </div>
@@ -309,14 +309,15 @@ class Templates {
                     // todo: add to history -> nope, reset button maybe
                 })
                 el.find('.btn-accept').click((e) => {
-                    // todo: apply ontology label function
-                    var text = $(e.target).closest('.triple').find('.tt-input').val()
-                    var editing = $(e.target).closest('.triple').find('a.editing')
+                    var triple = $(e.target).closest('.triple')
+                    var text = triple.find('.tt-input').val()
+                    var editing = triple.find('a.editing')
                         if (text.trim()) {
-                            editing.text(text)
-                            $(e.target).closest('.triple').addClass('update')
+                            editing.text(text) // <-- todo: apply ontology label function
+                            triple.addClass('update')
+                            triple.data(editing.data('token'),text)
                         }
-                        editing.removeClass('.editing')
+                        editing.removeClass('editing')
                 })
                 el.find('#new_button').click((e) => {
                     var NIL = "_________"
