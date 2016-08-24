@@ -15,29 +15,20 @@ var SNAP = {
     simplify: function(obj) {
         return _.mapValues(obj, function (v, k) {
             var bonds = v
-                .filter(function (o) {
-                    return o.p === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && (o.o.startsWith(namespaces.snap.prefix) || o.o.startsWith(namespaces.snap.uri) || o.o.startsWith(namespaces.perseus.prefix) || o.o.startsWith(namespaces.perseus.uri))
-                })
-                .map(function (o) {
-                    return o.s
-                })
+            .filter((o) =>
+                o.p.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+                &&   ( o.o.value.startsWith(namespaces.snap.prefix)
+                    || o.o.value.startsWith(namespaces.snap.uri)
+                    || o.o.value.startsWith(namespaces.perseus.prefix)
+                    || o.o.value.startsWith(namespaces.perseus.uri)
+                )
+            ).map((o) => o.s.value)
 
             var expressions = bonds.map(function (bond) {
-                var subject = v.filter(function (o) {
-                    return o.p.endsWith("has-bond") && o.o === bond
-                }).map(function (o) {
-                    return o.s
-                })[0]
-                var predicate = v.filter(function (o) {
-                    return o.p === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && o.s === bond
-                }).map(function (o) {
-                    return o.o
-                })[0]
-                var object = v.filter(function (o) {
-                    return o.p.endsWith("bond-with") && o.s === bond
-                }).map(function (o) {
-                    return o.o
-                })[0]
+                var subject = _.find(v, (o) => o.p.value.endsWith("has-bond") && o.o.value === bond).s.value
+                var predicate = _.find(v, (o) => o.p.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && o.s.value === bond).o.value
+                var object = _.find(v, (o) => o.p.value.endsWith("bond-with") && o.s.value === bond).o.value
+
                 return {s: subject, p:predicate, o:object}
             })
             return expressions
