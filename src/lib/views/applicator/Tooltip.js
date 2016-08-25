@@ -1,33 +1,16 @@
+import SNAP from '../../models/ontologies/SNAP'
+
 class Tooltip {
     constructor(jqParent) {
         jqParent.append($('<div class="margintooltip" style="display: none;"></div>'))
         this.register = (jqElement) => {
             jqElement.hover(function (e) {
+                // todo: stringify should check ontology and select simplifier or stringify raw (.value)
                 function stringify(obj) {
-                    return _.values(_.mapValues(obj,function(v,k) {
-                        var bonds = v
-                            .filter(function(o){
-                                return o.p === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && o.s.startsWith(k)
-                            })
-                            .map(function(o) {
-                                return o.s
-                            })
-                        var expressions = bonds.map(function(bond) {
-                            var subject = v.filter(function(o) {
-                                return o.p.endsWith("has-bond") && o.o === bond
-                            }).map(function(o) {return o.s})[0]
-                            var predicate = v.filter(function(o) {
-                                return o.p === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && o.s === bond
-                            }).map(function(o) {return o.o})[0]
-                            var object = v.filter(function(o) {
-                                return o.p.endsWith("bond-with") && o.s === bond
-                            }).map(function(o) {return o.o})[0]
-                            return subject.split("\/").slice(-1)[0]+"\n"+predicate+"\n"+object.split("\/").slice(-1)[0]
-                        })
-                        return expressions.join(";\n")
-                    })).join("\n\n")
+                    var simplified = SNAP.simplify(obj)
+                    return _.flatten(_.values(simplified)).map((o) => o.s+";\n"+o.p+";\n"+o.o).join("\n\n")
                 }
-                var graphs = _.pickBy($(this).data(),(v,k)=>k.startsWith('http://'))
+                var graphs = $(this).data('annotations')
                 var description = stringify(graphs)//attr(field)
                 var tooltip = $('.margintooltip')
 
