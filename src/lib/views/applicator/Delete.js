@@ -73,20 +73,22 @@ class Delete {
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>This is a Modal Heading</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
         jqParent.append(modal)
         var body = modal.find('.modal-body')
-        var delete_button = modal.find('.btn-success')
+        var apply_button = modal.find('.btn-success')
         button.click((e) => {
             // done: show modal (automatically w/ data-toggle)
             // todo: hide button if clicked elsewhere
             button.css('display','none')
         })
 
-        delete_button.click((e) => {
+        apply_button.click((e) => {
 
-            // done: update to new modal-body
-            // done: hide groups instead of removing them
-            // done: look for hidden graph elements, then hidden single triples
-            // note: GRAPHS = $('.modal-body').find('.group').filter(function(){return this.style.display==='none'})
-            // note: TRIPLES = $('.modal-body').find('.group').filter(function(){return this.style.display==='none'})
+            /**
+             * We are done editing and are now processing, in order:
+             * 1. Pre-existing annotation bodies that have been completely deleted
+             * 2. Partially deleted annotation bodies
+             * 3. Modified annotation bodies
+             * 4. Newly created annotation body
+             */
 
             var dG = body.find('.graph.old.delete')
             // done: extract data (just g, really)
@@ -94,7 +96,7 @@ class Delete {
             dG.remove()
 
             var dT = body.find('.graph.old .triple.delete')
-            // todo: extract data (gspo), expand to SNAP triples, delete
+            // todo: extract data (gspo), expand to SNAP triples (by finding a bond that's in graph g, has type p, is bond of s and bond with o), delete
             var delete_triples = _.zip(dT.closest('.graph.old').data('graph'), dT.data('original-subject'), dT.data('original-predicate'), dT.data('original-object'))
             dT.remove()
 
@@ -124,21 +126,28 @@ class Delete {
                     }
                 }
             )
-            // todo: extract data (gspo), expand to SNAP triples, update
+            // todo: extract data (gspo), expand to SNAP triples, update (i.e. get bond, delete bond, re-insert bond)
 
             var cT = body.find('.graph.new .triple:not(.delete)')
             var create_triples = _.zip(cT.data('subject'), cT.data('predicate'), cT.data('object')).filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
+            // todo: create annotation as per annotator / acquire
             // done: filter for NIL or empty strings
 
             // todo: create sparql
             var sparqlAll = deleteAll.map(/* todo: delete whole annotation */)
             var sparqlSome = deleteSome.map(/* todo: delete just the triples and change annotation */)
+            var sparqlInsert = ""
+
             // todo: (visual feedback) spinner
+            body.html('<span class="spinner"/>')
+
             // todo: run model.execute
-            // todo: (visueal feedback) then ticked checkbox
             // note: var results = this.model.execute(_.concat(sparqlAll,sparqlSome))
             // note: results.then((data) => if (data is w/o error) success else failure and report)
-            console.log(e)
+
+            // todo: (visual feedback) then ticked checkbox
+            body.html('<span class="okay"/>')
+            body.html('<span class="failure"/>')
         })
 
         modal.update = (graphs) => {
@@ -157,7 +166,7 @@ class Delete {
                 // note: show button
                 button.css({display:"block",position:"absolute",left:e.clientX-deltaW,top:e.clientY+deltaH});
                 // note: prep interface
-                modal.update(SNAP.simplify(_.pickBy(jqElement.data(),(v,k)=>k.startsWith('http://'))))
+                modal.update(SNAP.simplify(jqElement.data('annotations')))
             })
         }
 
@@ -167,3 +176,4 @@ class Delete {
 export default Delete
 
 // todo: rename to editor, delete current editor
+// note: this still works after refactoring the applicator, because it uses SNAP simplify
