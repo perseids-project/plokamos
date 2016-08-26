@@ -16,9 +16,9 @@ class Tooltip {
                 var tooltip = $('.margintooltip')
 
                 var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
-                var deltaH = menuState ? 0 : parseInt($("#menu-container").css('height'));
-                var deltaW = menuState ? parseInt($("#menu-container").css('width')) : 0;
-
+                var deltaH = 0// menuState ? 0 : parseInt($("#menu-container").css('height'));
+                var deltaW = 0// menuState ? parseInt($("#menu-container").css('width')) : 0;
+                // todo: possibly factor out layout calculations into Utils or somewhere else?
                 var parent = $(this.parentElement)
                 var position = parent.position()
                 var width = Math.min(100, position.left)
