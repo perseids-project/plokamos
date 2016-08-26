@@ -3,7 +3,8 @@ import $ from 'jquery'
 import _ from 'lodash'
 
 class NodeLink {
-    constructor(body) {
+    constructor(app) {
+        var body = app.anchor
         var self = this
         var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black;"/>')
         var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000; display:none;"/>');

@@ -1,7 +1,8 @@
 import SNAP from '../../models/ontologies/SNAP'
 
 class Tooltip {
-    constructor(jqParent) {
+    constructor(app) {
+        var jqParent = app.anchor
         jqParent.append($('<div class="margintooltip" style="display: none;"></div>'))
         this.register = (jqElement) => {
             jqElement.hover(function (e) {
