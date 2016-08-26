@@ -11,9 +11,11 @@ class Annotator {
 
     constructor(model,applicator,history) {
 
-        this.model = model;
-        this.applicator = applicator;
-        this.history = history;
+    constructor(app) {
+
+        this.model = app.model;
+        this.applicator = app.applicator;
+        this.history = app.history;
         this.currentRange = undefined;
         this.hash = (str) => str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 

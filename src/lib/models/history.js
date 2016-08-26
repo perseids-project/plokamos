@@ -1,9 +1,9 @@
 import $ from 'jquery'
 
 class History {
-    constructor(model,applicator) {
-        this.model = model;
-        this.applicator = applicator;
+    constructor(app) {
+        this.model = app.model;
+        this.applicator = app.applicator;
         this.commands = [];
         this.index = 0
     }

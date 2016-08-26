@@ -6,7 +6,7 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
-import Delete from '../views/applicator/Delete'
+import Editor from '../views/applicator/Editor'
 import SNAP from '../models/ontologies/SNAP'
 
 class Marker {
@@ -21,16 +21,16 @@ class Marker {
  */
 class Applicator {
 
-    
-    constructor (model) {
+    constructor (app) {
 
         // todo: hash selector in Id class
         var Id = {
             fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||""))
         }
 
-        this.model = model;
-        this.escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
+        var model = app.model;
+
+        // todo: move this to an utility class, note: var escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
 
         /**
          * Mark selector positions with span tag and add quads to data
@@ -56,7 +56,7 @@ class Applicator {
          * @param id (optional) annotation id to query
          */
         this.load = (id) =>
-            this.model.execute(Annotation.byIdentifier(id))
+            model.execute(Annotation.byIdentifier(id))
             .then((bindings) =>
                 _.groupBy(_.last(bindings).result,'id.value')
             ).then((grouped) => {
