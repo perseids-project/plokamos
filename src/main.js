@@ -14,25 +14,27 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import 'typeahead.js'
 
-var model = new Model();
+class Plokamos {
 
-var initialize = () => {
-    var getEndpoint = () => $('#annotator-main').data().sparqlEndpoint
-    var getUrn = () => $('#annotator-main').data().urn
-    var getUser = () => undefined // $('#annotator-main').dataset.user
+    constructor (element) {
+        var self = this
+        this.anchor = $(element)
+        this.model = new Model();
+        // keep this dynamically loaded for now
+        this.getEndpoint = () => self.anchor.data().sparqlEndpoint
+        this.getUrn = () => self.anchor.data().urn
+        this.getUser = () => self.anchor.data().user
 
-    var results = model
-        .load( getEndpoint(), getUrn(),getUser() )
-        .then( (success) => window.perseids.applicator = new Applicator(model) )
-        .then( (success) => window.perseids.history = new History(model, window.perseids.applicator) )
-        .then( (success) => window.perseids.annotator = new Annotator(model,window.perseids.applicator, window.perseids.history) )
+        this.initialize = () => {
+
+            self.model
+                .load(getEndpoint(), getUrn(), getUser())
+                .then((success) => self.applicator = new Applicator(self))
+                .then((success) => self.history = new History(self))
+                .then((success) => self.annotator = new Annotator(self))
+        }
+
+    }
 }
 
-// TODO: define clean interface for plugin, Annotator & Applicator
-
-export default {
-    initialize: initialize,
-    model: model,
-    tqa: TextQuoteAnchor,
-    wrapRangeText:wrapRangeText
-}
+window.Plokamos = Plokamos
