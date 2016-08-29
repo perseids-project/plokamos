@@ -9,7 +9,7 @@ import sparql from '../models/sparql'
  */
 class Annotator {
 
-    constructor(model,applicator,history) {
+    // API: create(fragment), update(fragments), delete(fragment), drop(graph)
 
     constructor(app) {
 
@@ -17,15 +17,13 @@ class Annotator {
         this.applicator = app.applicator;
         this.history = app.history;
         this.currentRange = undefined;
-        this.hash = (str) => str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
 
         /**
          * Acquire variables for Open Annotations
          * @type {{cite: ((p1?:*, p2?:*)=>string), user: (()=>string), urn: (()), date: (()=>string), triple: (()), selector: (()=>(any))}}
          */
-        // TODO: FIX ACQUIRE WITH NEW SELECTORS
         this.acquire = {
-            "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post),
+            "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+Utils.hash(pre)+Utils.hash(post),
             "user": () => $('#annotator-main').data().user,
             "urn": () => $('#annotator-main').data().urn,
             "date": () => (new Date()).toISOString(),
@@ -61,9 +59,9 @@ class Annotator {
                     var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
                     starter.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
 
-                    // TODO: USE TEMPLATE
-                    // TODO: MAKE STARTER OPEN TEMPLATE (data-target)
-                    // TODO: template.init() with selector
+                    // TODO: USE TEMPLATE [DONE PROBABLY]
+                    // TODO: MAKE STARTER OPEN TEMPLATE (data-target) [DONE PROBABLY]
+                    // TODO: template.init() with selector [DONE PROBABLY]
                 } else starter.css({display:"none"});
             }
 
