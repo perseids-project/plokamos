@@ -1,5 +1,5 @@
 import oaByUrnRetriever from './io/oaByUrnRetriever'
-import sparql from './sparql'
+import SPARQL from './sparql'
 import rdfstore from 'rdfstore'
 import _ from 'lodash'
 import $ from 'jquery'
@@ -62,7 +62,7 @@ class Model {
         var promise = endpoint.slice(-5)==='.json' ? $.getJSON(endpoint) : oaByUrnRetriever(endpoint, urn)
         // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return promise
-            .then((data) => sparql.bindings2insert(data.results.bindings))
+            .then((data) => SPARQL.bindingsToInsert(data.results.bindings))
             .then((data) => {
                 this.upstream = data
                 return this.reset()
