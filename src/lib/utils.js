@@ -1,38 +1,38 @@
+class Utils {
+    /*
+     Copyright (C) 2007, 2008  Alina Friedrichsen <x-alina@gmx.net>
 
-/*
- Copyright (C) 2007, 2008  Alina Friedrichsen <x-alina@gmx.net>
+     Redistribution and use in source and binary forms, with or without
+     modification, are permitted provided that the following conditions
+     are met:
+     1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+     2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
- 1. Redistributions of source code must retain the above copyright
- notice, this list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright
- notice, this list of conditions and the following disclaimer in the
- documentation and/or other materials provided with the distribution.
+     THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+     ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+     ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+     FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+     OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+     LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+     OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+     SUCH DAMAGE.
+     */
 
- THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- SUCH DAMAGE.
- */
-
-/*
- The md5_crypt() function was ported to JavaScript from FreeBSD's libcrypt
- and contains this license:
- "THE BEER-WARE LICENSE" (Revision 42):
- <phk@login.dknet.dk> wrote this file.  As long as you retain this notice you
- can do whatever you want with this stuff. If we meet some day, and you think
- this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
- */
-    function md5_to64(value, n) {
+    /*
+     The md5_crypt() function was ported to JavaScript from FreeBSD's libcrypt
+     and contains this license:
+     "THE BEER-WARE LICENSE" (Revision 42):
+     <phk@login.dknet.dk> wrote this file.  As long as you retain this notice you
+     can do whatever you want with this stuff. If we meet some day, and you think
+     this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
+     */
+    static md5_to64(value, n) {
         if (typeof VarType != "undefined") {
             value = VarType.toUInt(value);
             n = VarType.toUInt(n);
@@ -49,7 +49,7 @@
         return str;
     }
 
-    function md5_crypt(key, salt) {
+    static md5_crypt(key, salt) {
         if (typeof VarType != "undefined") {
             key = VarType.toStr(key);
             salt = VarType.toStr(salt);
@@ -112,10 +112,10 @@
         var value;
         for (var i = 0; i < 5; i++) {
             value = ((hash.charCodeAt(i) << 16) | (hash.charCodeAt(i + 6) << 8) | hash.charCodeAt(i + 12));
-            passwd += md5_to64(value, 4);
+            passwd += this.md5_to64(value, 4);
         }
         value = hash.charCodeAt(11);
-        passwd += md5_to64(value, 2);
+        passwd += this.md5_to64(value, 2);
 
         b64pad = old_b64pad;
         chrsz = old_chrsz;
@@ -123,4 +123,7 @@
         return passwd;
     }
 
-export default md5_crypt
+    static hash = (str) => str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString(16).replace("-","0");
+}
+
+export default Utils
