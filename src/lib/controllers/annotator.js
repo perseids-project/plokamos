@@ -1,7 +1,9 @@
 import $ from 'jquery';
 import TextQuoteAnchor from 'dom-anchor-text-quote';
-import sparql from '../models/sparql'
+import SPARQL from '../models/sparql'
+import Utils from '../utils'
 
+// todo: think about api - stacking commands, then executing them, in order to facilitate single step history?
 
 /**
  * Class for creation of annotations
@@ -188,7 +190,7 @@ class Annotator {
             binds.annotation(triple)
         )}}
 
-        var insert = sparql.bindings2insert(bindings.results.bindings);
+        var insert = SPARQL.bindingsToInsert(bindings.results.bindings);
 
         insert.forEach((sparql) => this.model.execute(sparql).then(
             (r) => {
