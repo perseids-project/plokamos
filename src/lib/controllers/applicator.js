@@ -80,18 +80,17 @@ class Applicator {
                     return $(element)
                 })
                 }
-            ) // todo: describe next step
+            )
             .then((elements) =>
                 elements.map((element) => {
                     this.tooltip.register(element);
                     this.delete.register(element);
                     return element
                 })
-            ) // todo: describe next step
-            // todo: group data by id
+            )
             .then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                    var snap = SNAP.simplify(grouped)
+                    var snap = SNAP.simplify()(grouped) // todo: move into nodelink, specify API for document plugins
                     var input = _.flatMap(snap,(v,k)=>v.map((o) => Object.assign(o,{g:k})))
                     this.nodelink.add(input)
                 }
@@ -113,10 +112,10 @@ class Applicator {
             }
         };
 
-        var body = $('body');
-        this.tooltip = new Tooltip(body)
-        this.delete = new Delete(body)
-        this.nodelink = new NodeLink(body)
+        // var body = $('body');
+        this.tooltip = new Tooltip(app)
+        this.delete = new Editor(app)
+        this.nodelink = new NodeLink(app)
         this.load();
     }
 
