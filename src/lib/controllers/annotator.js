@@ -78,6 +78,46 @@ class Annotator {
         }
 
         this.init();
+
+        /*
+        Editing functions below, they take bindings, create and run sparql queries, and post results back as promise
+         */
+
+        /**
+         * DROP: delete entire annotations including metadata
+         * Takes the ids in list.drop and
+         * @param graphs Object where graphs.triples (Array[Object]) is a list of GSPOs to delete and graphs.ids (Array[String]) is the list of annotation ids to be cleared
+         */
+        this.drop = (graphs) => this.model.execute(_.concat(
+            SPARQL.bindingsToDelete(_.flatten(graphs.triples)),
+            graphs.ids.map((id) => `DROP GRAPH <${annotation}>`)
+        ))
+        // TODO: check if quads are gspo or binding, convert to binding if necessary
+
+        /**
+         *
+         * @param deletions () is the list
+         */
+        this.delete = (deletions) => this.model.execute(SPARQL.bindingsToDelete(_.flatten(deletions)))
+        // TODO: check if deletions are gspo or binding, convert to binding if necessary
+
+        /**
+         *
+         * @param deletions
+         * @param insertions
+         */
+        this.update = (deletions, insertions) => this.model.execute([
+            SPARQL.bindingsToDelete(_.flatten(deletions)),
+            SPARQL.bindingsToInsert(_.flatten(insertions.map((triples) => triples.concat([{}])/* include user & date */)))
+        ])
+        // TODO: check if input is gspo or binding, convert to binding if necessary
+
+        /**
+         *
+         * @param list
+         */
+        this.create = (list) => {}
+        // TODO: use acquire to build annotation, mae sure its bindings not GSPOs
     }
     
     save () {
