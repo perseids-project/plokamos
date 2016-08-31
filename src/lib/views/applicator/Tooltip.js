@@ -8,7 +8,7 @@ class Tooltip {
             jqElement.hover(function (e) {
                 // todo: stringify should check ontology and select simplifier or stringify raw (.value)
                 function stringify(obj) {
-                    var simplified = SNAP.simplify(obj)
+                    var simplified = SNAP.simplify()(obj)
                     return _.flatten(_.values(simplified)).map((o) => o.s+";\n"+o.p+";\n"+o.o).join("\n\n")
                 }
                 var graphs = $(this).data('annotations')
