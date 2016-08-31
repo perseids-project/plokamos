@@ -8,6 +8,7 @@ import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
 import Editor from '../views/applicator/Editor'
 import SNAP from '../models/ontologies/SNAP'
+import OA from '../models/ontologies/OA'
 
 class Marker {
 
@@ -23,9 +24,8 @@ class Applicator {
 
     constructor (app) {
 
-        // todo: hash selector in Id class
         var Id = {
-            fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||""))
+            fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||"")) // todo: remove TQS specific code, use Utils & OA, but make sure it's consistent between marking and retrieving spans
         }
 
         var model = app.model;
@@ -64,8 +64,8 @@ class Applicator {
                     var spans = _.map(grouped, (v, k) => {
                         var selectorURI = _.find(v, (obj) => obj.p.value.endsWith("hasSelector")).o.value
                         var selectorTriples = v.filter((obj) => obj.s.value === selectorURI)
-                        var selectorType = Selectors["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"](selectorTriples)
-                        var selectorObject = Selectors[selectorType](selectorTriples)
+                        var selectorType = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value // todo: replace as many endsWith as possible with tests on qualified names
+                        var selectorObject = OA.simplify(selectorType)(selectorTriples)
                         var idFromSelector = Id.fromSelector(selectorObject)
                         var span = document.getElementById(idFromSelector) || this.mark[selectorType](selectorObject)
                         if (!store[idFromSelector]) {store[idFromSelector] = {}}
@@ -119,7 +119,7 @@ class Applicator {
         this.load();
     }
 
-    // TODO: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
+    // todo: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
 
     load (id)  {
         this.load(id);
