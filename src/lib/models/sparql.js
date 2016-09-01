@@ -14,7 +14,7 @@ class SPARQL {
     static bindingToSPARQL(binding) {
         var strings = _.mapValues(binding, (prop) => { switch (prop.type) {
             case "uri": return `<${prop.value}>`
-            case "literal": return !prop.datatype ? `"prop.value"` : `"${prop.value}"^^<${prop.datatype}>`
+            case "literal": return !prop.datatype ? `"${prop.value}"` : `"${prop.value}"^^<${prop.datatype}>`
             case "bnode": return prop.value.startsWith("_:") ? prop.value : `_:${prop.value}`
         }})
         return strings.g ? `GRAPH ${strings.g} {${strings.s} ${strings.p} ${strings.o} }` : `${strings.s} ${strings.p} ${strings.o} .`
@@ -23,7 +23,10 @@ class SPARQL {
         return _.flatten(["DELETE DATA {",bindings.map(this.bindingToSPARQL),"}"]).join("\n")
     }
     static bindingsToInsert(bindings) {
-        return _.flatten(["INSERT DATA {",bindings.map(this.bindingToSPARQL),"}"]).join("\n")
+        return _.chain(bindings)
+            .groupBy('g.value')
+            .map((v,k) => _.concat("INSERT DATA { GRAPH <"+k+"> {",v.map((quad) => this.bindingToSPARQL(_.omit(quad,'g'))),"}}").join("\n"))
+            .value()
     }
 }
 
