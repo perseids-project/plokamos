@@ -28,7 +28,7 @@ class Plokamos {
         this.initialize = () => {
 
             self.model
-                .load(getEndpoint(), getUrn(), getUser())
+                .load(self.getEndpoint(), self.getUrn(), self.getUser())
                 .then((success) => self.applicator = new Applicator(self))
                 .then((success) => self.history = new History(self))
                 .then((success) => self.annotator = new Annotator(self))
