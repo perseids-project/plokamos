@@ -13,8 +13,7 @@ var namespaces = [
     ]
 
 var expandMap = {
-        "default": () =>
-            (gspo, graphs) => {
+        "default": (gspo, graphs) => {
                 var annotation = graphs[gspo.g]
                 var bond_id = annotation ? undefined : gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4)
                 return annotation ? annotation.filter((triple) =>
@@ -114,35 +113,13 @@ class SNAP {
         return map[resource]
     }
 
-    /*static expandMap(resource) {
-        var map = {
-            "default": () =>
-            (gspo, graphs) => {
-                var annotation = graphs[gspo.g]
-                var bond_id = annotation ? undefined : gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4)
-                return annotation ? annotation.filter((triple) =>
-                    (quad.p.value.endsWith('has-bond') && quad.s.value === gspo.s)
-                    || (quad.p.value.endsWith('type') && quad.o.value === gspo.p)
-                    || (quad.p.value.endsWith('bond-with') && quad.o.value === gspo.o)
-                ) :
-                    [
-                        {g: gspo.g, s: bond_id, p: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", o: gspo.p},
-                        {g: gspo.g, s: gspo.s, p: "http://data.snapdrgn.net/ontology/snap#has-bond", o: bond_id},
-                        {g: gspo.g, s: bond_id, p: "http://data.snapdrgn.net/ontology/snap#bond-with", o: gspo.o},
-                    ]
-            }
-        }
-        return map[resource]
-    }*/
 
-
-
-    // TODO: test and move labels into var
-    static expand(type) { return _.get(expandMap,type,expandMap.default(type)) }
-    static simplify(type) { return _.get(simplifyMap,type,simplifyMap.default(type)) }
+    // todo: move labels into var
+    static expand(type) { return expandMap[type] || expandMap.default }
+    static simplify(type) { return simplifyMap[type] || simplifyMap.default }
 
     static label (uri) {
-        var term = uri.replace(namespaces.snap.uri,'').replace(namespaces.snap.prefix,'').replace(namespaces.perseus.uri,'').replace(namespaces.perseus.prefix,'')
+        var term = _.reduce(namespaces, (str,ns) => str.replace(new RegExp("^"+ns.uri),"").replace(new RegExp("^"+ns.prefix)), uri)
         var labels ={
             "EnemyOf":"Is Enemy Of",
             "CompanionOf":"Is Companion Of",

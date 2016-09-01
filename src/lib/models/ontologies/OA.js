@@ -52,9 +52,9 @@ var simplifyMap = {
 
 class OA {
 
-    static expand(type) { return _.get(expandMap,type,expandMap.default(type)) }
+    static expand(type) { return expandMap[type] || expandMap.default(type) }
 
-    static simplify(type) { return _.get(simplifyMap,type,simplifyMap.default(type)) }
+    static simplify(type) { return simplifyMap[type] || simplifyMap.default(type) }
 
 }
 
