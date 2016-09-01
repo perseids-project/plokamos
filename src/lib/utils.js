@@ -124,6 +124,9 @@ class Utils {
     }
 
     static hash(str) {return str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString(16).replace("-","0")}
+
+    static cite(pre,post) { return "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post) }
+
 }
 
 export default Utils
