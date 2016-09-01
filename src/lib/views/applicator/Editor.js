@@ -38,6 +38,8 @@ class Editor {
         // note: delete_graphs contains a list of annotation ids to delete [String]
         apply_button.click((e) => {
 
+            // NOTE: COMPUTING EDITS
+
             var annotations = origin.data('annotations')
             var dG = body.find('.graph.old.delete')
             var delete_graphs = dG.data('graph')
@@ -59,21 +61,29 @@ class Editor {
             var create_triples = _.zip(cT.data('subject'), cT.data('predicate'), cT.data('object'))
                 .filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
-                .map(SNAP.expand)// SNAP expand
-            // TODO: acquire.cite(app.getUser()+app.getUrn(),uuid
-
+                .map(SNAP.expand()(create_triples,annotations))
+            // todo: add title and motivatedby
             _.assign(selector,{id:cite+"-sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
 
+
+
+
+            // NOTE: APPLYING EDITS BELOW
+
             body.html('<span class="spinner"/>')
 
+            // TODO: create title for new annotations in frontend, because it uses ontologies
+            // todo: make drop take just ids and merge drop_triples with delete_triples
             annotator.drop({triples: delete_graphs.map((id) => annotations[id]),ids: delete_graphs})
             annotator.delete({deletions: delete_triples})
             annotator.update({deletions: update_triples.map((t) => { return { g:t[0], s:t[1], p:t[2], o:t[3] }}),
                               insertions: update_triples.map((t) => { return { g:t[0], s:t[4], p:t[5], o:t[6] }})
             })
-            annotator.create({create: [], selector: []})
-            annotator.apply() // todo: this can be improved; have multiple calls and a single step in history
+            annotator.create({create: create_triples, selector: selector_triples})
+            annotator.apply()
+
+            // todo: this can be improved; the goal is to take a single step in history
 
             body.html('<span class="okay"/>')
             body.html('<span class="failure"/>')
