@@ -19,11 +19,11 @@ class Plokamos {
     constructor (element) {
         var self = this
         this.anchor = $(element)
-        this.model = new Model();
+        this.model = new Model(self);
         // keep this dynamically loaded for now
-        this.getEndpoint = () => self.anchor.data().sparqlEndpoint
-        this.getUrn = () => self.anchor.data().urn
-        this.getUser = () => self.anchor.data().user
+        this.getEndpoint = () => {return { read: self.anchor.data('sparql-select-endpoint'), write: self.anchor.data('sparql-update-endpoint'), query: self.anchor.data('sparql-endpoint')}}
+        this.getUrn = () => self.anchor.data('urn')
+        this.getUser = () => self.anchor.data('user')
 
         this.initialize = () => {
 

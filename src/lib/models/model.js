@@ -6,7 +6,8 @@ import $ from 'jquery'
 
 class Model {
 
-    constructor () {
+    constructor (app) {
+        this.app = app
         this.defaultDataset = []
         this.namedDataset = []
         this.store = {};
@@ -58,8 +59,9 @@ class Model {
         }
     }
 
-    load(endpoint, urn, user) {
-        var promise = endpoint.slice(-5)==='.json' ? $.getJSON(endpoint) : oaByUrnRetriever(endpoint, urn)
+    load(endpoints, urn, user) {
+        var source = endpoints.read || endpoints.query || "/"
+        var promise = source.slice(-5)==='.json' ? $.getJSON(source) : oaByUrnRetriever(source, urn)
         // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return promise
             .then((data) => SPARQL.bindingsToInsert(data.results.bindings))
@@ -78,7 +80,7 @@ class Model {
     }
 
     save(endpoint) {
-
+        var target = endpoint
     }
 
     persist(endpoint) {
