@@ -1,12 +1,16 @@
 import Templates from '../annotator/Templates'
 import SNAP from '../../models/ontologies/SNAP'
+import OA from '../../models/ontologies/OA'
+import Utils from '../../utils'
 import _ from 'lodash'
+import $ from 'jquery'
 
 class Editor {
 
     constructor(app) {
+        var self = this
         var jqParent = app.anchor
-        annotator = app.annotator
+        this.annotator = () => app.annotator
         var origin = {}
         var selector = {}
         var labels = SNAP.labels
@@ -37,35 +41,38 @@ class Editor {
         // note: data =
         // note: delete_graphs contains a list of annotation ids to delete [String]
         apply_button.click((e) => {
-
+            var annotator = this.annotator()
             // NOTE: COMPUTING EDITS
+            var NIL = "_________"
 
             var annotations = origin.data('annotations')
             var dG = body.find('.graph.old.delete')
-            var delete_graphs = dG.data('graph')
+            var delete_graphs = dG.map((i,el) => $(el).data('graph')).get()
             dG.remove()
 
             var dT = body.find('.graph.old .triple.delete')
             var delete_triples = _.flatten(
-                _.zip(dT.closest('.graph.old').data('graph'), dT.data('original-subject'), dT.data('original-predicate'), dT.data('original-object'))
+                _.zip(dT.closest('.graph.old').map((i,el) => $(el).data('graph')), dT.map((i,el) => $(el).data('original-subject')), dT.map((i,el) => $(el).data('original-predicate')), dT.map((i,el) => $(el).data('original-object')))
                 .map((zipped) => {return {g:zipped[0],s:zipped[1],p:zipped[2],o:zipped[3]}})
                 .map((gspo) => SNAP.expand()(gspo, annotations))
             )
             dT.remove()
 
             var uT = body.find('.graph.old .triple.update')
-            var update_triples = _.zip(uT.closest('.graph.old').data('graph'), uT.data('original-subject'), uT.data('subject'), uT.data('original-predicate'), uT.data('predicate'), uT.data('original-object'), uT.data('object'))
+            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).data('object')))
 
             var cT = body.find('.graph.new .triple:not(.delete)')
-            var cite = annotator.acquire.cite(app.getUser()+app.getUrn(),Math.random().toString())
-            var create_triples = _.zip(cT.data('subject'), cT.data('predicate'), cT.data('object'))
+            var cite = Utils.cite(app.getUser()+app.getUrn(),Math.random().toString())
+            var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).data('subject')), cT.map((i,el) => $(el).data('predicate')), cT.map((i,el) => $(el).data('object')))
                 .filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
-                .map(SNAP.expand()(create_triples,annotations))
+                .map((t) => SNAP.expand()(t,annotations)))
             // todo: add title and motivatedby
-            _.assign(selector,{id:cite+"-sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
+            // TODO: create title for new annotations in frontend, because it uses ontologies
+            // TODO: only run execute in create if there is an annotation to create
+            _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
-
+            var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
 
 
 
@@ -73,14 +80,12 @@ class Editor {
 
             body.html('<span class="spinner"/>')
 
-            // TODO: create title for new annotations in frontend, because it uses ontologies
-            // todo: make drop take just ids and merge drop_triples with delete_triples
-            annotator.drop({triples: delete_graphs.map((id) => annotations[id]),ids: delete_graphs})
-            annotator.delete({deletions: delete_triples})
-            annotator.update({deletions: update_triples.map((t) => { return { g:t[0], s:t[1], p:t[2], o:t[3] }}),
-                              insertions: update_triples.map((t) => { return { g:t[0], s:t[4], p:t[5], o:t[6] }})
-            })
-            annotator.create({create: create_triples, selector: selector_triples})
+            var dropped = annotator.drop(delete_graphs)
+            var deleted = annotator.delete(_.concat(delete_triples,delete_graphs.map((id) => annotations[id])))
+            annotator.update(update_triples.map((t) => { return { g:t[0], s:t[1], p:t[2], o:t[3] }}),
+                update_triples.map((t) => { return { g:t[0], s:t[4], p:t[5], o:t[6] }})
+            )
+            annotator.create(cite,create_triples)
             annotator.apply()
 
             // todo: this can be improved; the goal is to take a single step in history

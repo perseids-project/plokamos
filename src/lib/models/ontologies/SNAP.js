@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+import _ from 'lodash'
 
 
 var namespaces = [
@@ -184,6 +185,9 @@ class SNAP {
             "StepFamilyRelationship":"Has Step Family Relationship With",
             "UncleOf":"Is Uncle Of"
         }
+
+        var uri = uri.startsWith("http://data.perseus.org/people/") ? uri.replace("http://data.perseus.org/people/",'').replace('#this','') : uri
+
         return labels[term] || uri
     }
 }

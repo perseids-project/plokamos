@@ -112,6 +112,11 @@ class Applicator {
             }
         };
 
+        this.reset = () => {
+            this.unload()
+            this.load()
+        }
+
         // var body = $('body');
         this.tooltip = new Tooltip(app)
         this.delete = new Editor(app)

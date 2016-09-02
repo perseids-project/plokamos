@@ -19,6 +19,7 @@ class Model {
          * @returns {*} promise for ordered list
          */
         this.execute = (sparql) => {
+            console.log((new Date()).getTime())
             var data = sparql.constructor === Array ? sparql : [sparql]
             var start = $.Deferred()
             var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
@@ -35,8 +36,7 @@ class Model {
                 start.promise()
             )
             start.resolve([])
-            seq.slice
-            return _.last(seq).deferred.promise()
+            return (_.last(seq) || {deferred:($.Deferred().resolve([]))}).deferred.promise()
         }
         this.reset = () => {
             var outer = $.Deferred();

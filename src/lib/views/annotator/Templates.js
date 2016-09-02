@@ -305,7 +305,7 @@ class Templates {
                     var triple = $(e.target).closest('.triple')
                         triple.animate({'height':'0px', 'margin-top':'0px', 'margin-bottom':'0px' },{duration:150, complete:() =>{$(e.target).closest('.triple').hide()}})
                         triple.addClass('delete')
-                    if (!triple.siblings(':not(.delete)').length) triple.closest('.graph.old').addClass('hide')
+                    if (!triple.siblings(':not(.delete)').length) triple.closest('.graph.old').addClass('delete')
                     // todo: add to history -> nope, reset button maybe
                 })
                 el.find('.btn-accept').click((e) => {
@@ -313,7 +313,7 @@ class Templates {
                     var text = triple.find('.tt-input').val()
                     var editing = triple.find('a.editing')
                         if (text.trim()) {
-                            editing.text(text) // <-- todo: apply ontology label function
+                            editing.text(SNAP.label(text)) // <-- todo: generalize for other ontologies
                             triple.addClass('update')
                             triple.data(editing.data('token'),text)
                         }

@@ -14,30 +14,16 @@ class Annotator {
     // API: create(fragment), update(fragments), delete(fragment), drop(graph)
 
     constructor(app) {
+        var self = this
+        this.defaultGraph = "http://data.perseus.org/graphs/people"
+        this.userId = app.anchor.data('user')
+        this.urn = app.anchor.data('urn')
         // TODO: add controls for history, save at bottom of anchor
         this.anchor = app.anchor
         this.model = app.model;
         this.applicator = app.applicator;
         this.history = app.history;
         this.currentRange = undefined;
-
-        /**
-         * Acquire variables for Open Annotations
-         * @type {{cite: ((p1?:*, p2?:*)=>string), user: (()=>string), urn: (()), date: (()=>string), triple: (()), selector: (()=>(any))}}
-         */
-        this.acquire = {
-            "cite": (pre,post) => "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+Utils.hash(pre)+Utils.hash(post),
-            "user": () => $('#annotator-main').data().user,
-            "urn": () => $('#annotator-main').data().urn,
-            "date": () => ,
-            "triple": () => {
-                return {
-                    subject: ($("#subject_prefixes").data('url')|"")+$("#create_subject > span > input").last().val(),
-                    predicate: ($("#predicate_prefixes").data('url')|"")+$("#create_predicate > span > input").last().val(),
-                    object: ($("#object_prefixes").data('url')|"")+$("#create_object > span > input").last().val()
-            }},
-            "selector": () => $('#create_range').data('selector')
-        }
 
         this.selector = {
             "http://www.w3.org/ns/oa#TextQuoteSelector" : () => {
@@ -71,7 +57,7 @@ class Annotator {
         };
 
         this.init = (id) => {
-            var id = id ? id : this.acquire.urn();
+            var id = id ? id : this.anchor.data('urn');
             var app = $('[data-urn="'+id+'"]');
             app.append('<div class="btn btn-circle" id="starter" style="display:none;" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-paperclip"></span></div>')
                 // then inject selection event listener
@@ -89,93 +75,128 @@ class Annotator {
          * Takes the ids in list.drop and
          * @param graphs Object where graphs.triples (Array[Object]) is a list of GSPOs to delete and graphs.ids (Array[String]) is the list of annotation ids to be cleared
          */
-        this.drop = (graphs) => this.model.execute(_.concat(
-            SPARQL.bindingsToDelete(_.flatten(graphs.triples)),
-            graphs.ids.map((id) => `DROP GRAPH <${annotation}>`)
-        ))
-        // TODO: check if quads are gspo or binding, convert to binding if necessary
+        this.drop = (graphs) => this.model.execute(graphs.map((uri) => `DROP GRAPH <${uri}>`))
 
         /**
          *
          * @param deletions () is the list
          */
-        this.delete = (deletions) => this.model.execute(SPARQL.bindingsToDelete(_.flatten(deletions)))
-        // TODO: check if deletions are gspo or binding, convert to binding if necessary
+        this.delete = (deletions) => _.flatten(deletions || []).length ? this.model.execute(SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))) : undefined
 
         /**
          *
          * @param deletions
          * @param insertions
          */
-        this.update = (deletions, insertions) => this.model.execute([
-            SPARQL.bindingsToDelete(_.flatten(deletions)),
-            SPARQL.bindingsToInsert(_.flatten(insertions.map((triples) => triples.concat([{}])/* include user & date */)))
-        ])
-        // TODO: check if input is gspo or binding, convert to binding if necessary
+        this.update = (deletions, insertions) => {
+            return this.model.execute(_.flatten([
+                SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo))),
+                SPARQL.bindingsToInsert(_.flatten(insertions.concat(
+                    // filter for graphs, map to graphid, get uniq
+                    _.uniq(insertions.map((i) => i.g.value || i.g)).map((annotationId) => [
+                        {
+                            "p": { "type":"uri", "value":"oa:annotatedAt" },
+                            "g": { "type":"uri", "value": self.defaultGraph},
+                            "s": { "type":"uri", "value":annotationId }, //
+                            "o": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp", "type":"literal", "value": (new Date()).toISOString()}
+                        }, {"p": { "type":"uri", "value":"oa:annotatedBy" },
+                            "g": { "type":"uri", "value": self.defaultGraph },
+                            "s": { "type":"uri", "value": annotationId },
+                            "o": { "type":"uri", "value": self.userId }}
+                    ])
+                )).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
+            ]))
+            }
+
 
         /**
          *
          * @param list
          */
         this.create = (annotationId, bindings) => {
-            var defaultGraph = "http://data.perseus.org/graphs/people"
-            // todo: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
-            var selectorId = _.find(bindings,(binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
-            // todo: make independent of selector type
-            var targetId = annotationId+"#target-"+Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
-            var userId = app.anchor.data('user')
-            var urn = app.anchor.data('urn')
-            var oa =[
-                {"g": { "type":"uri", "value": defaultGraph },
-                    "s": { "type":"uri", "value": annotationId },
-                    "p": { "type":"uri", "value": "rdf:type" },
-                    "o": { "type":"uri", "value": "oa:Annotation" }},
-                {"g": { "type":"uri", "value": defaultGraph },
-                    "s": { "type":"uri", "value": annotationId },
-                    "p": { "type":"uri", "value": "dcterms:source" },
-                    "o": { "type":"uri", "value": "https://github.com/fbaumgardt/perseids-annotator" }},
-                {"g": { "type":"uri", "value": defaultGraph },
-                    "s": { "type":"uri", "value": annotationId },
-                    "p": { "type":"uri", "value": "oa:serializedBy" },
-                    "o": { "type":"uri", "value": "https://github.com/fbaumgardt/perseids-annotator" }}
-            ]
-
-            var target = [
-                {"p": { "type":"uri", "value":"oa:hasTarget" },
-                    "g": { "type":"uri", "value":defaultGraph },
-                    "s": { "type":"uri", "value":annotationId },
-                    "o": { "type":"uri", "value":targetId }},
-                {"p": { "type":"uri", "value":"rdf:type" },
-                    "g": { "type":"uri", "value":defaultGraph },
-                    "s": { "type":"uri", "value":targetId },
-                    "o": { "type":"uri", "value":"oa:SpecificResource" }}, // todo: figure out alternatives for non-text targets
-                {"p": { "type":"uri", "value":"oa:hasSource" },
-                    "g": { "type":"uri", "value":defaultGraph },
-                    "s": { "type":"uri", "value":targetId },
-                    "o": { "type":"uri", "value":urn}},
-                {"p": { "type":"uri", "value":"oa:hasSelector" },
-                    "g": { "type":"uri", "value":defaultGraph },
-                    "s": { "type":"uri", "value":targetId },
-                    "o": { "type":"uri", "value":selectorId }}
-            ]
-
-            var date = [{
-                "p": { "type":"uri", "value":"oa:annotatedAt" },
-                "g": { "type":"uri", "value": defaultGraph},
-                "s": { "type":"uri", "value":annotationId },
-                "o": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp", "type":"literal", "value": (new Date()).toISOString()}
-            }]
-
-
-            var user = [
-                {"p": { "type":"uri", "value":"oa:annotatedBy" },
-                "g": { "type":"uri", "value": defaultGraph },
-                "s": { "type":"uri", "value": annotationId },
-                "o": { "type":"uri", "value": userId }} // NOTE: describe <o> query
+            var result = $.Deferred().resolve([]).promise()
+            if (bindings.length) {
+                // todo: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
+                var selectorId = _.find(bindings, (binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
+                // todo: make independent of selector type
+                var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
+                var oa = [
+                    {
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "p": {"type": "uri", "value": "rdf:type"},
+                        "o": {"type": "uri", "value": "oa:Annotation"}
+                    },
+                    {
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "p": {"type": "uri", "value": "dcterms:source"},
+                        "o": {"type": "uri", "value": "https://github.com/fbaumgardt/perseids-annotator"}
+                    },
+                    {
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "p": {"type": "uri", "value": "oa:serializedBy"},
+                        "o": {"type": "uri", "value": "https://github.com/fbaumgardt/perseids-annotator"}
+                    }
                 ]
 
-            this.model.execute(SPARQL.bindingsToInsert(_.flatten(oa,date,user,target,bindings)))
+                var target = [
+                    {
+                        "p": {"type": "uri", "value": "oa:hasTarget"},
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "o": {"type": "uri", "value": targetId}
+                    },
+                    {
+                        "p": {"type": "uri", "value": "rdf:type"},
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": targetId},
+                        "o": {"type": "uri", "value": "oa:SpecificResource"}
+                    }, // todo: figure out alternatives for non-text targets
+                    {
+                        "p": {"type": "uri", "value": "oa:hasSource"},
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": targetId},
+                        "o": {"type": "uri", "value": self.urn}
+                    },
+                    {
+                        "p": {"type": "uri", "value": "oa:hasSelector"},
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": targetId},
+                        "o": {"type": "uri", "value": selectorId}
+                    }
+                ]
 
+                var date = [{
+                    "p": {"type": "uri", "value": "oa:annotatedAt"},
+                    "g": {"type": "uri", "value": self.defaultGraph},
+                    "s": {"type": "uri", "value": annotationId},
+                    "o": {
+                        "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
+                        "type": "literal",
+                        "value": (new Date()).toISOString()
+                    }
+                }]
+
+
+                var user = [
+                    {
+                        "p": {"type": "uri", "value": "oa:annotatedBy"},
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "o": {"type": "uri", "value": self.userId}
+                    } // NOTE: describe <o> query
+                ]
+
+                var insert = SPARQL.bindingsToInsert(_.flatten(oa, date, user, target, bindings).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
+                result = this.model.execute(insert)
+            }
+            return result
+        }
+
+        this.apply = (promises) => {
+            this.applicator.reset()
         }
     }
 }
