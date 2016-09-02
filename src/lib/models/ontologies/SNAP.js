@@ -1,4 +1,5 @@
 import Utils from '../../utils'
+import SPARQL from '../sparql'
 import _ from 'lodash'
 
 
@@ -15,18 +16,19 @@ var namespaces = [
 
 var expandMap = {
         "default": (gspo, graphs) => {
-                var annotation = graphs[gspo.g]
-                var bond_id = annotation ? undefined : gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4)
-                return annotation ? annotation.filter((triple) =>
+
+                var annotation = (graphs||{})[gspo.g]
+                var bindings = annotation ? annotation.filter((quad) =>
                     (quad.p.value.endsWith('has-bond') && quad.s.value === gspo.s)
                     || (quad.p.value.endsWith('type') && quad.o.value === gspo.p)
                     || (quad.p.value.endsWith('bond-with') && quad.o.value === gspo.o)
-                ) :
-                    [
+                ) : []
+                var bond_id = bindings.length%3 ? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined // todo: get bonds and check bond sizes individually
+                return bond_id ? [
                         {g: gspo.g, s: bond_id, p: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", o: gspo.p},
                         {g: gspo.g, s: gspo.s, p: "http://data.snapdrgn.net/ontology/snap#has-bond", o: bond_id},
                         {g: gspo.g, s: bond_id, p: "http://data.snapdrgn.net/ontology/snap#bond-with", o: gspo.o},
-                    ]
+                    ].map((gspo) => SPARQL.gspoToBinding(gspo)) : bindings
             }
     }
 
