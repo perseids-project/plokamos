@@ -59,7 +59,7 @@ class Editor {
             dT.remove()
 
             var uT = body.find('.graph.old .triple.update')
-            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).data('object')))
+            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).data('subject')), uT.map((i,el) => $(el).data('predicate')), uT.map((i,el) => $(el).data('object')))
 
             var cT = body.find('.graph.new .triple:not(.delete)')
             var cite = Utils.cite(app.getUser()+app.getUrn(),Math.random().toString())
@@ -69,7 +69,6 @@ class Editor {
                 .map((t) => SNAP.expand()(t,annotations)))
             // todo: add title and motivatedby
             // TODO: create title for new annotations in frontend, because it uses ontologies
-            // TODO: only run execute in create if there is an annotation to create
             _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
             var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
@@ -80,13 +79,13 @@ class Editor {
 
             body.html('<span class="spinner"/>')
 
-            var dropped = annotator.drop(delete_graphs)
-            var deleted = annotator.delete(_.concat(delete_triples,delete_graphs.map((id) => annotations[id])))
-            annotator.update(update_triples.map((t) => { return { g:t[0], s:t[1], p:t[2], o:t[3] }}),
-                update_triples.map((t) => { return { g:t[0], s:t[4], p:t[5], o:t[6] }})
-            )
-            annotator.create(cite,create_triples)
-            annotator.apply()
+            annotator.drop(delete_graphs)
+                .then(() => annotator.delete(_.concat(delete_triples,delete_graphs.map((id) => annotations[id]))))
+                .then(() => annotator.update(_.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations)})),
+                    _.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations)}))
+                ))
+                .then(() => annotator.create(cite,create_triples))
+                .then(() => annotator.apply())
 
             // todo: this can be improved; the goal is to take a single step in history
 
