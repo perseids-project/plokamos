@@ -77,20 +77,30 @@ class Editor {
 
             // NOTE: APPLYING EDITS BELOW
 
-            body.html('<span class="spinner"/>')
-
-            annotator.drop(delete_graphs)
-                .then(() => annotator.delete(_.concat(delete_triples,delete_graphs.map((id) => annotations[id]))))
-                .then(() => annotator.update(_.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations)})),
-                    _.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations)}))
-                ))
-                .then(() => annotator.create(cite,create_triples))
-                .then(() => annotator.apply())
+            body.html('<span class="spinner">JUST A SEC!</span>')
+            var acc = []
+            annotator
+                .drop(delete_graphs)
+                .then((res) => {
+                    acc.push(res)
+                    return annotator.delete(_.concat(delete_triples,delete_graphs.map((id) => annotations[id])))
+                })
+                .then((res) => {
+                    acc.push(res)
+                    return annotator.update(_.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations)})),
+                        _.flatten(update_triples.map((t) => { return SNAP.expand()({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations)}))
+                    )
+                })
+                .then((res) => {
+                    acc.push(res)
+                    return annotator.create(cite,create_triples)
+                })
+                .then((res) => annotator.apply(_.flatten(acc.concat(res))))
 
             // todo: this can be improved; the goal is to take a single step in history
 
-            body.html('<span class="okay"/>')
-            body.html('<span class="failure"/>')
+            body.html('<span class="okay">OKAY!</span>')
+            body.html('<span class="failure">OH NO!</span>')
         })
 
         modal.update = (data, newSelector) => {
