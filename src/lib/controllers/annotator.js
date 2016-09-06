@@ -206,8 +206,13 @@ class Annotator {
             return result
         }
 
-        this.apply = (promises) => {
-            this.applicator.reset()
+        this.apply = (resolved) => {
+            // check if all successful (what about drop?)
+            // if success, map to sparql and add sparql to history
+            // else reset model
+            this.history.add(resolved.map((r) => r.sparql))
+            this.history.commit()
+            // this.applicator.reset()
         }
     }
 }
