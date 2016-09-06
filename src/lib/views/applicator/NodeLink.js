@@ -6,7 +6,7 @@ class NodeLink {
     constructor(app) {
         var body = app.anchor
         var self = this
-        var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black;"/>')
+        var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black; color:white;"><span class="glyphicon glyphicon-link"></span></span></div>')
         var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000; display:none;"/>');
         body.append(globalViewBtn);
         body.append(globalView);

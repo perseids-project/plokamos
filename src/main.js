@@ -10,8 +10,6 @@ window.$ = $
 window.jQuery = jquery
 window.jquery = jquery
 window._ = _
-import TextQuoteAnchor from 'dom-anchor-text-quote'
-import wrapRangeText from 'wrap-range-text'
 import 'typeahead.js'
 
 class Plokamos {
@@ -21,7 +19,7 @@ class Plokamos {
         this.anchor = $(element)
         this.model = new Model(self);
         // keep this dynamically loaded for now
-        this.getEndpoint = () => {return { read: self.anchor.data('sparql-select-endpoint'), write: self.anchor.data('sparql-update-endpoint'), query: self.anchor.data('sparql-endpoint')}}
+        this.getEndpoint = () => {return { query: self.anchor.data('sparql-endpoint'),read: self.anchor.data('sparql-select-endpoint'), write: self.anchor.data('sparql-update-endpoint')}}
         this.getUrn = () => self.anchor.data('urn')
         this.getUser = () => self.anchor.data('user')
 
