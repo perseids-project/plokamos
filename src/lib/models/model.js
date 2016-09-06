@@ -47,7 +47,7 @@ class Model {
                 inner.resolve();
             })
             inner.promise()
-                .then(() => this.execute(this.upstream))
+                .then(() => this.execute(_.flatten(this.upstream)))
                 .then(() => this.store.registeredGraphs(
                     (e,g) => {
                         this.namedDataset = _.uniq(_.map(g,(x) => x.nominalValue))
@@ -62,7 +62,7 @@ class Model {
     load(endpoints, urn, user) {
         var source = endpoints.read || endpoints.query || "/"
         var promise = source.slice(-5)==='.json' ? $.getJSON(source) : oaByUrnRetriever(source, urn)
-        // TODO: should be done in its own class, resulting in promise for store, which gets assigned to this.store
+        // todo: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return promise
             .then((data) => SPARQL.bindingsToInsert(data.results.bindings))
             .then((data) => {
@@ -71,20 +71,8 @@ class Model {
             })
     }
 
-
-    
-    execute(sparql) { return this.execute(sparql) }
-
-    update(triple) {
-
-    }
-
-    save(endpoint) {
-        var target = endpoint
-    }
-
-    persist(endpoint) {
-
+    execute(sparql) {
+        return this.execute(sparql)
     }
 
     reset() {
