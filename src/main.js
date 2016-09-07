@@ -5,7 +5,6 @@ import Model from './lib/models/model.js'
 import Applicator from './lib/controllers/applicator.js'
 import Annotator from './lib/controllers/annotator.js'
 import History from './lib/models/history'
-import Mustache from 'mustache.js'
 window.$ = $
 window.jQuery = jquery
 window.jquery = jquery
