@@ -85,7 +85,7 @@ class Annotator {
          *
          * @param deletions () is the list
          */
-        this.delete = (deletions) => _.flatten(deletions || []).length ? this.model.execute(SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))) : undefined
+        this.delete = (deletions) => _.flatten(deletions || []).length ? this.model.execute(SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))) : []
 
         /**
          *
