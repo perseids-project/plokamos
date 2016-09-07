@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import TextQuoteAnchor from 'dom-anchor-text-quote';
 import SPARQL from '../models/sparql'
 import Utils from '../utils'
 
@@ -23,52 +22,6 @@ class Annotator {
         this.model = app.model;
         this.applicator = app.applicator;
         this.history = app.history;
-        this.currentRange = undefined;
-
-        this.selector = {
-            "http://www.w3.org/ns/oa#TextQuoteSelector" : () => {
-                var selection = document.getSelection();
-                return TextQuoteAnchor.fromRange(document.getElementById("annotator-main"),selection.getRangeAt(0)).toSelector()
-            }
-        };
-        /**
-         * Event handlers for processing selections and showing/hiding starter button,
-         *
-         * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*))}}
-         */
-        this.starter = {
-            "http://www.w3.org/ns/oa#TextQuoteSelector" : (event) => {
-                var selection = document.getSelection();
-                var starter = $('#starter');
-                if (selection && !selection.isCollapsed && starter.css('display')==='none') {
-                    this.currentRange = selection.getRangeAt(0).cloneRange();
-                    var selector = this.selector["http://www.w3.org/ns/oa#TextQuoteSelector"]();
-                    var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
-                    var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
-                    var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
-                    starter.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
-
-                    // TODO: USE TEMPLATE [DONE PROBABLY]
-                    // TODO: MAKE STARTER OPEN TEMPLATE (data-target) [DONE PROBABLY]
-                    // TODO: template.init() with selector [DONE PROBABLY]
-                } else starter.css({display:"none"});
-            }
-
-        };
-
-        this.init = (id) => {
-            var id = id ? id : this.anchor.data('urn');
-            var app = $('[data-urn="'+id+'"]');
-            app.append('<div class="btn btn-circle" id="starter" style="display:none;" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-paperclip"></span></div>')
-                // then inject selection event listener
-            app.mouseup(this.starter["http://www.w3.org/ns/oa#TextQuoteSelector"])
-        }
-
-        this.init();
-
-        /*
-        Editing functions below, they take bindings, create and run sparql queries, and post results back as promise
-         */
 
         /**
          * DROP: delete entire annotations including metadata
