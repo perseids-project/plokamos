@@ -251,6 +251,7 @@ class Templates {
         this.partials = {
             triple: `
                         <div class="triple" title="Graph:{{g}} Subject:{{s}} Predicate:{{p}} Object:{{o}}" data-original-subject="{{s}}" data-original-predicate="{{p}}" data-original-object="{{o}}" data-subject="{{s}}" data-predicate="{{p}}" data-object="{{o}}">
+                        
                           <div class="content component" style="height:80px;">
                               <div class="display component" style="height:40px;">
                                   <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1 text-align: center;">
@@ -267,6 +268,8 @@ class Templates {
                               </div>
                           </div>
                         </div>
+                        <div class="tt-menu"></div>
+                        
                       `,
             graph:`<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
             graphs:`{{#annotations}}{{> graph}}{{/annotations}}`,
@@ -329,7 +332,7 @@ class Templates {
                         activate(list)
                     }
                 })
-                el.find('input').typeahead({minLength:3,highlight:true},{source:substringMatcher(names)})
+                el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true,menu:$(e).closest('.triple').next()},{source:substringMatcher(names)}))
                 return el
             }
 
