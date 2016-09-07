@@ -315,7 +315,7 @@ class Templates {
                         if (text.trim()) {
                             editing.text(SNAP.label(text)) // <-- todo: generalize for other ontologies
                             triple.addClass('update')
-                            triple.data(editing.data('token'),text)
+                            triple.get().forEach((elem) => elem.setAttribute("data-" + editing.data('token'),text))
                         }
                         editing.removeClass('editing')
                 })
