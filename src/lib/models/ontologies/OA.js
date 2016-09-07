@@ -29,8 +29,8 @@ var expandMap = {
             .compact()
             .value(),
     "default": (obj) => {
-        var ns = obj.replace ? _.find(this.namespaces,(ns) => this.expandMap[obj.replace(ns.prefix,ns.uri)]) : undefined
-        var resolved = ns ? this.expandMap[obj.replace(ns.prefix,ns.uri)] : undefined
+        var ns = obj.replace ? _.find(namespaces,(ns) => expandMap[ns.uri+obj.replace(ns.prefix,'')]) : undefined
+        var resolved = ns ? expandMap[ns.uri+obj.replace(ns.prefix,'')] : undefined
         return resolved ? resolved : (x) => x
     }
 }

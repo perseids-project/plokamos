@@ -25,7 +25,7 @@ class Editor {
             var selection = document.getSelection();
 
             // replace starter with
-            if (selection && !selection.isCollapsed && button.css('display')==='none') {
+            if (selection && !selection.isCollapsed && button.css('display')==='none' && modal.css('display')==='none') {
                 // add selector to modal or button
 
                 var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(jqParent,selection);
@@ -35,7 +35,7 @@ class Editor {
                 var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
                 button.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
                 modal.update({},selector)
-                origin = {data:()=>{}}
+                origin = {data:()=>{return {}}}
             } else button.css({display:"none"});
 
         })
