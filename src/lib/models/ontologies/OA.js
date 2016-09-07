@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import TextQuoteAnchor from 'dom-anchor-text-quote';
 
 var knowResources = []
 var labels = {}
@@ -28,8 +29,8 @@ var expandMap = {
             .compact()
             .value(),
     "default": (obj) => {
-        var ns = obj.replace ? _.find(this.namespaces,(ns) => this.expandMap[obj.replace(ns.prefix,ns.uri)]) : undefined
-        var resolved = ns ? this.expandMap[obj.replace(ns.prefix,ns.uri)] : undefined
+        var ns = obj.replace ? _.find(namespaces,(ns) => expandMap[ns.uri+obj.replace(ns.prefix,'')]) : undefined
+        var resolved = ns ? expandMap[ns.uri+obj.replace(ns.prefix,'')] : undefined
         return resolved ? resolved : (x) => x
     }
 }
@@ -50,11 +51,18 @@ var simplifyMap = {
     }
 }
 
+var createMap = {
+    "http://www.w3.org/ns/oa#TextQuoteSelector" : (element, selection) => TextQuoteAnchor.fromRange(element.tagName ? element : element.get(0),selection.getRangeAt(0)).toSelector(),
+    "default": () => {} // todo: figure out sane default
+}
+
 class OA {
 
     static expand(type) { return expandMap[type] || expandMap.default(type) }
 
     static simplify(type) { return simplifyMap[type] || simplifyMap.default(type) }
+
+    static create(type) {return createMap[type] || createMap.default(type)}
 
 }
 

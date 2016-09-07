@@ -19,6 +19,32 @@ class Editor {
         jqParent.append(button)
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>This is a Modal Heading</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
         jqParent.append(modal)
+
+        jqParent.mouseup((event) => {
+
+            var selection = document.getSelection();
+
+            // replace starter with
+            if (selection && !selection.isCollapsed && button.css('display')==='none' && modal.css('display')==='none') {
+                // add selector to modal or button
+
+                var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(jqParent,selection);
+
+                var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
+                var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
+                var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
+                button.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
+                modal.update({},selector)
+                origin = {data:()=>{return {}}}
+            } else button.css({display:"none"});
+
+        })
+
+        // move starter here and append to jqParent
+
+
+
+
         var body = modal.find('.modal-body')
         var apply_button = modal.find('.btn-success')
         button.click((e) => {
