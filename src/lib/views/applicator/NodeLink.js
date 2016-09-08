@@ -151,7 +151,8 @@ class NodeLink {
             );
             self.node.enter()
                 .append("svg:circle")
-                .attr("class", (d) => d.id)
+                .attr("class", "node")
+                .attr("data-id", (d) => d.id)
                 .attr("r", 7)
                 .call(self.force.drag)
                 .on("click",(d,i)=>{})
@@ -161,6 +162,7 @@ class NodeLink {
         }
         this.add = (triples) => {
             triples.forEach((t) => {
+                // we're looking for existing occurrences of resources from the new triple
                 var subjectIdx = _.findIndex(self.nodes,['id',t.s])
                 var objectIdx = _.findIndex(self.nodes,['id',t.o])
                 var predicateIdx = (subjectIdx+1 && objectIdx+1) ? _.findIndex(self.links,{source:subjectIdx,target:objectIdx}) : -1
