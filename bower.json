@@ -1,5 +1,6 @@
 {
-  "name": "annotator-plugin",
+  "name": "plokamos",
+  "version":"0.0.7-alpha",
   "description": "",
   "main": "",
   "authors": [

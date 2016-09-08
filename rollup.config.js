@@ -35,7 +35,7 @@ export default {
     globals: {
         rdfstore: 'rdfstore'
     },
-    moduleName: 'perseids',
+    moduleName: 'plokamos',
     targets: [
         {
             dest: 'build/js/annotator.js',
