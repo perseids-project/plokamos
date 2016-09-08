@@ -110,6 +110,8 @@ class Applicator {
                 }
                 if (parent) parent.removeChild( p[ 0 ] );
             }
+            if(!id) {this.nodelink.reset()}
+            // TODO: remove from nodelink / graph plugins?
         };
 
         this.reset = () => {

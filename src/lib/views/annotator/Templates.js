@@ -308,6 +308,7 @@ class Templates {
                     var triple = $(e.target).closest('.triple')
                         triple.animate({'height':'0px', 'margin-top':'0px', 'margin-bottom':'0px' },{duration:150, complete:() =>{$(e.target).closest('.triple').hide()}})
                         triple.addClass('delete')
+                        triple.next().remove() // tt-menu
                     if (!triple.siblings(':not(.delete)').length) triple.closest('.graph.old').addClass('delete')
                     // todo: add to history -> nope, reset button maybe
                 })
