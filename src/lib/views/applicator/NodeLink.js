@@ -11,8 +11,11 @@ class NodeLink {
         body.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');
-        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep)$('#global-view').css('display','none')});
-        globalViewBtn.mouseenter(function(e) {$('#global-view').css('display','block')});
+        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep) {$('#global-view').css('display','none'); self.force.stop()}});
+        globalViewBtn.mouseenter(function(e) {
+            if (!globalViewBtn.keep) {self.force.start()}
+            $('#global-view').css('display','block')
+        });
         globalViewBtn.click(function(e) {
             globalViewBtn.keep = !globalViewBtn.keep
             $('#global-view').css('display','block')})
@@ -29,7 +32,7 @@ class NodeLink {
         this.links = []
 
         this.vis = d3.select(this.parent).append("svg:svg").attr("width","100%").attr("height","100%")
-        this.force = d3.layout.force().size([$(self.parent).width(), $(self.parent).height()]).nodes(this.nodes).links(this.links).gravity(1).linkDistance(function(d){return (1-d.weight)*100}).charge(-3000).linkStrength(function(x) {
+        this.force = d3.layout.force().size([50, 50]).nodes(this.nodes).links(this.links).gravity(1).linkDistance(function(d){return (1-d.weight)*100}).charge(-3000).linkStrength(function(x) {
             return x.weight * 5
         });
         this.grid = function() {
@@ -120,8 +123,17 @@ class NodeLink {
                 return "translate(" + d.screenX + "," + d.screenY + ")";
             });
         };
+
+        this.update_force_size = () => {
+            var forceSize = self.force.size();
+            var parent = $(self.parent)
+            if (forceSize[0]!=parent.width() || forceSize[1]!=parent.height()) {
+                self.force.size([parent.width(), parent.height()])
+            }
+        }
+
         this.update_graph = () => {
-            self.force.size([$(self.parent).width(), $(self.parent).height()])
+            self.update_force_size()
             self.link = self.vis.selectAll("line.link").data(
                 self.force.links(),
                 (d) => d.source.id + "-" + d.target.id
@@ -146,7 +158,6 @@ class NodeLink {
                 .on("hover",(d,i)=>{});
             self.node.exit()
                 .remove();
-            self.force.start();
         }
         this.add = (triples) => {
             triples.forEach((t) => {
@@ -185,7 +196,7 @@ class NodeLink {
 
         this.update_graph()
         this.force.on("tick", () => {
-            self.force.size([$(self.parent).width(), $(self.parent).height()])
+            self.update_force_size()
             self.vis.select("g.gridcanvas").remove();
             if(self.USE_GRID) {
                 self.grid.init();
@@ -198,7 +209,6 @@ class NodeLink {
             self.link.call(self.updateLink);
         });
         this.grid.init()
-        this.force.start()
     }
 }
 
