@@ -167,7 +167,18 @@ class NodeLink {
             // this.update_graph()
             this.update_graph()
         }
-        this.remove = (triples) => {}
+        this.remove = (triples) => {
+
+        }
+
+        this.reset = () => {
+            this.force.stop()
+            self.nodes = []
+            self.links = []
+            self.force.nodes(self.nodes).links(self.links)
+            self.vis.selectAll("line.link").data([]).exit().remove()
+            self.vis.selectAll("circle.node").data([]).exit().remove()
+        }
         this.update = (triples) => {
 
         }
