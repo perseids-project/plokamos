@@ -164,7 +164,7 @@ class NodeLink {
             // self.nodes = this.nodes.concat(nodes||[])
             // self.links = this.links.concat(links||[])
             self.force.nodes(self.nodes).links(self.links)
-            this.update_graph()
+            // this.update_graph()
             this.update_graph()
         }
         this.remove = (triples) => {}
