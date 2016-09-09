@@ -49,7 +49,7 @@ class Editor {
         var apply_button = modal.find('.btn-success')
         button.click((e) => {
             // done: show modal (automatically w/ data-toggle)
-            // todo: hide button if clicked elsewhere
+            // planned: hide button if clicked elsewhere
             button.css('display','none')
         })
 
@@ -60,7 +60,7 @@ class Editor {
          * 3. Modified annotation bodies
          * 4. Newly created annotation body
          */
-        // todo: make button disabled by default, check if it needs to be enabled
+        // planned: make button disabled by default, check if it needs to be enabled
         // note: user = $('body').data('user')
         // note: address = $('body').data('urn') || document.url
         // note: selector = modal.selector
@@ -93,8 +93,8 @@ class Editor {
                 .filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
                 .map((t) => SNAP.expand()(t,annotations)))
-            // todo: add title and motivatedby
-            // TODO: create title for new annotations in frontend, because it uses ontologies
+            // planned: add title and motivatedby
+            // todo: create title for new annotations in frontend, because it uses ontologies
             _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
             var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
@@ -123,7 +123,7 @@ class Editor {
                 })
                 .then((res) => annotator.apply(_.flatten(acc.concat(res))))
 
-            // todo: this can be improved; the goal is to take a single step in history
+            // planned: this can be improved; the goal is to take a single step in history
 
             body.html('<span class="okay">OKAY!</span>')
             body.html('<span class="failure">OH NO!</span>')
@@ -131,7 +131,7 @@ class Editor {
 
         modal.update = (data, newSelector) => {
             // done: populate with graphs/triples
-            // todo: apply ontology-specific transformations
+            // planned: apply ontology-specific transformations
             var graphs = SNAP.simplify()(data)
             selector = newSelector
             template.init(body,{annotations:Object.keys(graphs).map((k) => { return {g:k,triples:graphs[k]}})})
@@ -141,8 +141,8 @@ class Editor {
         this.register = (jqElement) => {
             jqElement.click((e) => {
                 origin = jqElement
-                // todo: make button disappear again
-                // todo: merge with selection tool (via a container for plugin buttons)
+                // planned: make button disappear again
+                // planned: merge with selection tool (via a container for plugin buttons)
                 var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
                 var deltaH = menuState ? window.scrollY : window.scrollY-parseInt($("#menu-container").css('height'));
                 var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width')) : window.scrollX;

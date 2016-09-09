@@ -23,7 +23,7 @@ var expandMap = {
                     || (quad.p.value.endsWith('type') && quad.o.value === gspo.p)
                     || (quad.p.value.endsWith('bond-with') && quad.o.value === gspo.o)
                 ) : []
-                var bond_id = (bindings.length%3 || !annotation)? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined // todo: get bonds and check bond sizes individually
+                var bond_id = (bindings.length%3 || !annotation)? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined // planned: get bonds and check bond sizes individually
                 return bond_id ? [
                         {g: gspo.g, s: bond_id, p: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", o: gspo.p},
                         {g: gspo.g, s: gspo.s, p: "http://data.snapdrgn.net/ontology/snap#has-bond", o: bond_id},
@@ -117,7 +117,7 @@ class SNAP {
     }
 
 
-    // todo: move labels into var
+    // planned: move labels into var
     static expand(type) { return expandMap[type] || expandMap.default }
     static simplify(type) { return simplifyMap[type] || simplifyMap.default }
 

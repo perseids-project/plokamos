@@ -6,7 +6,7 @@ class Tooltip {
         jqParent.append($('<div class="margintooltip" style="display: none;"></div>'))
         this.register = (jqElement) => {
             jqElement.hover(function (e) {
-                // todo: stringify should check ontology and select simplifier or stringify raw (.value)
+                // planned: stringify should check ontology and select simplifier or stringify raw (.value)
                 function stringify(obj) {
                     var simplified = SNAP.simplify()(obj)
                     return _.flatten(_.values(simplified)).map((o) => SNAP.label(o.s)+";\n"+SNAP.label(o.p)+";\n"+SNAP.label(o.o)).join("\n\n")
@@ -18,7 +18,7 @@ class Tooltip {
                 var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
                 var deltaH = 0// menuState ? 0 : parseInt($("#menu-container").css('height'));
                 var deltaW = 0// menuState ? parseInt($("#menu-container").css('width')) : 0;
-                // todo: possibly factor out layout calculations into Utils or somewhere else?
+                // planned: possibly factor out layout calculations into Utils or somewhere else?
                 var parent = $(this.parentElement)
                 var position = parent.position()
                 var width = Math.min(100, position.left)

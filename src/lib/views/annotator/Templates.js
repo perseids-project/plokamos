@@ -235,7 +235,7 @@ class Templates {
             });
         }
 
-        // todo: deal with prefixes
+        // planned: deal with prefixes
         this.getPrefix = () => {
             return ""
         }
@@ -276,7 +276,7 @@ class Templates {
             // done: add empty graph container to create template and add new triples to it.
             new:`<div class="graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-circle" style="background-color: #4AA02C; color: white; font-size: 1em; cursor: pointer;">+</div></div>`,
             anchor:`<div class='anchor'><span class="prefix selector">{{selector.prefix}}</span><span class="exact selector">{{selector.exact}}</span><span class="suffix selector">{{selector.suffix}}</span></div>`
-        } // todo: add selector and display anchor
+        } // planned: add selector and display anchor
 
         this.init = (jqElement, data) => {
             jqElement.html(Mustache.render("{{> graphs}}{{> new}}{{> anchor}}",Object.assign({},data,self.view),self.partials))
@@ -310,14 +310,14 @@ class Templates {
                         triple.addClass('delete')
                         triple.next().remove() // tt-menu
                     if (!triple.siblings(':not(.delete)').length) triple.closest('.graph.old').addClass('delete')
-                    // todo: add to history -> nope, reset button maybe
+                    // planned: add to history -> nope, reset button maybe
                 })
                 el.find('.btn-accept').click((e) => {
                     var triple = $(e.target).closest('.triple')
                     var text = triple.find('.tt-input').val()
                     var editing = triple.find('a.editing')
                         if (text.trim()) {
-                            editing.text(SNAP.label(text)) // <-- todo: generalize for other ontologies
+                            editing.text(SNAP.label(text)) // <-- planned: generalize for other ontologies
                             triple.addClass('update')
                             triple.get().forEach((elem) => elem.setAttribute("data-" + editing.data('token'),text))
                         }
@@ -339,7 +339,7 @@ class Templates {
 
 
             // jqElement.find('.tt-menu').insertAfter(this.closest('.group'))
-            // todo: move autocomplete element (possibly have to add another container on the outside)
+            // planned: move autocomplete element (possibly have to add another container on the outside)
             return activate(jqElement)
         }
     }

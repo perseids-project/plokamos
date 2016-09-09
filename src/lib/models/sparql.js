@@ -14,7 +14,7 @@ class SPARQL {
             return {type:"uri",value:prop}
         } else if (prop.startsWith("_:")) {
             return {type:"bnode",value:prop}
-        } else { // todo: come back and use regex properly
+        } else { // planned: come back and use regex properly
             if (!prop.replace(/\d+/g,'')) {
                 return {type:"literal",datatype:"http://www.w3.org/2001/XMLSchema#int",value:prop}
             } else if (prop.replace(/\d+/g,'').startsWith("--T::.")) {
@@ -23,7 +23,7 @@ class SPARQL {
                 return {type:"literal",value:prop}
             }
         }
-    }/* todo: switch for uri, literal, bnode with a regex (what about hypothesis?)*/)
+    }/* planned: switch for uri, literal, bnode with a regex (what about hypothesis?)*/)
     }
     static bindingToGspo(binding) {return _.mapValues(binding,(prop) => prop.value)}
     static bindingToSPARQL(binding) {

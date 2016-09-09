@@ -4,7 +4,7 @@
  */
 
 var Selectors = {
-    // todo: figure out if still used anywhere; move to ontologies/OA.js; i need a system to select queries depending on arguments
+    // planned: figure out if still used anywhere; move to ontologies/OA.js; i need a system to select queries depending on arguments
     "http://www.w3.org/ns/oa#hasSelector": (id) => [
         "SELECT ?id ?g ?s ?p ?o",
         "WHERE {",
