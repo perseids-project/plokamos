@@ -250,27 +250,21 @@ class Templates {
             }}
         this.partials = {
             triple: `
-                        <div class="triple" title="Graph:{{g}} Subject:{{s}} Predicate:{{p}} Object:{{o}}" data-original-subject="{{s}}" data-original-predicate="{{p}}" data-original-object="{{o}}" data-subject="{{s}}" data-predicate="{{p}}" data-object="{{o}}">
-                        
-                          <div class="content component" style="height:80px;">
-                              <div class="display component" style="height:40px;">
-                                  <div class="sentence component" style="overflow:scroll; white-space:nowrap; padding: 9px; background-color:white; z-index:1 text-align: center;">
-                                      <a href="#" class="object down" title="Change object" data-token="object">{{#label}}{{o}}{{/label}}</a>
-                                      <a href="#" class="predicate down" title="Change predicate" data-token="predicate">{{#label}}{{p}}{{/label}}</a>
-                                      <a href="#" class="subject down" title="Change subject" data-token="subject">{{#label}}{{s}}{{/label}}</a>
-                                  </div>
-                                  <div class="btn-delete component"><span class="glyphicon glyphicon-minus-sign" style="color:white;"></span></div>
-                              </div>
-                              <div class="edit component" style="top:40px; height:40px;">
-                                  <div class="btn-accept up component"><span class="glyphicon glyphicon-ok" style="color:white;"></span></div>
-                                  <input class="component" type="text" placeholder="Search...">
-                                  <div class="btn-discard up component"><span class="glyphicon glyphicon-remove"></span></div>
-                              </div>
-                          </div>
-                        </div>
-                        <div class="tt-menu"></div>
-                        
-                      `,
+              <div class="triple" title="Graph:{{g}} Subject:{{s}} Predicate:{{p}} Object:{{o}}" data-original-subject="{{s}}" data-original-predicate="{{p}}" data-original-object="{{o}}" data-subject="{{s}}" data-predicate="{{p}}" data-object="{{o}}">
+                <div class="sentence well container">
+                  <div class="token subject col-xs-12 col-md-4" data-token="subject">
+                    <input class="typeahead" placeholder="Subject" value="{{#label}}{{s}}{{/label}}">
+                  </div>
+                  <div class="token predicate col-xs-12 col-md-4" data-token="predicate">
+                    <input class="typeahead" placeholder="Predicate" value="{{#label}}{{p}}{{/label}}">
+                  </div>
+                  <div class="token object col-xs-12 col-md-4" data-token="object">
+                    <input class="typeahead" placeholder="Object" value="{{#label}}{{o}}{{/label}}">
+                  </div>
+                </div>
+                <div class="btn-delete"><span class="glyphicon glyphicon-trash"/></div>
+              </div>
+            `,
             graph:`<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
             graphs:`{{#annotations}}{{> graph}}{{/annotations}}`,
             // done: add empty graph container to create template and add new triples to it.
@@ -282,23 +276,6 @@ class Templates {
             jqElement.html(Mustache.render("{{> graphs}}{{> new}}{{> anchor}}",Object.assign({},data,self.view),self.partials))
 
             function activate(el) {
-                el.find('.triple').hover(
-                    (e) => {
-                        $(e.currentTarget).find('.sentence').animate({'width':'-=50'},{duration:600})
-                    },
-                    (e) => {
-                        $(e.currentTarget).find('.sentence').animate({'width':'100%'},{duration:600})
-                    }
-                )
-                el.find('a.down').click((e) => {
-                    // done: update placeholder
-                    $(e.target).addClass('editing')
-                    $(e.target).closest('.triple').find('.tt-input').attr('placeholder',e.target.text)
-                    $(e.target).closest('.content').animate({'top':'-40px'},{duration:400})
-                })
-                el.find('.up').click((e) => {
-                    $(e.target).closest('.content').animate({'top':'0px'},{duration:400})
-                })
                 el.find('div.btn-delete').click((e) => {
                     // done: command list -> does the command list exist in the class or as data-attributes
                     // note: no command list, just marked ui elements
@@ -308,7 +285,6 @@ class Templates {
                     var triple = $(e.target).closest('.triple')
                         triple.animate({'height':'0px', 'margin-top':'0px', 'margin-bottom':'0px' },{duration:150, complete:() =>{$(e.target).closest('.triple').hide()}})
                         triple.addClass('delete')
-                        triple.next().remove() // tt-menu
                     if (!triple.siblings(':not(.delete)').length) triple.closest('.graph.old').addClass('delete')
                     // planned: add to history -> nope, reset button maybe
                 })
@@ -323,17 +299,32 @@ class Templates {
                         }
                         editing.removeClass('editing')
                 })
+                // todo: rewrite btn-accept to apply label to entered values
                 el.find('#new_button').click((e) => {
-                    var NIL = "_________"
-                    var triple = $('.graph.new').find('.triple:last')
+                    var triple = $('.graph.new').find('.triple:not(.delete):last')
                     // the following prevents the button from creating a new triple before the previous one has been completed
-                    if (!triple.length || (triple.data('subject')!=NIL && triple.data('predicate')!=NIL && triple.data('object')!=NIL)) {
-                        var list = $(Mustache.render("{{> triple}}",Object.assign({},{g:NIL,s:NIL,p:NIL,o:NIL},self.view),self.partials))
+                    if (!triple.length || (triple.data('subject') && triple.data('predicate') && triple.data('object'))) {
+                        var list = $(Mustache.render("{{> triple}}",Object.assign({},{g:"",s:"",p:"",o:""},self.view),self.partials))
                         list.appendTo($('.graph.new'))
                         activate(list)
                     }
                 })
-                el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true,menu:$(e).closest('.triple').next()},{source:substringMatcher(names)}))
+                el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:substringMatcher(names)}))
+                el.find('.triple').keypress((e) => {
+                    if (e.which === 13) {
+                        var triple = $(e.target).closest('.triple')
+                        var jqToken = $(e.target).closest('.token')
+                        var token = jqToken.data('token')
+                    }
+                })
+                el.find('.token pre').on("DOMSubtreeModified",(e) => {
+                    var target = $(e.target)
+                    var triple = target.closest('.triple')
+                    var token = target.closest('.token').data('token')
+                    triple.get(0).setAttribute('data-'+token,target.text())
+                    if (triple.data(token+'-original')!=triple.data(token)) triple.addClass('update')
+                    // set update class?
+                })
                 return el
             }
 
