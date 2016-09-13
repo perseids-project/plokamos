@@ -2,7 +2,7 @@ import $ from 'jquery';
 import SPARQL from '../models/sparql'
 import Utils from '../utils'
 
-// todo: think about api - stacking commands, then executing them, in order to facilitate single step history?
+// planned: think about api - stacking commands, then executing them, in order to facilitate single step history?
 
 /**
  * Class for creation of annotations
@@ -17,7 +17,7 @@ class Annotator {
         this.defaultGraph = "http://data.perseus.org/graphs/persons"
         this.userId = app.anchor.data('user')
         this.urn = app.anchor.data('urn')
-        // TODO: add controls for history, save at bottom of anchor
+        // todo: add controls for history, save at bottom of anchor
         this.anchor = app.anchor
         this.model = app.model;
         this.applicator = app.applicator;
@@ -46,6 +46,7 @@ class Annotator {
          * @param insertions
          */
         this.update = (deletions, insertions) => {
+            // todo: remove old title, add new title
             return this.model.execute(_.flatten([
                 SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo))),
                 SPARQL.bindingsToInsert(_.flatten(insertions.concat(
@@ -73,9 +74,9 @@ class Annotator {
         this.create = (annotationId, bindings) => {
             var result = $.Deferred().resolve([]).promise()
             if (bindings.length) {
-                // todo: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
+                // planned: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
                 var selectorId = _.find(bindings, (binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
-                // todo: make independent of selector type
+                // planned: make independent of selector type
                 var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
                 var oa = [
                     {
@@ -116,7 +117,7 @@ class Annotator {
                         "g": {"type": "uri", "value": self.defaultGraph},
                         "s": {"type": "uri", "value": targetId},
                         "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#SpecificResource"}
-                    }, // todo: figure out alternatives for non-text targets
+                    }, // planned: figure out alternatives for non-text targets
                     {
                         "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasSource"},
                         "g": {"type": "uri", "value": self.defaultGraph},

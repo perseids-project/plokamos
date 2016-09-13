@@ -40,8 +40,8 @@ class History {
         var commands = _.chain(this.commands.slice(0,this.index)).flatten().value()
         var sequence = commands.slice().reverse()
 
-        // TODO: possibly aggregate the responses
-        // TODO: do DROP last, because it cannot be reverted (easily)
+        // todo: possibly aggregate the responses
+        // todo: do DROP last, because it cannot be reverted (easily)
         var response = _.reduce(commands,(previous,current) =>
             previous.then(
                 (success) => {
@@ -61,7 +61,7 @@ class History {
             (failure) => {
                 var successful = commands.slice(0,-1*sequence.length)
                 var failed = sequence.slice().reverse()
-                // todo: recover structure of commands
+                // planned: recover structure of commands
                 this.model.upstream.push(successful)
                 this.commands = [failed]
                 this.reset()

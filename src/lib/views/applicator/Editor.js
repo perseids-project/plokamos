@@ -17,7 +17,7 @@ class Editor {
         var template = new Templates(labels)
         var button = $('<div class="btn btn-circle btn-info" id="edit_btn" style="display:none;" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-paperclip"></span></div>')
         jqParent.append(button)
-        var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>This is a Modal Heading</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
+        var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
         jqParent.append(modal)
 
         jqParent.mouseup((event) => {
@@ -49,7 +49,7 @@ class Editor {
         var apply_button = modal.find('.btn-success')
         button.click((e) => {
             // done: show modal (automatically w/ data-toggle)
-            // todo: hide button if clicked elsewhere
+            // planned: hide button if clicked elsewhere
             button.css('display','none')
         })
 
@@ -60,7 +60,7 @@ class Editor {
          * 3. Modified annotation bodies
          * 4. Newly created annotation body
          */
-        // todo: make button disabled by default, check if it needs to be enabled
+        // planned: make button disabled by default, check if it needs to be enabled
         // note: user = $('body').data('user')
         // note: address = $('body').data('urn') || document.url
         // note: selector = modal.selector
@@ -85,16 +85,16 @@ class Editor {
             dT.remove()
 
             var uT = body.find('.graph.old .triple.update')
-            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).data('subject')), uT.map((i,el) => $(el).data('predicate')), uT.map((i,el) => $(el).data('object')))
+            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).attr('data-subject')), uT.map((i,el) => $(el).attr('data-predicate')), uT.map((i,el) => $(el).attr('data-object')))
 
             var cT = body.find('.graph.new .triple:not(.delete)')
             var cite = Utils.cite(app.getUser()+app.getUrn(),Math.random().toString())
-            var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).data('subject')), cT.map((i,el) => $(el).data('predicate')), cT.map((i,el) => $(el).data('object')))
-                .filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
+            var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).attr('data-subject')), cT.map((i,el) => $(el).attr('data-predicate')), cT.map((i,el) => $(el).attr('data-object')))
+                .filter((t)=> t[0] && t[1] && t[2])
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
                 .map((t) => SNAP.expand()(t,annotations)))
-            // todo: add title and motivatedby
-            // TODO: create title for new annotations in frontend, because it uses ontologies
+            // planned: add title and motivatedby
+            // todo: create title for new annotations in frontend, because it uses ontologies
             _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
             var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
@@ -123,7 +123,7 @@ class Editor {
                 })
                 .then((res) => annotator.apply(_.flatten(acc.concat(res))))
 
-            // todo: this can be improved; the goal is to take a single step in history
+            // planned: this can be improved; the goal is to take a single step in history
 
             body.html('<span class="okay">OKAY!</span>')
             body.html('<span class="failure">OH NO!</span>')
@@ -131,7 +131,7 @@ class Editor {
 
         modal.update = (data, newSelector) => {
             // done: populate with graphs/triples
-            // todo: apply ontology-specific transformations
+            // planned: apply ontology-specific transformations
             var graphs = SNAP.simplify()(data)
             selector = newSelector
             template.init(body,{annotations:Object.keys(graphs).map((k) => { return {g:k,triples:graphs[k]}})})
@@ -141,8 +141,8 @@ class Editor {
         this.register = (jqElement) => {
             jqElement.click((e) => {
                 origin = jqElement
-                // todo: make button disappear again
-                // todo: merge with selection tool (via a container for plugin buttons)
+                // planned: make button disappear again
+                // planned: merge with selection tool (via a container for plugin buttons)
                 var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
                 var deltaH = menuState ? window.scrollY : window.scrollY-parseInt($("#menu-container").css('height'));
                 var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width')) : window.scrollX;

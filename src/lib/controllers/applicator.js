@@ -25,12 +25,12 @@ class Applicator {
     constructor (app) {
 
         var Id = {
-            fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||"")) // todo: remove TQS specific code, use Utils & OA, but make sure it's consistent between marking and retrieving spans
+            fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||"")) // planned: remove TQS specific code, use Utils & OA, but make sure it's consistent between marking and retrieving spans
         }
 
         var model = app.model;
 
-        // todo: move this to an utility class, note: var escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
+        // planned: move this to an utility class, note: var escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
 
         /**
          * Mark selector positions with span tag and add quads to data
@@ -64,7 +64,7 @@ class Applicator {
                     var spans = _.map(grouped, (v, k) => {
                         var selectorURI = _.find(v, (obj) => obj.p.value.endsWith("hasSelector")).o.value
                         var selectorTriples = v.filter((obj) => obj.s.value === selectorURI)
-                        var selectorType = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value // todo: replace as many endsWith as possible with tests on qualified names
+                        var selectorType = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value // planned: replace as many endsWith as possible with tests on qualified names
                         var selectorObject = OA.simplify(selectorType)(selectorTriples)
                         var idFromSelector = Id.fromSelector(selectorObject)
                         var span = document.getElementById(idFromSelector) || this.mark[selectorType](selectorObject)
@@ -90,7 +90,7 @@ class Applicator {
             )
             .then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                    var snap = SNAP.simplify()(grouped) // todo: move into nodelink, specify API for document plugins
+                    var snap = SNAP.simplify()(grouped) // planned: move into nodelink, specify API for document plugins
                     var input = _.flatMap(snap,(v,k)=>v.map((o) => Object.assign(o,{g:k})))
                     this.nodelink.add(input)
                 }
@@ -111,7 +111,8 @@ class Applicator {
                 if (parent) parent.removeChild( p[ 0 ] );
             }
             if(!id) {this.nodelink.reset()}
-            // TODO: remove from nodelink / graph plugins?
+            // todo: generalize to reset all plugins
+            // note: is this superfluous if we reset on edit anyways?
         };
 
         this.reset = () => {
@@ -126,7 +127,7 @@ class Applicator {
         this.load();
     }
 
-    // todo: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
+    // planned: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
 
     load (id)  {
         this.load(id);

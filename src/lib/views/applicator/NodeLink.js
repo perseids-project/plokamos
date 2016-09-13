@@ -171,8 +171,8 @@ class NodeLink {
                 if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:1})-1}
             })
             // todo
-            // todo: take in triples instead of node/links and convert them with self.node indices
-            // todo: remember that removing may require re-indexing!
+            // planned: take in triples instead of node/links and convert them with self.node indices
+            // planned: remember that removing may require re-indexing!
             // todo
             // self.nodes = this.nodes.concat(nodes||[])
             // self.links = this.links.concat(links||[])

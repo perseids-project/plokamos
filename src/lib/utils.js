@@ -123,7 +123,7 @@ class Utils {
         return passwd;
     }
 
-    static hash(str) {return str.split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString(16).replace("-","0")}
+    static hash(str) {return JSON.stringify(str).split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString(16).replace("-","0")}
 
     static cite(pre,post) { return "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post) }
 

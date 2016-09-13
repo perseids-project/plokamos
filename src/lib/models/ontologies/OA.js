@@ -36,7 +36,7 @@ var expandMap = {
 }
 
 var simplifyMap = {
-    "http://www.w3.org/ns/oa#TextQuoteSelector": (selectorTriples) => { // todo: rename to bindings
+    "http://www.w3.org/ns/oa#TextQuoteSelector": (selectorTriples) => { // planned: rename to bindings
         var selectorObject = {}
         selectorObject.type = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value
         selectorObject.prefix = _.find(selectorTriples,(t) => t.p.value.endsWith("prefix")).o.value
@@ -53,7 +53,7 @@ var simplifyMap = {
 
 var createMap = {
     "http://www.w3.org/ns/oa#TextQuoteSelector" : (element, selection) => TextQuoteAnchor.fromRange(element.tagName ? element : element.get(0),selection.getRangeAt(0)).toSelector(),
-    "default": () => {} // todo: figure out sane default
+    "default": () => {} // planned: figure out sane default
 }
 
 class OA {
