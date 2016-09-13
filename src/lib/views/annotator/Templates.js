@@ -310,13 +310,7 @@ class Templates {
                     }
                 })
                 el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:substringMatcher(names)}))
-                el.find('.triple').keypress((e) => {
-                    if (e.which === 13) {
-                        var triple = $(e.target).closest('.triple')
-                        var jqToken = $(e.target).closest('.token')
-                        var token = jqToken.data('token')
-                    }
-                })
+                el.find('.token').on('typeahead:select',(e,text) => $(e.currentTarget).find('pre').text(text))
                 el.find('.token pre').on("DOMSubtreeModified",(e) => {
                     var target = $(e.target)
                     var triple = target.closest('.triple')
