@@ -303,7 +303,7 @@ class Templates {
                 el.find('#new_button').click((e) => {
                     var triple = $('.graph.new').find('.triple:not(.delete):last')
                     // the following prevents the button from creating a new triple before the previous one has been completed
-                    if (!triple.length || (triple.data('subject') && triple.data('predicate') && triple.data('object'))) {
+                    if (!triple.length || (triple.attr('data-subject') && triple.attr('data-predicate') && triple.attr('data-object'))) {
                         var list = $(Mustache.render("{{> triple}}",Object.assign({},{g:"",s:"",p:"",o:""},self.view),self.partials))
                         list.appendTo($('.graph.new'))
                         activate(list)

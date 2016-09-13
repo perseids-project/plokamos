@@ -85,12 +85,12 @@ class Editor {
             dT.remove()
 
             var uT = body.find('.graph.old .triple.update')
-            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).data('subject')), uT.map((i,el) => $(el).data('predicate')), uT.map((i,el) => $(el).data('object')))
+            var update_triples = _.zip(uT.closest('.graph.old').map((i,el) => $(el).data('graph')), uT.map((i,el) => $(el).data('original-subject')), uT.map((i,el) => $(el).data('original-predicate')), uT.map((i,el) => $(el).data('original-object')), uT.map((i,el) => $(el).attr('data-subject')), uT.map((i,el) => $(el).attr('data-predicate')), uT.map((i,el) => $(el).attr('data-object')))
 
             var cT = body.find('.graph.new .triple:not(.delete)')
             var cite = Utils.cite(app.getUser()+app.getUrn(),Math.random().toString())
-            var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).data('subject')), cT.map((i,el) => $(el).data('predicate')), cT.map((i,el) => $(el).data('object')))
-                .filter((t)=> t[0]!=NIL && t[1]!=NIL && t[2]!=NIL)
+            var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).attr('data-subject')), cT.map((i,el) => $(el).attr('data-predicate')), cT.map((i,el) => $(el).attr('data-object')))
+                .filter((t)=> t[0] && t[1] && t[2])
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
                 .map((t) => SNAP.expand()(t,annotations)))
             // planned: add title and motivatedby
