@@ -12,19 +12,28 @@ class History {
     undo() {
         this.index -= 1
         this.model.reset()
-        return this.model.execute(_.flatten(this.commands.slice(0,this.index)))
+        this.forwardBtn.prop('disabled',false)
+        if (!this.index) this.backBtn.prop('disabled',true)
+        this.model.execute(_.flatten(this.commands.slice(0,this.index)))
+            .then((result) => this.applicator.reset())
     }
 
     redo() {
         this.index += 1
-        return this.commands.slice(0,this.index)
+        this.model.reset()
+        this.backBtn.prop('disabled',false)
+        if (this.index===this.commands.length) this.forwardBtn.prop('disabled',true)
+        this.model.execute(_.flatten(this.commands.slice(0,this.index)))
+            .then((result) => this.applicator.reset())
     }
 
     add(cmd) {
-        this.commands.splice(0,this.index)
+        this.commands.splice(this.index)
         var cmds = cmd.constructor === Array ? cmd : [cmd]
-        cmds.forEach((c) => this.commands.push(c))
-        this.index += cmds.length
+        this.commands.push(cmds)
+        this.index += 1
+        this.backBtn.prop('disabled',false)
+        this.forwardBtn.prop('disabled',true)
         return this.commands
     }
 
