@@ -15,8 +15,8 @@ class Editor {
         var selector = {}
         var labels = SNAP.labels
         var template = new Templates(labels)
-        var button = $('<div class="btn btn-circle btn-info" id="edit_btn" style="display:none;" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-paperclip"></span></div>')
-        jqParent.append(button)
+        var button = $('<div class="btn" id="edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
+        $('body').on('shown.bs.popover',(e) => $('.popover-footer').append(button))
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
         jqParent.append(modal)
 
@@ -25,18 +25,20 @@ class Editor {
             var selection = document.getSelection();
 
             // replace starter with
-            if (selection && !selection.isCollapsed && button.css('display')==='none' && modal.css('display')==='none') {
+            if (selection && !selection.isCollapsed && modal.css('display')==='none') {
                 // add selector to modal or button
 
                 var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(jqParent,selection);
 
-                var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
-                var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
-                var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
-                button.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
+                // var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
+                // var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
+                // var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
+                // button.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
+                // todo: open popover
                 modal.update({},selector)
                 origin = {data:()=>{return {}}}
-            } else button.css({display:"none"});
+            } // todo: remove popover?
+            // else button.css({display:"none"});
 
         })
 
@@ -47,11 +49,6 @@ class Editor {
 
         var body = modal.find('.modal-body')
         var apply_button = modal.find('.btn-success')
-        button.click((e) => {
-            // done: show modal (automatically w/ data-toggle)
-            // planned: hide button if clicked elsewhere
-            button.css('display','none')
-        })
 
         /**
          * We are done editing and are now processing, in order:
@@ -69,7 +66,6 @@ class Editor {
         apply_button.click((e) => {
             var annotator = this.annotator()
             // NOTE: COMPUTING EDITS
-            var NIL = "_________"
 
             var annotations = origin.data('annotations')
             var dG = body.find('.graph.old.delete')
@@ -127,6 +123,7 @@ class Editor {
 
             body.html('<span class="okay">OKAY!</span>')
             body.html('<span class="failure">OH NO!</span>')
+            origin.popover('hide')
         })
 
         modal.update = (data, newSelector) => {
@@ -143,10 +140,6 @@ class Editor {
                 origin = jqElement
                 // planned: make button disappear again
                 // planned: merge with selection tool (via a container for plugin buttons)
-                var menuState = document.documentElement.clientWidth - parseInt($("#menu-container").css('width'))
-                var deltaH = menuState ? window.scrollY : window.scrollY-parseInt($("#menu-container").css('height'));
-                var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width')) : window.scrollX;
-                button.css({display:"block",position:"absolute",left:e.clientX-deltaW,top:e.clientY+deltaH});
                 modal.update(jqElement.data('annotations'),jqElement.data('selector'))
             })
         }
