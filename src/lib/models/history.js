@@ -1,8 +1,13 @@
 import $ from 'jquery'
 
 class History {
+
     constructor(app) {
         this.app = app
+        this.backBtn = $(`<button id="plokamos-back" class="btn" title="Undo" disabled><span class="glyphicon glyphicon-chevron-left"/></button>`)
+        this.forwardBtn = $(`<button id="plokamos-forward" class="btn" title="Redo" disabled><span class="glyphicon glyphicon-chevron-right"/></button>`)
+        this.commitBtn = $(`<button id="plokamos-commit" class="btn" title="Commit" disabled><span class="glyphicon glyphicon-cloud-upload"/></button>`)
+        this.app.bar.navigation.append(this.backBtn,this.forwardBtn,this.commitBtn)
         this.model = app.model;
         this.applicator = app.applicator;
         this.commands = [];
@@ -12,12 +17,17 @@ class History {
     undo() {
         this.index -= 1
         this.model.reset()
+        this.forwardBtn.prop('disabled',false)
+        if (!this.index) this.backBtn.prop('disabled',true)
         return this.model.execute(_.flatten(this.commands.slice(0,this.index)))
     }
 
     redo() {
         this.index += 1
+        this.backBtn.prop('disabled',false)
+        if (this.index===this.commands.length) this.forwardBtn.prop('disabled',true)
         return this.commands.slice(0,this.index)
+        // todo: what needs to happen here?
     }
 
     add(cmd) {
@@ -69,5 +79,7 @@ class History {
         )
         return response
     }
+
+    // planned: progress() function that moves a colored line across the plokamos-bar border
 }
 export default History
