@@ -12,6 +12,7 @@ export default {
             exclude: [
                 'bower_components/lodash/**',
                 'bower_components/jquery/**',
+                'bower_components/bootstrap/**',
                 'bower_components/jsonld/**',
                 'bower_components/d3/**',
                 'node_modules/**'
@@ -22,7 +23,8 @@ export default {
             override: {
                 jquery: 'dist/jquery.js',
                 lodash: 'dist/lodash.js',
-                'typeahead.js': 'dist/typeahead.bundle.js'
+                'typeahead.js': 'dist/typeahead.bundle.js',
+                bootstrap: 'dist/js/bootstrap.js'
             }
         }),
         nodeResolve({
