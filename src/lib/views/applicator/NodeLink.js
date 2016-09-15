@@ -6,9 +6,13 @@ class NodeLink {
     constructor(app) {
         var body = app.anchor
         var self = this
-        var globalViewBtn = $('<div class="btn btn-circle" id="global-view-btn" style="position: fixed; top:15%; right:5%; z-index:1000; background-color:black; color:white;"><span class="glyphicon glyphicon-link"></span></span></div>')
+        var globalViewBtn = $(`
+          <button id="global-view-btn" class="btn">
+            <span class="glyphicon glyphicon-certificate"/>
+          </button>
+        `)
         var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000;"/>');
-        body.append(globalViewBtn);
+        app.bar.plugins.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');
         globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep) {$('#global-view').css('display','none'); self.force.stop()}});

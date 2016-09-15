@@ -47,7 +47,7 @@ class Model {
                 inner.resolve();
             })
             inner.promise()
-                .then(() => this.execute(_.flatten(this.upstream)))
+                .then(() => this.execute(_.flattenDeep(this.upstream)))
                 .then(() => this.store.registeredGraphs(
                     (e,g) => {
                         this.namedDataset = _.uniq(_.map(g,(x) => x.nominalValue))
