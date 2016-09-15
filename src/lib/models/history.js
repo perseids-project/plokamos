@@ -1,8 +1,13 @@
 import $ from 'jquery'
 
 class History {
+
     constructor(app) {
         this.app = app
+        this.backBtn = $(`<button id="plokamos-back" class="btn" title="Undo" disabled><span class="glyphicon glyphicon-chevron-left"/></button>`)
+        this.forwardBtn = $(`<button id="plokamos-forward" class="btn" title="Redo" disabled><span class="glyphicon glyphicon-chevron-right"/></button>`)
+        this.commitBtn = $(`<button id="plokamos-commit" class="btn" title="Commit" disabled><span class="glyphicon glyphicon-cloud-upload"/></button>`)
+        this.app.bar.navigation.append(this.backBtn,this.forwardBtn,this.commitBtn)
         this.model = app.model;
         this.applicator = app.applicator;
         this.commands = [];
@@ -78,5 +83,7 @@ class History {
         )
         return response
     }
+
+    // planned: progress() function that moves a colored line across the plokamos-bar border
 }
 export default History
