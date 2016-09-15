@@ -41,6 +41,7 @@ class History {
             this.commands.push(cmds)
             this.index += 1
             this.backBtn.prop('disabled',false)
+            this.commitBtn.prop('disabled',false)
             this.forwardBtn.prop('disabled',true)
             return this.commands
         }
@@ -48,6 +49,9 @@ class History {
         this.reset = () => {
             this.commands = [];
             this.index = 0
+            this.backBtn.prop('disabled',true)
+            this.forwardBtn.prop('disabled',true)
+            this.commitBtn.prop('disabled',true)
             return this.model.reset().then(() => this.applicator.reset())
         }
 
