@@ -20,19 +20,31 @@ class History {
         this.undo = () => {
             this.index -= 1
             this.model.reset()
-            this.forwardBtn.prop('disabled',false)
-            if (!this.index) this.backBtn.prop('disabled',true)
-            this.model.execute(_.flatten(this.commands.slice(0,this.index)))
-                .then((result) => this.applicator.reset())
+                .then(() =>
+                    this.model.execute(_.flatten(this.commands.slice(0,this.index)))
+                )
+                .then((result) => {
+                    this.applicator.reset()
+                    this.forwardBtn.prop('disabled',false)
+                    if (!this.index) {
+                        this.backBtn.prop('disabled',true)
+                        this.commitBtn.prop('disabled',true)
+                    }
+                })
         }
 
         this.redo = () => {
             this.index += 1
             this.model.reset()
-            this.backBtn.prop('disabled',false)
-            if (this.index===this.commands.length) this.forwardBtn.prop('disabled',true)
-            this.model.execute(_.flatten(this.commands.slice(0,this.index)))
-                .then((result) => this.applicator.reset())
+                .then(() =>
+                    this.model.execute(_.flatten(this.commands.slice(0,this.index)))
+                )
+                .then((result) => {
+                    this.applicator.reset()
+                    this.backBtn.prop('disabled',false)
+                    this.commitBtn.prop('disabled',false)
+                    if (this.index===this.commands.length) this.forwardBtn.prop('disabled',true)
+                })
         }
 
         this.add = (cmd) => {
