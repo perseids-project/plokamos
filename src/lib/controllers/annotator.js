@@ -165,8 +165,8 @@ class Annotator {
             // if success, map to sparql and add sparql to history
             // else reset model
             this.history.add(resolved.map((r) => r.sparql))
-            this.history.commit()
-            // this.applicator.reset()
+            // this.history.commit()
+            this.applicator.reset()
         }
     }
 }
