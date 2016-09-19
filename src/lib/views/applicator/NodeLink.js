@@ -140,7 +140,7 @@ class NodeLink {
             self.update_force_size()
             self.link = self.vis.selectAll("line.link").data(
                 self.force.links(),
-                (d) => d.source.id + "-" + d.target.id
+                (d) => d.source + "-" + d.target
             );
             self.link.enter()
                 .insert("svg:line", ".node")
