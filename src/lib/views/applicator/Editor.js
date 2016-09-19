@@ -2,6 +2,7 @@ import Templates from '../annotator/Templates'
 import SNAP from '../../models/ontologies/SNAP'
 import OA from '../../models/ontologies/OA'
 import Utils from '../../utils'
+import wrapRangeText from 'wrap-range-text'
 import _ from 'lodash'
 import $ from 'jquery'
 
@@ -34,10 +35,26 @@ class Editor {
                 // var deltaH = menuState ? window.scrollY+15 : window.scrollY-parseInt($("#menu-container").css('height'))+15;
                 // var deltaW = menuState ? window.scrollX+parseInt($("#menu-container").css('width'))-10 : window.scrollX-10;
                 // button.css({display:"block",position:"absolute",left:event.clientX-deltaW,top:event.clientY+deltaH});
-                // todo: open popover
+
                 modal.update({},selector)
                 origin = {data:()=>{return {}}}
-            } // todo: remove popover?
+                span = document.createElement('span')
+                span.setAttribute('id','popover-selection')
+                wrapRangeText(span,selection.getRangeAt(0))
+                // todo: wrap selection x
+                $('#popover-selection').popover({
+                    container:"body",
+                    html:"true",
+                    trigger: "manual",
+                    placement: "auto top",
+                    title: selection.toString(),
+                    content: "<div class='popover-footer'/>"
+                })
+                $('#popover-selection').popover('show')
+                $('#popover-selection').popover('destroy')
+
+                // todo: correctly size popover after addition of plugin buttons
+            }   // todo: remove popover? remove span?
             // else button.css({display:"none"});
 
         })
