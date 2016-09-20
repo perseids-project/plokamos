@@ -14,8 +14,8 @@ class Tooltip {
                 return "<span class='popover-source' data-source-id='"+jqElement.attr('id')+"'></span><div class='popover-list'>"+_.flatten(
                     _.values(simplified)).map((o) =>
                 "<span class='tt-label tt-subject'>"+
-                SNAP.label(o.s)+"</span><span class='tt-label tt-predicate'>"+
-                SNAP.label(o.p)+"</span><span class='tt-label tt-object'>"+
+                SNAP.label(o.s)+"</span>-<span class='tt-label tt-predicate'>"+
+                SNAP.label(o.p)+"</span>-<span class='tt-label tt-object'>"+
                 SNAP.label(o.o)+"</span>").join("<br>")+
                 "</div><div class='popover-footer'/>"
             }
