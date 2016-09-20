@@ -21,7 +21,12 @@ class Editor {
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
         jqParent.append(modal)
 
-        jqParent.mouseup((event) => {
+        jqParent.mouseup((e) => {
+            var pos = $('#popover-selection')
+            if (pos) {
+                pos.popover('destroy')
+                pos.replaceWith(pos.text())
+            }
 
             var selection = document.getSelection();
 
@@ -47,11 +52,11 @@ class Editor {
                     html:"true",
                     trigger: "manual",
                     placement: "auto top",
-                    title: selection.toString(),
+                    title: selector.exact,
                     content: "<div class='popover-footer'/>"
                 })
                 $('#popover-selection').popover('show')
-                $('#popover-selection').popover('destroy')
+                // $('#popover-selection').popover('destroy')
 
                 // todo: correctly size popover after addition of plugin buttons
             }   // todo: remove popover? remove span?
