@@ -240,6 +240,12 @@ class Templates {
             return ""
         }
 
+        this.updateValue = (event,text) => {
+            var triple = $(event.target).closest('.triple').get(0)
+            var token = $(event.target).closest('.token').data('token')
+            triple.setAttribute('data-'+token, text)
+            if (triple.dataset[token]!=triple.dataset[token+'-original']) $(triple).addClass('update')
+        }
         this.translate = labels || {}
         this.view = {
             label: () => {
@@ -310,15 +316,15 @@ class Templates {
                     }
                 })
                 el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:substringMatcher(names)}))
-                el.find('.token').on('typeahead:select',(e,text) => $(e.currentTarget).find('pre').text(text))
-                el.find('.token pre').on("DOMSubtreeModified",(e) => {
-                    var target = $(e.target)
-                    var triple = target.closest('.triple')
-                    var token = target.closest('.token').data('token')
-                    triple.get(0).setAttribute('data-'+token,target.text())
-                    if (triple.data(token+'-original')!=triple.data(token)) triple.addClass('update')
-                    // set update class?
+
+                el.find('.token').on('typeahead:selected',self.updateValue)
+                el.find('.token').on('typeahead:autocompleted', self.updateValue)
+                el.find('.token').on('keyup', (e) => {
+                    if (e.key.length===1 || e.key==="Backspace") {
+                        self.updateValue(e,e.target.value)
+                    }
                 })
+
                 return el
             }
 
