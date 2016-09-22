@@ -177,9 +177,11 @@ class NodeLink {
                 .on("click",(d,i)=>{})
                 .on("mouseover",(d,i)=>{
                     $('#rdftable tr').filter((j,e) => j && $(e).text().indexOf(d.id.replace('http://data.perseus.org/people/',''))===-1).css('display','none')
+                    $('#rdftable td').filter((j,e) => j && $(e).text().indexOf(d.id.replace('http://data.perseus.org/people/',''))+1).css('color','red')
                 })
                 .on("mouseout",(d,i)=>{
                     $('#rdftable tr').css('display','')
+                    $('#rdftable td').css('color','')
                 })
                 .append("svg:text")
                 .text((d) => d.id)
