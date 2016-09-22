@@ -160,7 +160,8 @@ class NodeLink {
                 .insert("svg:line", ".node")
                 .attr("class", "link")
                 .on("click",(d,i)=>{})
-                .on("hover",(d,i)=>{});
+                .on("hover",(d,i)=>{
+                });
             self.link.exit()
                 .remove();
             self.node = self.vis.selectAll("circle.node").data(
@@ -174,7 +175,15 @@ class NodeLink {
                 .attr("r", 7)
                 .call(self.force.drag)
                 .on("click",(d,i)=>{})
-                .on("hover",(d,i)=>{});
+                .on("mouseover",(d,i)=>{
+                    $('#rdftable tr').filter((j,e) => j && $(e).text().indexOf(d.id.replace('http://data.perseus.org/people/',''))===-1).css('display','none')
+                })
+                .on("mouseout",(d,i)=>{
+                    $('#rdftable tr').css('display','')
+                })
+                .append("svg:text")
+                .text((d) => d.id)
+                .style("fill-opacity", 1);
             self.node.exit()
                 .remove();
         }
