@@ -11,11 +11,13 @@ class NodeLink {
             <span class="glyphicon glyphicon-certificate"/>
           </button>
         `)
-        var globalView = $('<div class="well" id="global-view" style="position:fixed; top:10%; left:12.5%; width:75%; height:40%; z-index:1000;"/>');
+        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"></div></div>');
         app.bar.plugins.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');
-        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep) {$('#global-view').css('display','none'); self.force.stop()}});
+        globalViewBtn.mouseleave(function(e) {if (!globalViewBtn.keep) {
+            $('#global-view').css('display','none'); self.force.stop()
+        }});
         globalViewBtn.mouseenter(function(e) {
             if (!globalViewBtn.keep) {self.force.start()}
             $('#global-view').css('display','block')
@@ -24,7 +26,19 @@ class NodeLink {
             globalViewBtn.keep = !globalViewBtn.keep
             $('#global-view').css('display','block')})
         globalViewBtn.keep = false;
-        this.parent = globalView.get(0)
+
+        $('#rdftable').html(`
+  <table class="table">
+    <tr style="font-weight:bold;">
+      <td>Subject</td>
+      <td>Predicate</td>
+      <td>Object</td>
+      <td>URN</td>
+    </tr>
+  </table>
+        `)
+
+        this.parent = $('#nodelink').get(0)
 
         this.USE_GRID = true;
         this.GRID_SIZE = 60;
@@ -146,21 +160,34 @@ class NodeLink {
                 .insert("svg:line", ".node")
                 .attr("class", "link")
                 .on("click",(d,i)=>{})
-                .on("hover",(d,i)=>{});
+                .on("hover",(d,i)=>{
+                });
             self.link.exit()
                 .remove();
-            self.node = self.vis.selectAll("circle.node").data(
+            self.node = self.vis.selectAll("g.node").data(
                 self.force.nodes(),
                 (d) => d.id
             );
-            self.node.enter()
-                .append("svg:circle")
-                .attr("class", "node")
+            var nodeEnter = self.node.enter()
+                .append("svg:g")
+                .attr("class","node");
+            nodeEnter.append("svg:circle")
                 .attr("data-id", (d) => d.id)
                 .attr("r", 7)
                 .call(self.force.drag)
                 .on("click",(d,i)=>{})
-                .on("hover",(d,i)=>{});
+                .on("mouseover",(d,i)=>{
+                    $('#rdftable tr').filter((j,e) => j && $(e).text().indexOf(d.id.replace('http://data.perseus.org/people/',''))===-1).css('display','none')
+                    $('#rdftable td').filter((j,e) => j && $(e).text().indexOf(d.id.replace('http://data.perseus.org/people/',''))+1).css('color','red')
+                })
+                .on("mouseout",(d,i)=>{
+                    $('#rdftable tr').css('display','')
+                    $('#rdftable td').css('color','')
+                });
+            nodeEnter.append("svg:text")
+                .text((d) => d.id.replace('http://data.perseus.org/people/','').replace('#this',''))
+                .attr('class','node-label')
+                .attr('text-anchor','middle');
             self.node.exit()
                 .remove();
         }
@@ -172,7 +199,18 @@ class NodeLink {
                 var predicateIdx = (subjectIdx+1 && objectIdx+1) ? _.findIndex(self.links,{source:subjectIdx,target:objectIdx}) : -1
                 if (subjectIdx+1) {self.nodes[subjectIdx].graphs.push(t.g)} else {subjectIdx = self.nodes.push({id:t.s,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
                 if (objectIdx+1) {self.nodes[objectIdx].graphs.push(t.g)} else {objectIdx = self.nodes.push({id:t.o,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
-                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:1})-1}
+                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:0.5})-1}
+            })
+
+            triples.forEach((t) => {
+                $('#rdftable > .table').append(`
+                    <tr>
+                        <td>${t.s.replace('http://data.perseus.org/people/','')}</td>
+                        <td>${t.p}</td>
+                        <td>${t.o.replace('http://data.perseus.org/people/','')}</td>
+                        <td>${t.g.replace('http://data.perseus.org/collections/','')}</td>
+                    </tr>
+                `)
             })
             // todo
             // planned: take in triples instead of node/links and convert them with self.node indices
@@ -195,6 +233,14 @@ class NodeLink {
             self.force.nodes(self.nodes).links(self.links)
             self.vis.selectAll("line.link").data([]).exit().remove()
             self.vis.selectAll("circle.node").data([]).exit().remove()
+            $('#rdftable > .table').html(`
+                <tr style="font-weight:bold;">
+                  <td>Subject</td>
+                  <td>Predicate</td>
+                  <td>Object</td>
+                  <td>URN</td>
+                </tr>
+            `)
         }
         this.update = (triples) => {
 

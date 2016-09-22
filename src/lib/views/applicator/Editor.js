@@ -22,6 +22,8 @@ class Editor {
         jqParent.append(modal)
 
         jqParent.mouseup((e) => {
+
+            if ($(e.target).closest('#global-view').length) return
             var pos = $('#popover-selection')
             if (pos) {
                 pos.popover('destroy')
