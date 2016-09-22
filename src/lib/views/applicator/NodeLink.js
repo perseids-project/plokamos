@@ -164,13 +164,14 @@ class NodeLink {
                 });
             self.link.exit()
                 .remove();
-            self.node = self.vis.selectAll("circle.node").data(
+            self.node = self.vis.selectAll("g.node").data(
                 self.force.nodes(),
                 (d) => d.id
             );
-            self.node.enter()
-                .append("svg:circle")
-                .attr("class", "node")
+            var nodeEnter = self.node.enter()
+                .append("svg:g")
+                .attr("class","node");
+            nodeEnter.append("svg:circle")
                 .attr("data-id", (d) => d.id)
                 .attr("r", 7)
                 .call(self.force.drag)
@@ -182,10 +183,11 @@ class NodeLink {
                 .on("mouseout",(d,i)=>{
                     $('#rdftable tr').css('display','')
                     $('#rdftable td').css('color','')
-                })
-                .append("svg:text")
-                .text((d) => d.id)
-                .style("fill-opacity", 1);
+                });
+            nodeEnter.append("svg:text")
+                .text((d) => d.id.replace('http://data.perseus.org/people/','').replace('#this',''))
+                .attr('class','node-label')
+                .attr('text-anchor','middle');
             self.node.exit()
                 .remove();
         }
@@ -197,7 +199,7 @@ class NodeLink {
                 var predicateIdx = (subjectIdx+1 && objectIdx+1) ? _.findIndex(self.links,{source:subjectIdx,target:objectIdx}) : -1
                 if (subjectIdx+1) {self.nodes[subjectIdx].graphs.push(t.g)} else {subjectIdx = self.nodes.push({id:t.s,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
                 if (objectIdx+1) {self.nodes[objectIdx].graphs.push(t.g)} else {objectIdx = self.nodes.push({id:t.o,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
-                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:1})-1}
+                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:0.5})-1}
             })
 
             triples.forEach((t) => {
