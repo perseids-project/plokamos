@@ -1,4 +1,4 @@
-import oaByUrnRetriever from './io/oaByUrnRetriever'
+import oaByUrnUserRetriever from './io/oaByUrnUserRetriever'
 import SPARQL from './sparql'
 import rdfstore from 'rdfstore'
 import _ from 'lodash'
@@ -61,7 +61,7 @@ class Model {
 
     load(endpoints, urn, user) {
         var source = endpoints.read || endpoints.query || "/"
-        var promise = source.slice(-5)==='.json' ? $.getJSON(source) : oaByUrnRetriever(source, urn)
+        var promise = source.slice(-5)==='.json' ? $.getJSON(source) : oaByUrnUserRetriever(source, urn, user)
         // planned: should be done in its own class, resulting in promise for store, which gets assigned to this.store
         return promise
             .then((data) => SPARQL.bindingsToInsert(data.results.bindings))
