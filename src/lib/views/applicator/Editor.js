@@ -39,12 +39,12 @@ class Editor {
                 var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(jqParent,selection);
 
                 modal.update({},selector)
-                origin = {data:()=>{return {}}}
                 span = document.createElement('span')
                 span.setAttribute('id','popover-selection')
+                span.setAttribute('data-graphs','{}')
                 wrapRangeText(span,selection.getRangeAt(0))
-
-                $('#popover-selection').popover({
+                origin = $('#popover-selection')
+                origin.popover({
                     container:"body",
                     html:"true",
                     trigger: "manual",
@@ -52,7 +52,7 @@ class Editor {
                     title: selector.exact,
                     content: "<div class='popover-footer'/>"
                 })
-                $('#popover-selection').popover('show')
+                origin.popover('show')
             }
 
         })

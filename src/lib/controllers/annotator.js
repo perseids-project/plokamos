@@ -76,6 +76,17 @@ class Annotator {
             if (bindings.length) {
                 // planned: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
                 var selectorId = _.find(bindings, (binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
+                var object = _.find(bindings, (binding) => binding.p.value.endsWith("bond-with")).o.value
+                var bond = _.find(bindings, (binding) => binding.p.value.endsWith("has-bond")).o.value
+                var predicate = _.find(bindings, (binding) => binding.s.value === bond && binding.p.value.endsWith("bond-with")).o.value
+                var title = [
+                    {
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "p": {"type": "uri", "value": "http://purl.org/dc/terms/title"},
+                        "o": {"type": "literal", "value": `${object} identifies ${object.replace('http://data.perseus.org/people/smith:','').split('-')[0]} as ${predicate} in ${self.urn}`}
+                    }
+                ]
                 // planned: make independent of selector type
                 var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
                 var oa = [
@@ -89,13 +100,19 @@ class Annotator {
                         "g": {"type": "uri", "value": self.defaultGraph},
                         "s": {"type": "uri", "value": annotationId},
                         "p": {"type": "uri", "value": "http://purl.org/dc/terms/source"},
-                        "o": {"type": "uri", "value": "https://github.com/fbaumgardt/perseids-annotator"}
+                        "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"}
                     },
                     {
                         "g": {"type": "uri", "value": self.defaultGraph},
                         "s": {"type": "uri", "value": annotationId},
                         "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#serializedBy"},
-                        "o": {"type": "uri", "value": "https://github.com/fbaumgardt/perseids-annotator"}
+                        "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"} // todo: add version
+                    },
+                    {
+                        "g": {"type": "uri", "value": self.defaultGraph},
+                        "s": {"type": "uri", "value": annotationId},
+                        "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#motivatedBy"},
+                        "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#identifying"}
                     },
                     {
                         "g": {"type": "uri", "value": self.defaultGraph},
@@ -154,7 +171,7 @@ class Annotator {
                 ]
                 this.model.defaultDataset.push(annotationId)
                 this.model.namedDataset.push(annotationId)
-                var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
+                var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, title, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
                 result = this.model.execute(insert)
             }
             return result
