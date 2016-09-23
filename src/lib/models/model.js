@@ -24,7 +24,7 @@ class Model {
             var data = sparql.constructor === Array ? sparql : [sparql]
             var start = $.Deferred()
             var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
-            _.reduce(
+            var last = _.reduce(
                 seq,
                 (previous,current) => {
                     previous.then((acc) => {
@@ -37,7 +37,15 @@ class Model {
                 start.promise()
             )
             start.resolve([])
-            return (_.last(seq) || {deferred:($.Deferred().resolve([]))}).deferred.promise()
+            return last.then((result) => {
+                var deferred = $.Deferred()
+                this.store.registeredGraphs((e,g) => {
+                    this.namedDataset = _.uniq(_.map(g,(x) => x.nominalValue))
+                    this.defaultDataset = this.namedDataset
+                    deferred.resolve(result)
+                })
+                return deferred.promise()
+            })
         }
         this.reset = () => {
             var outer = $.Deferred();
