@@ -10,7 +10,7 @@ import _ from 'lodash'
 
 class SPARQL {
     static gspoToBinding(gspo) {return _.mapValues(gspo, (prop) => {
-        if (prop.startsWith("http://") || prop.startsWith("http://")) {
+        if ((prop.startsWith("http://") || prop.startsWith("urn:")) && !(prop.indexOf(' ')+1)) {
             return {type:"uri",value:prop}
         } else if (prop.startsWith("_:")) {
             return {type:"bnode",value:prop}
