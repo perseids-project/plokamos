@@ -122,12 +122,8 @@ class SNAP {
     static simplify(type) { return simplifyMap[type] || simplifyMap.default }
 
     static label (uri) {
-        var term = _.reduce(namespaces, (str,ns) => str.replace(new RegExp("^"+ns.uri),"").replace(new RegExp("^"+ns.prefix)), uri)
+        var term = _.reduce(namespaces, (str,ns) => str.replace(new RegExp("^"+ns.uri),"").replace(new RegExp("^"+ns.prefix),""), uri)
         var labels ={
-            "EnemyOf":"Is Enemy Of",
-            "CompanionOf":"Is Companion Of",
-            "WifeOf":"Is Wife Of",
-            "HusbandOf":"Is Husband Of",
             "AcknowledgedFamilyRelationship":"Has Acknowledged Family Relationship With",
             "AdoptedFamilyRelationship":"Has Adopted Family Relationship With",
             "AllianceWith":"Has Alliance With",
@@ -139,10 +135,12 @@ class SNAP {
             "ChildOf":"Is Child Of",
             "ChildOfSiblingOf":"Is ChildOfSibling Of",
             "ClaimedFamilyRelationship":"Has Claimed Family Relationship With",
+            "CompanionOf":"Is Companion Of",
             "CousinOf":"Is Cousin Of",
             "DaughterOf":"Is Daughter Of",
             "DescendentOf":"Is Descendent Of",
             "EmnityFor":"Has Emnity For",
+            "EnemyOf":"Is Enemy Of",
             "ExtendedFamilyOf":"Is Extended Family Of",
             "ExtendedHouseholdOf":"Is Extended Household Of",
             "FamilyOf":"Is Family Of",
@@ -165,6 +163,7 @@ class SNAP {
             "HereditaryFamilyOf":"Is HereditaryFamily Of",
             "HouseSlaveOf":"Is HouseSlave Of",
             "HouseholdOf":"Is Household Of",
+            "HusbandOf":"Is Husband Of",
             "InLawFamilyRelationship":"Has In-Law Family Relationship With",
             "IntimateRelationshipWith":"Has Intimate Relationship With",
             "KinOf":"Is Kin Of",
@@ -185,7 +184,8 @@ class SNAP {
             "SlaveOf":"Is Slave Of",
             "SonOf":"Is Son Of",
             "StepFamilyRelationship":"Has Step Family Relationship With",
-            "UncleOf":"Is Uncle Of"
+            "UncleOf":"Is Uncle Of",
+            "WifeOf":"Is Wife Of"
         }
 
         var uri = uri.startsWith("http://data.perseus.org/people/") ? uri.replace("http://data.perseus.org/people/",'').replace('#this','') : uri
