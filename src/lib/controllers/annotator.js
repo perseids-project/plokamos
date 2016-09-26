@@ -17,7 +17,6 @@ class Annotator {
         this.defaultGraph = "http://data.perseus.org/graphs/persons"
         this.userId = app.anchor.data('user')
         this.urn = app.anchor.data('urn')
-        // todo: add controls for history, save at bottom of anchor
         this.anchor = app.anchor
         this.model = app.model;
         this.applicator = app.applicator;

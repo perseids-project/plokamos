@@ -30,8 +30,9 @@ class Applicator {
 
         var model = app.model;
 
+        this.spinner = $(`<div class="spinner"><span class="glyphicon glyphicon-refresh glyphicon-spinning"></span><br><span>Loading ...</span></div>`).appendTo(app.anchor)
         // planned: move this to an utility class, note: var escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
-
+        this.spinner.css('display','inline-block')
         /**
          * Mark selector positions with span tag and add quads to data
          * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
@@ -116,15 +117,16 @@ class Applicator {
         };
 
         this.reset = () => {
+            this.spinner.css('display','inline-block')
             this.unload()
-            this.load()
+            this.load().then(() => this.spinner.css('display','none'))
         }
 
         // var body = $('body');
         this.tooltip = new Tooltip(app)
         this.delete = new Editor(app)
         this.nodelink = new NodeLink(app)
-        this.load();
+        this.load().then(() => this.spinner.css('display','none'));
     }
 
     // planned: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
