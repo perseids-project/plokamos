@@ -5,7 +5,8 @@ class Tooltip {
 
         $(document).on('click', '.popover-footer > .btn', (e) => {
             var id = $('.popover-source').data('source-id')
-            $(document.getElementById(id)).popover('hide')
+            $(document.getElementById(id)).click()
+            $('#popover-selection').popover('hide')
         })
         this.register = (jqElement) => {
             // planned: stringify should check ontology and select simplifier or stringify raw (.value)
