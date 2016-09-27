@@ -60,7 +60,7 @@ class Editor {
         })
 
         var body = modal.find('.modal-body')
-        var apply_button = modal.find('.btn-info')
+        var apply_button = modal.find('.btn-primary')
 
         /**
          * We are done editing and are now processing, in order:
