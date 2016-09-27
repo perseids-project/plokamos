@@ -277,13 +277,13 @@ class Templates {
                     <input class="typeahead" placeholder="Object" value="{{#label}}{{o}}{{/label}}">
                   </div>
                 </div>
-                <div class="btn-delete"><span class="glyphicon glyphicon-trash"/></div>
+                <div class="btn-delete" title="Delete triple"><span class="glyphicon glyphicon-trash"/></div>
               </div>
             `,
             graph:`<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
             graphs:`{{#annotations}}{{> graph}}{{/annotations}}`,
             // done: add empty graph container to create template and add new triples to it.
-            new:`<div class="graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-circle" style="background-color: #4AA02C; color: white; font-size: 1em; cursor: pointer;">+</div></div>`,
+            new:`<div class="graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-info btn-circle" title="Add triple">+</div></div>`,
             anchor:`<div class='anchor'><span class="prefix selector">{{selector.prefix}}</span><span class="exact selector">{{selector.exact}}</span><span class="suffix selector">{{selector.suffix}}</span></div>`
         } // planned: add selector and display anchor
 

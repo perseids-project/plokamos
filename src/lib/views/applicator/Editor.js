@@ -17,9 +17,9 @@ class Editor {
         var labels = SNAP.labels
         var template = new Templates(labels)
 
-        var button = $('<div class="btn" id="edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
+        var button = $('<div class="btn btn-primary edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
         $('body').on('shown.bs.popover',(e) => $('#'+e.target.getAttribute('aria-describedby')).find('.popover-footer').append(button))
-        var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
+        var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button></div></div>')
 
         jqParent.append(modal)
 
@@ -60,7 +60,7 @@ class Editor {
         })
 
         var body = modal.find('.modal-body')
-        var apply_button = modal.find('.btn-success')
+        var apply_button = modal.find('.btn-info')
 
         /**
          * We are done editing and are now processing, in order:
