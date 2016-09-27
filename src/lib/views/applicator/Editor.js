@@ -16,9 +16,11 @@ class Editor {
         var selector = {}
         var labels = SNAP.labels
         var template = new Templates(labels)
+
         var button = $('<div class="btn" id="edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
         $('body').on('shown.bs.popover',(e) => $('#'+e.target.getAttribute('aria-describedby')).find('.popover-footer').append(button))
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-success" data-dismiss="modal">Create</button><button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button></div></div>')
+
         jqParent.append(modal)
 
         jqParent.mouseup((e) => {
@@ -91,14 +93,10 @@ class Editor {
                 .filter((t)=> t[0] && t[1] && t[2])
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
                 .map((t) => SNAP.expand()(t,annotations)))
-            // planned: add title and motivatedby
-            // todo: create title for new annotations in frontend, because it uses ontologies
             _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
             var selector_triples = OA.expand(selector.type)(selector)
             var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
 
-
-            body.html('<span class="spinner"></span>')
             var acc = []
             annotator
                 .drop(delete_graphs)
@@ -119,9 +117,6 @@ class Editor {
                 .then((res) => annotator.apply(_.flatten(acc.concat(res))))
 
             // planned: this can be improved; the goal is to take a single step in history
-
-            body.html('<span class="okay"></span>')
-            body.html('<span class="failure"></span>')
             origin.popover('hide')
         })
 
