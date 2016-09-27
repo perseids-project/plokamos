@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import Mustache from 'mustache'
 import SNAP from '../../models/ontologies/SNAP'
+import sparqlQuery from '../../models/io/sparqlRetriever'
 /**
  * Class for the Editor interface
  */
@@ -15,7 +16,7 @@ class Templates {
                 cb(matches);
             };
         };
-        var names = [
+        this.names = [
             "http://data.perseus.org/people/smith:Ajax-1#this",
             "http://data.perseus.org/people/smith:Teucrus-1#this",
             "http://data.perseus.org/people/smith:achilles-1#this",
@@ -247,6 +248,14 @@ class Templates {
             if (triple.dataset[token]!=triple.dataset[token+'-original']) $(triple).addClass('update')
         }
         this.translate = labels || {}
+        var query = `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        SELECT ?resource ?label WHERE {
+            GRAPH <http://data.perseids.org/namespaces> {
+  	            ?resource rdfs:label ?label
+            }
+        }`
+        sparqlQuery($('#annotator-main').data('sparql-select-endpoint'),query).then((data) => self.names = data.results.bindings.map((x) => x.resource.value))
+
         this.view = {
             label: () => {
                 return (uri,render) => {
@@ -315,7 +324,7 @@ class Templates {
                         activate(list)
                     }
                 })
-                el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:substringMatcher(names)}))
+                el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:substringMatcher(self.names)}))
 
                 el.find('.token').on('typeahead:selected',self.updateValue)
                 el.find('.token').on('typeahead:autocompleted', self.updateValue)
