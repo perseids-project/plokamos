@@ -94,7 +94,7 @@ class Editor {
                 .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
                 .map((t) => SNAP.expand()(t,annotations)))
             _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
-            var selector_triples = OA.expand(selector.type)(selector)
+            var selector_triples = OA.expand(selector.type)(_.mapValues(selector,(v) => v.replace(new RegExp('\n','ig'),'')))
             var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
 
             var acc = []
