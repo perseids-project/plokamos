@@ -1,0 +1,392 @@
+
+.ctsurn {
+    font-family: 'EB Garamond';
+    font-size: 13px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 18.5714px;
+}
+.pb {
+    font-family: 'EB Garamond';
+    font-size: 13px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 18.5714px;
+}
+
+.end {
+    height:100px;
+}
+
+.header {
+    position: relative;
+}
+
+.credit {
+    position: absolute;
+    bottom: 5px;
+    right: 18px;
+    color: ivory;
+}
+
+.btn-circle {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    padding: 3px 0px;
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 20px;
+}
+
+#annotator-main {
+    margin-left: 160px;
+    margin-right: 80px;
+    text-align: justify;
+}
+#starter {
+    background-color: #FDEE00;
+    cursor: pointer;
+}
+
+/**
+ * Applicator
+ * Styling for annotation markers and data tooltips
+ */
+
+.perseids-annotation {
+    border-bottom: 2px dashed #337ab7;
+    cursor: pointer;
+}
+.tt-label {
+    cursor: pointer;
+    font-size: 0.8em;
+    text-decoration: underline;
+    color: #337ab7;/*
+    border: 1px solid #444;
+    border-radius: 3px;*/
+    padding: 2px;
+    margin: 0px 0px;
+}
+.tt-label:hover {
+    color: #fe5623;
+}
+
+.popover {
+    max-width: 67%;
+    padding: 0px;
+/** We may want to use shadows and simpler interfaces
+    -moz-box-shadow:    1px 1px 2px 3px #666;
+    -webkit-box-shadow: 1px 1px 2px 3px #666;
+    box-shadow:         1px 1px 2px 3px #666;
+*/}
+
+.popover-title {
+    border: 1px solid #eee;
+    background-color: #fdfdfd;
+}
+
+.popover-content {
+    padding: 0px;
+}
+
+.popover-list {
+    padding: 0px 5px;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.popover.top > .arrow:after {
+    border-top-color: #eeeeee;
+}
+
+.popover-footer {
+    padding: 0px 5px;
+    text-align: right;
+    height: 25px;
+    width: 100%;
+    mind-width: 30px;
+    background-color: #f9f9f9;
+    border-radius: 0 0 0.5rem 0.5rem;
+    border: 1px solid #eee;
+    border-top-color: #ddd;
+}
+
+#popover-selection {
+    background-color: #A1CCFF;
+}
+
+/**
+ * Typeahead
+ * Layout and decoration of input forms and autcomplete menus
+ */
+
+.twitter-typeahead {
+    width:100%;
+}
+.typeahead,
+.tt-query,
+.tt-hint {
+    width: 100%;
+    height: 34px;
+    padding: 8px 12px;
+    font-size: 15px;
+    line-height: 16px;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    outline: none;
+}
+.typeahead {
+    cursor: pointer;
+}
+.typeahead:focus {
+    cursor: text;
+    border: 2px solid #0097cf;
+}
+.tt-query {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.tt-hint {
+    height:40px;
+    padding-left:13px;
+    color: #fe5623;
+}
+.tt-menu:not(.tt-open) {
+    display:none !important;
+}
+.tt-menu {
+    position:absolute;
+    width: 100%;
+    margin: 12px 0;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
+}
+.tt-suggestion:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #0097cf;
+}
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: #0097cf;
+
+}
+.tt-suggestion p {
+    margin: 0;
+}
+.tt-input {
+    height:40px !important;
+}
+
+/**
+ * NodeLink
+ * Styling nodes and links incl. :hover
+ */
+
+g.node > circle {
+    fill: #888;
+    stroke: white;
+    stroke-width: 4;
+}
+g.node > circle:hover {
+    fill: red;
+}
+line.link {
+    stroke: #555;
+    stroke-width: 1.5;
+    opacity: 0.7;
+}
+line.link:hover {
+    fill:red;
+    stroke: red;
+}
+text.node-label {
+    font: 0.7em sans-serif;
+    color: #337ab7;
+}
+
+.upper-half {
+    position:fixed;
+    border-bottom-left-radius:0px;
+    border-bottom-right-radius:0px;
+    bottom: 50%;
+    top: 5%;
+    left: 5%;
+    right: 5%;
+    margin-bottom: 0px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+.lower-half {
+    overflow: scroll;
+    position: fixed;
+    top: 50%;
+    left: 5%;
+    right: 5%;
+    max-height: 45%;
+    border-top-left-radius:0px;
+    border-top-right-radius:0px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+/**
+ * Editor
+ * Styling of Editor GUI
+ */
+
+.modal {
+    margin:20px;
+    font-family: sans-serif;
+}
+
+#edit_modal > .well {
+    background-color: white;
+    padding: 0px;
+}
+
+#nodelink {
+    min-height: 45%;
+}
+
+#rdftable {
+    max-height: 45%;
+}
+
+.edit_btn {
+    font-size: 0.7em;
+    padding: 2px 10px;
+}
+
+.triple {
+    padding: 0px;
+    margin: 10px;
+}
+.sentence {
+    padding: 3px;
+    width:100%;
+    background-color: #f9f9f9;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-bottom:0px;
+}
+.token {
+    padding: 2px !important;
+}
+.btn-delete {
+    padding-top:3px;
+    cursor: pointer;
+    text-align:center;
+    background-color: #e3e3e3;
+    color: #337ab7;
+    width:100%;
+    margin-top:0px;
+    border: 1px solid #e3e3e3;
+    border-bottom-left-radius:4px;
+    border-bottom-right-radius:4px;
+}
+.btn-delete:hover {
+    background-color: #ddd;
+    color: crimson;
+}
+.modal-footer {
+    background-color: #f9f9f9;
+    padding: 8px 15px;
+}
+.modal-header {
+    background-color: #fdfdfd;
+}
+#new_button {
+    font-size: 2em;
+}
+
+/**
+ * Query responses
+ * Elements to provide visual feedback to generated SPARQL queries
+ */
+
+.okay {
+    background-color: green;
+}
+.failure {
+    background-color: red;
+}
+
+/**
+ * Plokamos-Bar
+ */
+
+.plokamos-bar {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 50px;
+    padding: 8px;
+    border-top: 2px solid #aaa;
+    background-color: #444;
+}
+
+.plokamos-bar .btn {
+    margin: 0px 2px;
+}
+
+.plokamos-navigation {
+    overflow-x: auto;
+}
+
+.plokamos-plugins {
+    text-align: right;
+}
+
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    display: none;
+    color: #337ab7;
+}
+
+.glyphicon-spinning {
+    font-size: 5em;
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+}
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
