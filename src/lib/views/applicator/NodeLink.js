@@ -11,7 +11,7 @@ class NodeLink {
             <span class="glyphicon glyphicon-certificate"/>
           </button>
         `)
-        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"></div></div>');
+        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"><div class="middle-bar"/><table class="table"/></div></div>');
         app.bar.plugins.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');
@@ -27,16 +27,20 @@ class NodeLink {
             $('#global-view').css('display','block')})
         globalViewBtn.keep = false;
 
-        $('#rdftable').html(`
-  <table class="table">
+        $('#rdftable > .table').html(`
     <tr style="font-weight:bold;">
       <td>Subject</td>
       <td>Predicate</td>
       <td>Object</td>
       <td>URN</td>
     </tr>
-  </table>
         `)
+
+        // create set of all labels
+        // make buttons in middle-bar to toggle labels
+        // keep a list of hovered/clicked labels
+        // on hover/click add remove labels from list
+        // change opacity according to lists
 
         this.parent = $('#nodelink').get(0)
 
@@ -226,6 +230,8 @@ class NodeLink {
                     </tr>
                 `)
             })
+
+            _.chain(triples).map('p').uniq().value().forEach((p) => $(`<div class="filter-btn">${p}</div>`).appendTo('.middle-bar'))
             // todo
             // planned: take in triples instead of node/links and convert them with self.node indices
             // planned: remember that removing may require re-indexing!
