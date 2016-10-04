@@ -21,7 +21,7 @@ class Plokamos {
         $('body').append(this.bar)
         this.model = new Model(self);
         // keep this dynamically loaded for now
-        this.getEndpoint = () => {return { query: self.anchor.data('sparql-endpoint'),read: self.anchor.data('sparql-select-endpoint'), write: self.anchor.data('sparql-update-endpoint')}}
+        this.getEndpoint = () => {return { query: self.anchor.data('sparql-endpoint'),read: self.anchor.data('sparql-select-endpoint'), write: self.anchor.data('sparql-update-endpoint'), config: self.anchor.data('sparql-config-endpoint')}}
         this.getUrn = () => self.anchor.data('urn')
         this.getUser = () => self.anchor.data('user')
 
