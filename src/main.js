@@ -13,11 +13,14 @@ class Plokamos {
     constructor (element) {
         var self = this
         this.anchor = $(element)
+
+        // todo: this.ui
         this.bar = $(`<div class="plokamos-bar"/>`)
         this.bar.navigation = $(`<div class="plokamos-navigation col-xs-6">`)
         this.bar.plugins = $(`<div class="plokamos-plugins col-xs-6">`)
         this.bar.append(this.bar.navigation)
         this.bar.append(this.bar.plugins)
+
         $('body').append(this.bar)
         this.model = new Model(self);
         // keep this dynamically loaded for now
@@ -29,6 +32,10 @@ class Plokamos {
 
             self.model
                 .load(self.getEndpoint(), self.getUrn(), self.getUser())
+                .then((sucess) => {
+                    self.ontology = new Ontology(self)
+                    return self.ontology.init()
+                })
                 .then((success) => self.applicator = new Applicator(self))
                 .then((success) => self.history = new History(self))
                 .then((success) => self.annotator = new Annotator(self))
