@@ -6,19 +6,30 @@ var pmetaMap = {
     "" : "o"
 }
 
-var simplification = (rules) => (id,v) => {
-    let subjectRule = _.find(rules, (r) => r.target==="http://.../Subject")
-    let predicateRule = _.find(rules, (r) => r.target==="http://.../Predicate")
-    let objectRule = _.find(rules, (r) => r.target==="http://.../Object")
-    let subject = _.find(v, (o) => o[pmetaMap[subjectRule.constraint]] === subjectRule.value)[pmetaMap[subjectRule.source]].value
-    let predicate = _.find(v, (o) => o[pmetaMap[predicateRule.constraint]] === predicateRule.value)[pmetaMap[predicateRule.source]].value
-    let object = _.find(v, (o) => o[pmetaMap[objectRule.constraint]] === objectRule.value)[pmetaMap[objectRule.source]].value
+// todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
+var simplification = (rules) => (id,v) => _.reduce(rules, (result, rule) => result[pmetaMap[rule.target]] = _.find(v, (o) => o[pmetaMap[rule.constraint]] === rule.value)[pmetaMap[rule.source]].value)
 
-    return {s: subject, p: predicate, o: object}
-}
 
-var expansion = (rules) => (id,v) => {
-    
+var expansion = (rules) => (gspo, graphs) => {
+
+    // if exisiting annotation, get bindings by filtering for rule-conforming triples
+    let annotation = (graphs||{})[gspo.g]
+    let bindings = annotation ? annotation.filter(
+        (quad) => _.reduce(rules, (result, rule) => result || (quad[pmetaMap[rule.constraint]].value === rule.value && quad[pmetaMap[rule.source]] === rule.target), false)
+    ) : []
+
+    // what does it mean to have annotation and mismatching length? --> update. valid case or not?
+    // todo: replace bond with rule-derived token
+    let id = (bindings.length%rules.length || !annotation) ? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined
+
+    // if new annotation, get bindings by creating them with rule
+    return id ? rules.map((rule) => {
+        let res = {g:gspo.g, s:id, p:id, o:id} // avoid figuring out where to place id by overwriting it below
+        res[pmetaMap[rule.constraint]] = rule.value
+        res[pmetaMap[rule.source]] = gspo[pmetaMap[rule.target]]
+        return SPARQL.gspoToBinding(res)
+        }) : bindings
+
 }
 
 class Transformation {
@@ -34,7 +45,9 @@ class Transformation {
     }
 
     expand(list) {
-
+        // grouped has graph uris as keys and bindings as values
+        // need to determine which rules to use
+        return _.mapValues(list,this[simplify])
     }
 
     static get() {
@@ -68,7 +81,7 @@ class Transformation {
                             .map((rules) => expression(rules))
                             .value()
 
-                        return new Vocabulary(uri,prefix,terms)
+                        return new Transformation(uri,prefix,terms)
                     })
             }
         }
