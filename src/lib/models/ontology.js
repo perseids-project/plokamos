@@ -16,7 +16,7 @@ class Ontology {
 
     constructor(app) {
         let endpoint = app.getEndpoint()
-        this[endpoint] = endpoint.config || endpoint.read || endpoint.query
+        endpoint = endpoint.config || endpoint.read || endpoint.query
         this[all] = [new SNAP(endpoint), new OA(endpoint)]
         this[scoring] = () => {}
     }
