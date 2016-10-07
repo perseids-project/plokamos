@@ -1,14 +1,17 @@
 import SPARQL from '../sparql'
 
+const simplify = Symbol()
+const expand = Symbol()
+
 var pmetaMap = {
-    "" : "s",
-    "" : "p",
-    "" : "o"
+    "http://data.perseids.org/meta#Graph" : "g",
+    "http://data.perseids.org/meta#Subject" : "s",
+    "http://data.perseids.org/meta#Predicate" : "p",
+    "http://data.perseids.org/meta#Object" : "o"
 }
 
 // todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
 var simplification = (rules) => (id,v) => _.reduce(rules, (result, rule) => result[pmetaMap[rule.target]] = _.find(v, (o) => o[pmetaMap[rule.constraint]] === rule.value)[pmetaMap[rule.source]].value)
-
 
 var expansion = (rules) => (gspo, graphs) => {
 
@@ -34,23 +37,25 @@ var expansion = (rules) => (gspo, graphs) => {
 
 class Transformation {
 
-    constructor() {
-
+    constructor(rulesList) {
+        this[simplify] = rulesList.map((rules) => simplification(rules))
+        this[expand] = rulesList.map((rules) => expansion(rules))
     }
 
     simplify(grouped) {
+        // todo: fix mapping - possibly decide which rule to use
         // grouped has graph uris as keys and bindings as values
         // need to determine which rules to use
-        return _.mapValues(grouped,this[simplify])
+        return _.mapValues(grouped,(v,k) => this[simplify](k,v))
     }
 
-    expand(list) {
+    expand(gspo, graphs) {
         // grouped has graph uris as keys and bindings as values
         // need to determine which rules to use
-        return _.mapValues(list,this[simplify])
+        return this[expand](gspo,graphs)
     }
 
-    static get() {
+    static get(uri) {
         let query = `
             prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -77,11 +82,10 @@ class Transformation {
                         let transformations = _.chain(data.results.bindings)
                             .map(SPARQL.bindingToGspo)
                             .groupBy('transformation')
-                            .keys()
-                            .map((rules) => expression(rules))
+                            .values()
                             .value()
 
-                        return new Transformation(uri,prefix,terms)
+                        return new Transformation(transformations)
                     })
             }
         }
@@ -89,3 +93,5 @@ class Transformation {
     }
 
 }
+
+export default Transformation
