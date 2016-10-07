@@ -61,3 +61,5 @@ class Vocabulary {
     }
 
 }
+
+export default Vocabulary
