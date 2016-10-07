@@ -1,8 +1,6 @@
 import _ from 'lodash'
 import $ from 'jquery'
-import OA from './ontologies/OA'
-import SNAP from './ontologies/SNAP'
-// import smith from './ontologies/SMITH'
+import Ontology from './vocabularies/ontology'
 
 /**
  * Symbols for private class members
@@ -12,21 +10,11 @@ const all = Symbol()
 const scoring = Symbol()
 const endpoint = Symbol()
 
-class Ontology {
+class OntologySet {
 
-    constructor(app) {
-        let endpoint = app.getEndpoint()
-        endpoint = endpoint.config || endpoint.read || endpoint.query
-        this[all] = [new SNAP(endpoint), new OA(endpoint)]
+    constructor(ontologies) {
+        this[all] = ontologies
         this[scoring] = () => {}
-    }
-
-    /**
-     * Do async initialization of individual ontologies
-     * @returns {*} Promise that resolves when ontologies are ready
-     */
-    init() {
-        return $.when(...this[all].map((o) => o.load(this[endpoint])))
     }
 
     /**
@@ -37,9 +25,9 @@ class Ontology {
      */
     test(data, keepEnum) {
         return _.chain(this[all])
-            .map(_.test(data)) // run individual tests
+            .map((o) => o.test(data)) // run individual tests
             .zip(this[all]) // align with ontologies
-            .sortBy(this[scoring]) // rank with a scoring function
+            .sortBy((a) => this[scoring](a[0])) // rank with a scoring function
             .head() // get the highest ranked result
             .map((res) => keepEnum || !res ? res : res[1]) // remove the test result ?
             .value() // return
@@ -86,18 +74,41 @@ class Ontology {
      */
     namespaces(ontology) {
         // todo: check for ontology, else return:
-        _.chain(this[all]).map('namespaces').flatten().value()
+        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('namespaces').flatten().value()
     }
 
     /**
      * Get a list of URIs, e.g. for autocomplete
      * @param ontology
      */
-    resources(ontology) {
+    resources(uri) {
         // todo: check for ontology, else return:
-        _.chain(this[all]).map('namespaces').flatten().value()
+
+        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
+    }
+
+    /**
+     * Do async initialization of individual ontologies
+     * @returns {*} Promise that resolves when ontologies are ready
+     */
+    static get(endpoint) {
+        let endpoint = app.getEndpoint()
+        this[endpoint] = endpoint.config || endpoint.read || endpoint.query
+        let query = `
+            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            prefix pmeta: <http://data.perseids.org/meta#>
+            
+            SELECT ?uri WHERE {
+              GRAPH <http://data.perseids.org/namespaces> {
+                ?uri rdf:type pmeta:namespace 
+              }
+            }
+        `
+        $.ajax()
+            .then((data) => $.when(...data.result.bindings.map((binding) => Ontology.get(binding.uri.value).from(endpoint))))
+            .then(() => new OntologySet(arguments))
     }
 
 }
 
-export default Ontology
+export default OntologySet
