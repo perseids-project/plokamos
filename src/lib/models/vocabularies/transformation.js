@@ -1,4 +1,6 @@
 import SPARQL from '../sparql'
+import sparqlQuery from '../io/sparqlRetriever'
+import _ from 'lodash'
 
 const simplify = Symbol()
 const expand = Symbol()
@@ -77,7 +79,7 @@ class Transformation {
         `
         return {
             from: (endpoint) => {
-                return $.ajax()
+                return sparqlQuery(endpoint, query)
                     .then((data) => {
                         let transformations = _.chain(data.results.bindings)
                             .map(SPARQL.bindingToGspo)

@@ -45,12 +45,13 @@ class Ontology {
     }
 
     static get(uri) {
-
-        $.when(
-            Vocabulary.get().from(),
-            Transformation.get().from()
-        ).then((voc, trans) => {
-            return new Ontology(voc, trans)
-        })
+        return {
+            from: (endpoint) => $.when(
+                Vocabulary.get(uri).from(endpoint),
+                Transformation.get(uri).from(endpoint)
+            ).then((voc, trans) => {
+                return new Ontology(voc, trans)
+            })
+        }
     }
 }

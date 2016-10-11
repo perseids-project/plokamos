@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import sparqlQuery from '../io/sparqlRetriever'
 
 const URI = Symbol()
 const PREFIX = Symbol()
@@ -47,8 +48,8 @@ class Vocabulary {
         `
         return {
             from: (endpoint) => {
-                return $.ajax()
-                    .then((bindings) => {
+                return sparqlQuery(endpoint, query)
+                    .then((data) => {
                         let prefix = _.uniq(data.results.bindings.map((binding) => (binding.prefix || {}).value))[0]||""
                         let terms = {}
                         data.results.bindings.forEach((binding) => {

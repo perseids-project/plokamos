@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import $ from 'jquery'
 import Ontology from './vocabularies/ontology'
+import sparqlQuery from './io/sparqlRetriever'
 
 /**
  * Symbols for private class members
@@ -91,9 +92,8 @@ class OntologySet {
      * Do async initialization of individual ontologies
      * @returns {*} Promise that resolves when ontologies are ready
      */
-    static get(endpoint) {
-        let endpoint = app.getEndpoint()
-        this[endpoint] = endpoint.config || endpoint.read || endpoint.query
+    static from(ep) {
+        this[endpoint] = ep
         let query = `
             prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             prefix pmeta: <http://data.perseids.org/meta#>
@@ -104,9 +104,9 @@ class OntologySet {
               }
             }
         `
-        $.ajax()
-            .then((data) => $.when(...data.result.bindings.map((binding) => Ontology.get(binding.uri.value).from(endpoint))))
-            .then(() => new OntologySet(arguments))
+        sparqlQuery(this[endpoint], query)
+            .then((data) => $.when(...data.results.bindings.map((binding) => Ontology.get(binding.uri.value).from(this[endpoint]))))
+            .then(function() {return new OntologySet(arguments)})
     }
 
 }
