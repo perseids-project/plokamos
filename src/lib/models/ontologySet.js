@@ -44,7 +44,7 @@ class OntologySet {
      * @returns {*}
      */
     simplify(data, ontology) {
-        let simplifier = ontology && this[all].filter((o) => o.name === ontology).length ? this[all].filter((o) => o.name === ontology)[0] : test(data)
+        let simplifier = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
         return simplifier.simplify(data)
 
     }
@@ -56,7 +56,7 @@ class OntologySet {
      * @returns {*}
      */
     expand(data, ontology) {
-        let expander = ontology && this[all].filter((o) => o.name === ontology).length ? this[all].filter((o) => o.name === ontology)[0] : test(data)
+        let expander = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
         return expander.expand(data)
     }
 
@@ -67,7 +67,7 @@ class OntologySet {
      * @returns {*}
      */
     label(data, ontology) {
-        let labeler = ontology && this[all].filter((o) => o.name === ontology).length ? this[all].filter((o) => o.name === ontology)[0] : test(data)
+        let labeler = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
         return labeler.label(data)
 
     }
