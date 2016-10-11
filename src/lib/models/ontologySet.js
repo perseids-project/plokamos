@@ -78,14 +78,14 @@ class OntologySet {
      */
     namespaces(ontology) {
         // todo: check for ontology, else return:
-        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('namespaces').flatten().value()
+        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('namespace').flatten().value()
     }
 
     /**
      * Get a list of URIs, e.g. for autocomplete
      * @param ontology
      */
-    resources(uri) {
+    resources(ontology) {
         // todo: check for ontology, else return:
 
         _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
