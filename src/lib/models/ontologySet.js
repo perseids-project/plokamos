@@ -15,7 +15,10 @@ class OntologySet {
 
     constructor(ontologies) {
         this[all] = ontologies
-        this[scoring] = () => {}
+        this[scoring] = (matrix) => {
+            let elements = _.chain(matrix).flattenDeep()
+            return elements.sum().value() / elements.value().length
+        }
     }
 
     /**
