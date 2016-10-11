@@ -20,9 +20,9 @@ class OntologySet {
 
     /**
      * Determine which ontology to use
-     * @param data
-     * @param keepEnum
-     * @returns {*}
+     * @param data The resource, triple or motif to test
+     * @param keepEnum Flag for requesting the test result
+     * @returns {*} The highest scoring ontology
      */
     test(data, keepEnum) {
         return _.chain(this[all])
