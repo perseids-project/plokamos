@@ -56,7 +56,7 @@ var createMap = {
     "default": () => {} // planned: figure out sane default
 }
 
-var queries = {
+var queryMap = {
     "byIdentifier": (id) => {
         var id_phrase = id ? "BIND(<"+id+"> AS ?id)" : "?id rdf:type oa:Annotation ."
         return [
@@ -113,6 +113,8 @@ class OA {
     static simplify(type) { return simplifyMap[type] || simplifyMap.default(type) }
 
     static create(type) {return createMap[type] || createMap.default(type)}
+
+    static query(type) {return queryMap[type]}
 
 }
 
