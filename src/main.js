@@ -29,7 +29,7 @@ class Plokamos {
             query: self.anchor.data('sparql-endpoint'),
             read: self.anchor.data('sparql-select-endpoint') || self.anchor.data('sparql-endpoint'),
             write: self.anchor.data('sparql-update-endpoint') || self.anchor.data('sparql-endpoint'),
-            config: self.anchor.data('sparql-config-endpoint') || self.anchor.data('sparql-read-endpoint') || self.anchor.data('sparql-endpoint')
+            config: self.anchor.data('sparql-config-endpoint') || self.anchor.data('sparql-select-endpoint') || self.anchor.data('sparql-endpoint')
         }}
         this.getUrn = () => self.anchor.data('urn')
         this.getUser = () => self.anchor.data('user')
@@ -38,7 +38,7 @@ class Plokamos {
 
             self.model
                 .load(self.getEndpoint(), self.getUrn(), self.getUser())
-                .then((success) => OntologySet.get(self.getEndpoint().config))
+                .then((success) => OntologySet.from(self.getEndpoint().config))
                 .then((ontology) => self.ontology = ontology)
                 .then((success) => self.applicator = new Applicator(self))
                 .then((success) => self.history = new History(self))

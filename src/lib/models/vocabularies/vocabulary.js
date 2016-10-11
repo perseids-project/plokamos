@@ -35,13 +35,15 @@ class Vocabulary {
 
     static get(uri) {
         let query = `
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            PREFIX pmeta: <http://data.perseids.org/meta#>
             SELECT ?prefix ?resource ?label WHERE {
                 GRAPH <http://data.perseids.org/namespaces> {
                     BIND(<${uri}> AS ?uri)
-                    ?uri rdf:type perseidsmeta:namespace .
-                    ?uri perseidsmeta:prefix ?prefix
-                    ?uri perseidsmeta:member ?resource .
+                    ?uri rdf:type pmeta:namespace .
+                    ?uri pmeta:prefix ?prefix .
+                    ?uri pmeta:member ?resource .
   	                ?resource rdfs:label ?label
                 }
             }
@@ -53,7 +55,7 @@ class Vocabulary {
                         let prefix = _.uniq(data.results.bindings.map((binding) => (binding.prefix || {}).value))[0]||""
                         let terms = {}
                         data.results.bindings.forEach((binding) => {
-                            obj[`${binding.resource.value}`] = binding.label ? binding.label.value : binding.resource.value.replace(uri,prefix)
+                            terms[`${binding.resource.value}`] = binding.label ? binding.label.value : binding.resource.value.replace(uri,prefix)
                         })
                         return new Vocabulary(uri,prefix,terms)
                     })

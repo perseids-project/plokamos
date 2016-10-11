@@ -64,7 +64,10 @@ class Ontology {
      * @returns {*} A matrix describing the matching between ontology and data.
      */
     test(resource) {
-        return _.chain(typeof resource === 'Array' ? resource : [resource]).map(_.values).reduce((result,obj) => result || this[vocabulary].test(obj), false).value()
+        return _.chain(typeof resource === 'Array' ? resource : [resource])
+            .map(_.values)
+            .reduce((result,obj) => result || this[vocabulary].test(obj), false)
+            .value()
     }
 
     /**
@@ -113,3 +116,5 @@ class Ontology {
         }
     }
 }
+
+export default Ontology
