@@ -1,7 +1,5 @@
 import $ from 'jquery'
 import _ from 'lodash'
-import Selectors from '../models/queries/oa_selectors'
-import Annotation from '../models/queries/oabyId'
 import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
@@ -57,7 +55,7 @@ class Applicator {
          * @param id (optional) annotation id to query
          */
         this.load = (id) =>
-            model.execute(Annotation.byIdentifier(id))
+            model.execute(OA.query("byIdentifier")(id)) // todo:
             .then((bindings) =>
                 _.groupBy(_.last(bindings).result,'id.value')
             ).then((grouped) => {
@@ -127,6 +125,7 @@ class Applicator {
         this.delete = new Editor(app)
         this.nodelink = new NodeLink(app)
         this.load().then(() => this.spinner.css('display','none'));
+        // todo: Should I move this to an init function? At least it's not returning the promise
     }
 
     // planned: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)
