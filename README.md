@@ -16,4 +16,6 @@ Plokamos uses [Rollup.js]() as its build system. After installing its dependenci
 
 Currently, Plokamos is meant to be used as a [plugin]() to the [Nemo/Capitains]() CTS web interface. The plugin provides configuration of the document ID and the address of a remote triple store via HTML `data` attributes.
 
-## 
+## Architecture
+
+## Ontologies
