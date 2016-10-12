@@ -38,7 +38,7 @@ class Editor {
         // FUNCTIONS
         modal.update = (data, newSelector) => {
             // planned: apply ontology-specific transformations
-            var graphs = app.ontology.simplify()(data)
+            var graphs = app.ontology.simplify(data)
             selector = newSelector
             template.init(body,{annotations:Object.keys(graphs).map((k) => { return {g:k,triples:graphs[k]}})})
         }
@@ -90,7 +90,7 @@ class Editor {
                 var delete_triples = _.flatten(
                     _.zip(dT.closest('.graph.old').map((i,el) => $(el).data('graph')), dT.map((i,el) => $(el).data('original-subject')), dT.map((i,el) => $(el).data('original-predicate')), dT.map((i,el) => $(el).data('original-object')))
                         .map((zipped) => {return {g:zipped[0],s:zipped[1],p:zipped[2],o:zipped[3]}})
-                        .map((gspo) => app.ontology.expand()(gspo, annotations))
+                        .map((gspo) => app.ontology.expand(gspo, annotations))
                 )
                 dT.remove()
                 return delete_triples
@@ -105,7 +105,7 @@ class Editor {
                 var new_triples = _.flatten(_.zip(cT.map((i,el) => $(el).attr('data-subject')), cT.map((i,el) => $(el).attr('data-predicate')), cT.map((i,el) => $(el).attr('data-object')))
                     .filter((t)=> t[0] && t[1] && t[2])
                     .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
-                    .map((t) => app.ontology.expand()(t,annotations)))
+                    .map((t) => app.ontology.expand(t,annotations)))
                 _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
                 var selector_triples = OA.expand(selector.type)(_.mapValues(selector,(v) => v.replace(new RegExp('\n','ig'),'')))
                 var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
@@ -143,8 +143,8 @@ class Editor {
                 })
                 .then((res) => {
                     acc.push(res)
-                    return annotator.update(_.flatten(update_triples.map((t) => { return app.ontology.expand()({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations)})),
-                        _.flatten(update_triples.map((t) => { return app.ontology.expand()({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations)}))
+                    return annotator.update(_.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations)})),
+                        _.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations)}))
                     )
                 })
                 .then((res) => {
