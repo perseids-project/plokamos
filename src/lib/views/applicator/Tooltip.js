@@ -1,4 +1,4 @@
-
+import _ from 'lodash'
 
 class Tooltip {
     constructor(app) {
@@ -11,7 +11,7 @@ class Tooltip {
         this.register = (jqElement) => {
             // planned: stringify should check ontology and select simplifier or stringify raw (.value)
             function stringify(obj) {
-                var simplified = app.ontology.simplify()(obj)
+                var simplified = _.mapValues(obj,app.ontology.simplify)
                 return "<span class='popover-source' data-source-id='"+jqElement.attr('id')+"'></span><div class='popover-list'>"+_.flatten(
                     _.values(simplified)).map((o) =>
                 `<span class='tt-label tt-subject' title='${o.s}'>${app.ontology.label(o.s)}</span> 
