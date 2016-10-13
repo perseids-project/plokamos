@@ -31,13 +31,18 @@ class OntologySet {
      * @returns {*} The highest scoring ontology
      */
     test(data, keepEnum) {
-        return _.chain(this[all])
+        /*let res = _.chain(self[all])
             .map((o) => o.test(data)) // run individual tests
-            .zip(this[all]) // align with ontologies
-            .sortBy((a) => this[scoring](a[0])) // rank with a scoring function
+            .zip(self[all]) // align with ontologies
+            .sortBy((a) => self[scoring](a[0])) // rank with a scoring function
             .head() // get the highest ranked result
-            .map((res) => keepEnum || !res ? res : res[1]) // remove the test result ?
-            .value() // return
+            .value() // return*/
+        let flt = _.filter(self[all], (o) => o.simplify().length)
+        let tst = _.map(flt,(o) => o.test(data))
+        let zpd = _.zip(tst,flt)
+        let srt = _.sortBy(zpd,(a) => self[scoring](a[0]))
+        let res = _.head(srt)
+        return keepEnum || !res ? res : res[1] // remove the test result ?
     }
 
     /**
