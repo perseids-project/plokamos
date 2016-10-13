@@ -10,12 +10,15 @@ import sparqlQuery from './io/sparqlRetriever'
 const all = Symbol()
 const scoring = Symbol()
 const endpoint = Symbol()
+var self;
+
 
 class OntologySet {
 
     constructor(ontologies) {
-        this[all] = ontologies
-        this[scoring] = (matrix) => {
+        self = this
+        self[all] = _.map(ontologies,(x) => x)
+        self[scoring] = (matrix) => {
             let elements = _.chain(matrix).flattenDeep()
             return elements.sum().value() / elements.value().length
         }
