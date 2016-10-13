@@ -119,7 +119,7 @@ class OntologySet {
               }
             }
         `
-        sparqlQuery(this[endpoint], query)
+        return sparqlQuery(this[endpoint], query)
             .then((data) => $.when(...data.results.bindings.map((binding) => Ontology.get(binding.uri.value).from(this[endpoint]))))
             .then(function() {return new OntologySet(arguments)})
     }
