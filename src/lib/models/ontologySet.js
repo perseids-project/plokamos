@@ -68,8 +68,8 @@ class OntologySet {
      * @returns {*}
      */
     expand(data, ontology) {
-        let expander = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
-        return expander.expand(data)
+        let expander = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(data)
+        return expander ? expander.expand(data) : data
     }
 
     /**
@@ -79,8 +79,8 @@ class OntologySet {
      * @returns {*}
      */
     label(data, ontology) {
-        let labeler = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
-        return labeler.label(data)
+        let labeler = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(data)
+        return labeler ? labeler.label(data) : data
 
     }
 
