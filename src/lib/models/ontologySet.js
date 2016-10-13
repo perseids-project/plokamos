@@ -47,13 +47,17 @@ class OntologySet {
 
     /**
      * Simplify a graph from a general, indirect form into a human-readable one
-     * @param data
+     * todo: decide on the i/o data types
+     * @param data Annotations in 'grouped' format
      * @param ontology
      * @returns {*}
      */
-    simplify(data, ontology) {
-        let simplifier = ontology && this[all].filter((o) => o.name === ontology).length ? _.head(this[all].filter((o) => o.name === ontology)) : test(data)
-        return simplifier.simplify(data)
+    simplify(body, id, ontology) {
+        var simplifier =
+            ontology && self[all].filter((o) => o.name === ontology).length ?
+                _.head(self[all].filter((o) => o.name === ontology)) :
+                self.test(body)
+        return simplifier ? simplifier.simplify(body, id) : body
 
     }
 
