@@ -74,12 +74,12 @@ class Applicator {
                         return span
                     })
 
-                return _.uniq(spans).map((span) => {
+                return _.uniqBy(spans.map((span) => {
                     var data = store[span.getAttribute('id')]
                     var element = document.getElementById(span.getAttribute('id'))
                     element.setAttribute('data-annotations',JSON.stringify(data))
                     return $(element)
-                })
+                }), (j) => j.attr('id'))
                 }
             )
             .then((elements) =>
