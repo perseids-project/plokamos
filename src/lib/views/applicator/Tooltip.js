@@ -30,6 +30,7 @@ class Tooltip {
                 title: jqElement.data('selector').exact,
                 content: content
             })
+            jqElement.click((e) => $('#'+e.target.getAttribute('aria-describedby')).toggleClass('fixed'))
         }
     }
 }
