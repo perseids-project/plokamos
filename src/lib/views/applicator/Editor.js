@@ -17,7 +17,7 @@ class Editor {
         var labels = SNAP.labels
         var template = new Templates(labels)
 
-        var button = $('<div class="btn btn-primary edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
+        var button = '<div class="btn btn-primary edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>'
         $('body').on('shown.bs.popover',(e) => $('#'+e.target.getAttribute('aria-describedby')).find('.popover-footer').append(button))
         var modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button></div></div>')
 
@@ -25,7 +25,10 @@ class Editor {
 
         jqParent.mouseup((e) => {
 
+            // Don't use selection inside #global-view
             if ($(e.target).closest('#global-view').length) return
+
+            // If selection exists, remove it
             var pos = $('#popover-selection')
             if (pos) {
                 pos.popover('destroy')
@@ -40,13 +43,14 @@ class Editor {
 
                 var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(jqParent,selection);
 
-                modal.update({},selector)
+                // modal.update({},selector)
                 span = document.createElement('span')
                 span.setAttribute('id','popover-selection')
-                span.setAttribute('data-graphs','{}')
+                span.setAttribute('data-annotations','{}')
+                span.setAttribute('data-selector',JSON.stringify(selector))
                 wrapRangeText(span,selection.getRangeAt(0))
-                origin = $('#popover-selection')
-                origin.popover({
+                span = $('#popover-selection')
+                span.popover({
                     container:"body",
                     html:"true",
                     trigger: "manual",
@@ -54,7 +58,7 @@ class Editor {
                     title: selector.exact,
                     content: "<div class='popover-footer'/>"
                 })
-                origin.popover('show')
+                span.popover('show')
             }
 
         })
@@ -120,6 +124,13 @@ class Editor {
             origin.popover('hide')
         })
 
+        $('body').on('click','.edit_btn',(e) => {
+            let id = $(e.target).closest('.popover').attr('id')
+            origin = $(document.querySelectorAll(`[aria-describedby="${id}"]`))
+            modal.update(origin.data('annotations'),origin.data('selector'))
+
+        })
+
         modal.update = (data, newSelector) => {
             // planned: apply ontology-specific transformations
             var graphs = SNAP.simplify()(data)
@@ -128,10 +139,10 @@ class Editor {
         }
 
         this.register = (jqElement) => {
-            jqElement.click((e) => {
-                origin = jqElement
-                modal.update(jqElement.data('annotations'),jqElement.data('selector'))
-            })
+            //jqElement.click((e) => {
+             //   origin = jqElement
+               // modal.update(jqElement.data('annotations'),jqElement.data('selector'))
+            //})
         }
 
     }

@@ -4,10 +4,10 @@ class Tooltip {
     constructor(app) {
 
         $(document).on('click', '.popover-footer > .btn', (e) => {
-            var id = $('.popover-source').data('source-id')
-            $(document.getElementById(id)).click()
-            $('#popover-selection').popover('hide')
+            $('.popover').map((i,j) => $(document.querySelectorAll(`[aria-describedby="${j.id}"]`)).click())
+            $('#popover-selection').popover('destroy')
         })
+
         this.register = (jqElement) => {
             // planned: stringify should check ontology and select simplifier or stringify raw (.value)
             function stringify(obj) {
