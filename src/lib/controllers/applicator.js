@@ -89,8 +89,8 @@ class Applicator {
             )
             .then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                    var snap = SNAP.simplify(grouped) // planned: move into nodelink, specify API for document plugins
-                    var input = _.flatMap(snap,(v,k)=>v.map((o) => Object.assign(o,{g:k})))
+                    var snap = _.mapValues(grouped, (v,k) => OA.getBodies(v).map((b) => app.ontology.simplify(b,k))) // planned: move into nodelink, specify API for document plugins
+                    var input = _.flatMapDeep(snap,(v,k)=>v.map((o) => o.map((p) => Object.assign(p,{g:k}))))
                     this.nodelink.add(input)
                 }
             )
