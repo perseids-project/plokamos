@@ -90,7 +90,7 @@ class OntologySet {
      */
     namespaces(ontology) {
         // todo: check for ontology, else return:
-        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('namespace').flatten().value()
+        _.chain(self[all]).filter((o) => !ontology || o.name === ontology).map('namespace').flatten().value()
     }
 
     /**
@@ -100,7 +100,7 @@ class OntologySet {
     resources(ontology) {
         // todo: check for ontology, else return:
 
-        _.chain(this[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
+        _.chain(self[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
     }
 
     /**
