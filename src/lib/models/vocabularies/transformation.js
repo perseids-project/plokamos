@@ -13,7 +13,19 @@ var pmetaMap = {
 }
 
 // todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
-var simplification = (rules) => (id,v) => _.reduce(rules, (result, rule) => result[pmetaMap[rule.target]] = _.find(v, (o) => o[pmetaMap[rule.constraint]] === rule.value)[pmetaMap[rule.source]].value)
+var simplification = (rules) =>
+    (v,id) =>
+        _.reduce(
+            rules,
+            (result, rule) => {
+                 var found = _.find(v, (o) =>
+                     (o[pmetaMap[rule.constraint]].value || o[pmetaMap[rule.constraint]]) === rule.value
+                    )
+                result[pmetaMap[rule.target]] = found[pmetaMap[rule.source]].value
+                return result
+            },
+            {}
+        )
 
 var expansion = (rules) => (gspo, graphs) => {
 
