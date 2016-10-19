@@ -113,7 +113,7 @@ class OntologySet {
             prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             prefix pmeta: <http://data.perseids.org/meta#>
             
-            SELECT ?uri WHERE {
+            SELECT DISTINCT ?uri WHERE {
               GRAPH <http://data.perseids.org/namespaces> {
                 ?uri rdf:type pmeta:namespace 
               }
