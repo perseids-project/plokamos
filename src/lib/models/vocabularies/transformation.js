@@ -56,17 +56,18 @@ class Transformation {
         this[expand] = rulesList.map((rules) => expansion(rules))
     }
 
-    simplify(grouped) {
+    // todo: grouped is expected to be a dictionary of annotations
+    simplify(body,id) {
         // todo: fix mapping - possibly decide which rule to use
         // grouped has graph uris as keys and bindings as values
         // need to determine which rules to use
-        return _.mapValues(grouped,(v,k) => this[simplify](k,v))
+        return body ? this[simplify].map((s) => s(body,id)) : this[simplify]
     }
 
     expand(gspo, graphs) {
         // grouped has graph uris as keys and bindings as values
         // need to determine which rules to use
-        return this[expand](gspo,graphs)
+        return gspo ? this[expand].map((e) => e(gspo,graphs)) : this[expand]
     }
 
     static get(uri) {
