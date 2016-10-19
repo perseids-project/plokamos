@@ -63,7 +63,7 @@ class Transformation {
             prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             prefix pmeta: <http://data.perseids.org/meta#>
             
-            SELECT ?transformation ?target ?constraint ?value ?source WHERE {
+            SELECT DISTINCT ?transformation ?target ?constraint ?value ?source WHERE {
               GRAPH <http://data.perseids.org/namespaces> {
                 BIND(<${uri}> AS ?uri)
                 ?uri rdf:type pmeta:namespace .
