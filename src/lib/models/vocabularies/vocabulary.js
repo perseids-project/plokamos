@@ -38,7 +38,7 @@ class Vocabulary {
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX pmeta: <http://data.perseids.org/meta#>
-            SELECT ?prefix ?resource ?label WHERE {
+            SELECT DISTINCT ?prefix ?resource ?label WHERE {
                 GRAPH <http://data.perseids.org/namespaces> {
                     BIND(<${uri}> AS ?uri)
                     ?uri rdf:type pmeta:namespace .
