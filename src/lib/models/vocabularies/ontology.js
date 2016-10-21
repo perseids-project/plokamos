@@ -64,10 +64,17 @@ class Ontology {
      * @returns {*} A matrix describing the matching between ontology and data.
      */
     test(resource) {
-        return _.chain(typeof resource === 'Array' ? resource : [resource])
-            .map(_.values)
-            .reduce((result,obj) => result || this[vocabulary].test(obj), false)
-            .value()
+        let coefficients = {g:0,s:1,p:3,o:1}
+        switch (JSON.stringify(resource)[0]) {
+            case "[":
+                return resource.map((x) => this.test(x))
+                break;
+            case "{":
+                return _.map(resource,(v,k) => this.test(v.value || v) ? coefficients[k]: 0)
+                break;
+            default:
+                return this[vocabulary].test(resource)
+        }
     }
 
     /**
