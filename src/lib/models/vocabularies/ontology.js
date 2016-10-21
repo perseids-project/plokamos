@@ -33,8 +33,8 @@ class Ontology {
      * @param id The annotation id
      * @param graph The annotation graph, including OA frame
      */
-    simplify(id, graph){
-        this[transformation].simplify(id, graph)
+    simplify(body, id){
+        return this[transformation].simplify(body, id)
     }
 
     /**
