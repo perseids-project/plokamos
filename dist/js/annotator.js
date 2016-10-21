@@ -43086,6 +43086,179 @@
 	    this.grid.init();
 	};
 
+	var namespaces = [{
+	    uri: "http://www.w3.org/ns/oa#",
+	    prefix: "oa:"
+	}];
+
+	var expandMap = {
+	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(selector) {
+	        return _$1.chain(["prefix", "exact", "suffix"]).map(function (pos) {
+	            return selector[pos] ? {
+	                g: { type: "uri", value: "http://data.perseus.org/graphs/persons" },
+	                s: { type: "uri", value: selector.id },
+	                p: { type: "uri", value: 'http://www.w3.org/ns/oa#' + pos },
+	                o: { type: "literal", value: selector[pos] }
+	            } : undefined;
+	        }).concat({
+	            g: { type: "uri", value: "http://data.perseus.org/graphs/persons" },
+	            s: { type: "uri", value: selector.id },
+	            p: { type: "uri", value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" },
+	            o: { type: "uri", value: "http://www.w3.org/ns/oa#TextQuoteSelector" }
+	        }).compact().value();
+	    },
+	    "default": function _default(obj) {
+	        var ns = obj.replace ? _$1.find(namespaces, function (ns) {
+	            return expandMap[ns.uri + obj.replace(ns.prefix, '')];
+	        }) : undefined;
+	        var resolved = ns ? expandMap[ns.uri + obj.replace(ns.prefix, '')] : undefined;
+	        return resolved ? resolved : function (x) {
+	            return x;
+	        };
+	    }
+	};
+
+	var simplifyMap = {
+	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(selectorTriples) {
+	        // planned: rename to bindings
+	        var selectorObject = {};
+	        selectorObject.type = _$1.find(selectorTriples, function (t) {
+	            return t.p.value.endsWith("type");
+	        }).o.value;
+	        selectorObject.prefix = _$1.find(selectorTriples, function (t) {
+	            return t.p.value.endsWith("prefix");
+	        }).o.value;
+	        selectorObject.exact = _$1.find(selectorTriples, function (t) {
+	            return t.p.value.endsWith("exact");
+	        }).o.value;
+	        selectorObject.suffix = _$1.find(selectorTriples, function (t) {
+	            return t.p.value.endsWith("suffix");
+	        }).o.value;
+	        return selectorObject;
+	    },
+	    "default": function _default(obj) {
+	        var ns = obj.replace ? _$1.find(namespaces, function (ns) {
+	            return simplifyMap[obj.replace(ns.prefix, ns.uri)];
+	        }) : undefined;
+	        var resolved = ns ? simplifyMap[obj.replace(ns.prefix, ns.uri)] : undefined;
+	        return resolved ? resolved : function (x) {
+	            return x;
+	        };
+	    }
+	};
+
+	var createMap = {
+	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(element, selection) {
+	        return TextQuoteAnchor$1.fromRange(element.tagName ? element : element.get(0), selection.getRangeAt(0)).toSelector();
+	    },
+	    "default": function _default() {} // planned: figure out sane default
+	};
+
+	var queryMap = {
+	    "byIdentifier": function byIdentifier(id) {
+	        var id_phrase = id ? "BIND(<" + id + "> AS ?id)" : "?id rdf:type oa:Annotation .";
+	        return ["PREFIX oa: <http://www.w3.org/ns/oa#>", "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>", "SELECT DISTINCT ?id ?g ?s ?p ?o", "WHERE {", id_phrase, "{", "?id oa:hasTarget ?s .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasTarget/oa:hasSelector ?s .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasBody ?g .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasTarget ?t .", "?s oa:hasTarget ?t .", "GRAPH ?g {?s ?p ?o}", "}", "}"].join("\n");
+	    },
+	    "http://www.w3.org/ns/oa#hasSelector": function httpWwwW3OrgNsOaHasSelector(id) {
+	        return ["SELECT ?id ?g ?s ?p ?o", "WHERE {", "GRAPH ?g {", (id || "?id") + ' <http://www.w3.org/ns/oa#hasTarget> ?target .', "?target <http://www.w3.org/ns/oa#hasSelector> ?s .", "?s ?p ?o", "}}"].join("\n");
+	    },
+	    "http://www.w3.org/ns/oa#hasBody": function httpWwwW3OrgNsOaHasBody(id) {
+	        return ["SELECT ?id ?subject ?predicate ?object ?graph", "WHERE {", "GRAPH ?g {?id <http://www.w3.org/ns/oa#hasBody> ?graph } .", "GRAPH ?graph {?subject ?predicate ?object}", "}"].join("\n");
+	    }
+	};
+
+	var OA = function () {
+	    function OA() {
+	        classCallCheck(this, OA);
+	    }
+
+	    createClass(OA, null, [{
+	        key: 'getBodies',
+	        value: function getBodies(xs) {
+	            var ids = xs.filter(function (x) {
+	                return (x.p.value || x.p).replace("oa:", "http://www.w3.org/ns/oa#") === "http://www.w3.org/ns/oa#hasBody";
+	            }).map(function (x) {
+	                return x.o.value || x.o;
+	            });
+	            var annotation = xs.filter(function (x) {
+	                return (x.o.value || x.o) === "http://www.w3.org/ns/oa#Annotation";
+	            }).map(function (x) {
+	                return x.s.value || x.s;
+	            });
+	            var partition = _$1.groupBy(ids, function (id) {
+	                return _$1.find(xs, function (x) {
+	                    return annotation.indexOf(id) + 1;
+	                }) ? "graphs" : "resources";
+	            });
+
+	            var result1 = (partition.graphs || []).map(function (id) {
+	                return _$1.filter(xs, function (x) {
+	                    return (x.g.value || x.g) === id;
+	                });
+	            });
+	            var result2 = (partition.resources || []).map(function (id) {
+	                return _$1.filter(xs, function (x) {
+	                    return (x.s.value || x.s) != id;
+	                });
+	            });
+	            return _$1.concat(result1, result2);
+	        }
+	    }, {
+	        key: 'getTargets',
+	        value: function getTargets(xs) {
+	            var targetObjs = _$1.filter(xs, function (x) {
+	                return (x.p.value || x.p).replace("oa:", "http://www.w3.org/ns/oa#") === "http://www.w3.org/ns/oa#hasTarget";
+	            });
+	            return targetObjs.map(function (targetObj) {
+	                return _$1.filter(xs, function (x) {
+	                    return (x.s.value || x.s) === (targetObj.o.value || targetObj.o);
+	                });
+	            });
+	        }
+	    }, {
+	        key: 'getSelectors',
+	        value: function getSelectors(xs) {
+	            var selectorObjs = _$1.filter(xs, function (x) {
+	                return (x.p.value || x.p).replace("oa:", "http://www.w3.org/ns/oa#") === "http://www.w3.org/ns/oa#hasSelector";
+	            });
+	            return selectorObjs.map(function (selectorObj) {
+	                return _$1.filter(xs, function (x) {
+	                    return (x.s.value || x.s) === (selectorObj.o.value || selectorObj.o);
+	                });
+	            });
+	        }
+	    }, {
+	        key: 'getAnnotator',
+	        value: function getAnnotator(xs) {
+	            var annotatorObj = _$1.find(xs, function (x) {
+	                return (x.p.value || x.p).replace("oa:", "http://www.w3.org/ns/oa#") === "http://www.w3.org/ns/oa#annotatedBy";
+	            });
+	            return annotatorObj.o.value || annotatorObj.o;
+	        }
+	    }, {
+	        key: 'expand',
+	        value: function expand(type) {
+	            return expandMap[type] || expandMap.default(type);
+	        }
+	    }, {
+	        key: 'simplify',
+	        value: function simplify(type) {
+	            return simplifyMap[type] || simplifyMap.default(type);
+	        }
+	    }, {
+	        key: 'create',
+	        value: function create(type) {
+	            return createMap[type] || createMap.default(type);
+	        }
+	    }, {
+	        key: 'query',
+	        value: function query(type) {
+	            return queryMap[type];
+	        }
+	    }]);
+	    return OA;
+	}();
+
 	var Tooltip = function Tooltip(app) {
 	    classCallCheck(this, Tooltip);
 
@@ -43095,11 +43268,16 @@
 	        $(document.getElementById(id)).click();
 	        $('#popover-selection').popover('hide');
 	    });
+
 	    this.register = function (jqElement) {
 	        // planned: stringify should check ontology and select simplifier or stringify raw (.value)
 	        function stringify(obj) {
-	            var simplified = app.ontology.simplify()(obj);
-	            return "<span class='popover-source' data-source-id='" + jqElement.attr('id') + "'></span><div class='popover-list'>" + _.flatten(_.values(simplified)).map(function (o) {
+	            var simplified = _$1.mapValues(obj, function (graph, id) {
+	                return OA.getBodies(graph).map(function (body) {
+	                    return app.ontology.simplify(body, id);
+	                });
+	            });
+	            return "<span class='popover-source' data-source-id='" + jqElement.attr('id') + "'></span><div class='popover-list'>" + _$1.flattenDeep(_$1.values(simplified)).map(function (o) {
 	                return '<span class=\'tt-label tt-subject\' title=\'' + o.s + '\'>' + app.ontology.label(o.s) + '</span> \n                <span class=\'tt-label tt-predicate\' title=\'' + o.p + '\'>' + app.ontology.label(o.p) + '</span> \n                <span class=\'tt-label tt-object\' title=\'' + o.o + '\'>' + app.ontology.label(o.o) + '</span>';
 	            }).join("<br>") + "</div><div class='popover-footer'/>";
 	        }
@@ -43866,9 +44044,9 @@
 	    return Utils;
 	}();
 
-	var namespaces = Symbol();
-	var expandMap = Symbol();
-	var simplifyMap = Symbol();
+	var namespaces$1 = Symbol();
+	var expandMap$1 = Symbol();
+	var simplifyMap$1 = Symbol();
 	var _name = Symbol();
 
 	var SNAP = function () {
@@ -43886,12 +44064,12 @@
 	    }, {
 	        key: 'load',
 	        value: function load(endpoint) {
-	            this[namespaces] = [{ prefix: "snap:", uri: "http://data.snapdrgn.net/ontology/snap#" }, { prefix: "perseusrdf:", uri: "http://data.perseus.org/" }];
-	            this[simplifyMap] = {
+	            this[namespaces$1] = [{ prefix: "snap:", uri: "http://data.snapdrgn.net/ontology/snap#" }, { prefix: "perseusrdf:", uri: "http://data.perseus.org/" }];
+	            this[simplifyMap$1] = {
 	                "default": function _default(obj) {
 	                    return _$1.mapValues(obj, function (v, k) {
 	                        var bonds = v.filter(function (o) {
-	                            return o.p.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && _$1.reduce(namespaces, function (acc, ns) {
+	                            return o.p.value === "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" && _$1.reduce(namespaces$1, function (acc, ns) {
 	                                return acc || o.o.value.startsWith(ns.prefix) || o.o.value.startsWith(ns.uri);
 	                            }, false);
 	                        }).map(function (o) {
@@ -43915,7 +44093,7 @@
 	                    });
 	                }
 	            };
-	            this[expandMap] = {
+	            this[expandMap$1] = {
 	                "default": function _default(gspo, graphs) {
 
 	                    var annotation = (graphs || {})[gspo.g];
@@ -43938,17 +44116,17 @@
 	    }, {
 	        key: 'simplify',
 	        value: function simplify() {
-	            return this[simplifyMap][type] || this[simplifyMap].default;
+	            return this[simplifyMap$1][type] || this[simplifyMap$1].default;
 	        }
 	    }, {
 	        key: 'expand',
 	        value: function expand() {
-	            return this[expandMap][type] || this[expandMap].default;
+	            return this[expandMap$1][type] || this[expandMap$1].default;
 	        }
 	    }, {
 	        key: 'label',
 	        value: function label(uri) {
-	            var term = _$1.reduce(this[namespaces], function (str, ns) {
+	            var term = _$1.reduce(this[namespaces$1], function (str, ns) {
 	                return str.replace(new RegExp("^" + ns.uri), "").replace(new RegExp("^" + ns.prefix), "");
 	            }, uri);
 	            var labels = {
@@ -44029,7 +44207,7 @@
 	 * Class for the Editor interface
 	 */
 
-	var Templates = function Templates(labels) {
+	var Templates = function Templates(ontology, labels) {
 	    var _this = this;
 
 	    classCallCheck(this, Templates);
@@ -44049,7 +44227,7 @@
 	    };
 	    this.names = ["http://data.perseus.org/people/smith:Ajax-1#this", "http://data.perseus.org/people/smith:Teucrus-1#this", "http://data.perseus.org/people/smith:achilles-1#this", "http://data.perseus.org/people/smith:acron-1#this", "http://data.perseus.org/people/smith:aeacus-1#this", "http://data.perseus.org/people/smith:aeneas-1#this", "http://data.perseus.org/people/smith:aethlius-1#this", "http://data.perseus.org/people/smith:aetolus-1#this", "http://data.perseus.org/people/smith:agamemnon-1#this", "http://data.perseus.org/people/smith:ajax-1#this", "http://data.perseus.org/people/smith:ajax-2#this", "http://data.perseus.org/people/smith:amphitrite-1#this", "http://data.perseus.org/people/smith:amulius-1#this", "http://data.perseus.org/people/smith:andromache-1#this", "http://data.perseus.org/people/smith:antigone-1#this", "http://data.perseus.org/people/smith:antilochus-1#this", "http://data.perseus.org/people/smith:aphrodite-1#this", "http://data.perseus.org/people/smith:apollo-1#this", "http://data.perseus.org/people/smith:ares-1#this", "http://data.perseus.org/people/smith:artemis-1#this", "http://data.perseus.org/people/smith:ascanius-1#this", "http://data.perseus.org/people/smith:asterodia-1#this", "http://data.perseus.org/people/smith:astyanax-1#this", "http://data.perseus.org/people/smith:astymedusa-1#this", "http://data.perseus.org/people/smith:athena-1#this", "http://data.perseus.org/people/smith:calyce-1#this", "http://data.perseus.org/people/smith:castor-1#this", "http://data.perseus.org/people/smith:charybdis-1#this", "http://data.perseus.org/people/smith:circe-1#this", "http://data.perseus.org/people/smith:clymenus-1#this", "http://data.perseus.org/people/smith:clytaemnestra-1#this", "http://data.perseus.org/people/smith:crataeis-1#this", "http://data.perseus.org/people/smith:creon-1#this", "http://data.perseus.org/people/smith:creon-2#this", "http://data.perseus.org/people/smith:cypselus-2#this", "http://data.perseus.org/people/smith:deiphobus-1#this", "http://data.perseus.org/people/smith:diomedes-1#this", "http://data.perseus.org/people/smith:dioscuri-1#this", "http://data.perseus.org/people/smith:echidna-1#this", "http://data.perseus.org/people/smith:eetion-1#this", "http://data.perseus.org/people/smith:electra-4#this", "http://data.perseus.org/people/smith:emathion-1#this", "http://data.perseus.org/people/smith:endymion-1#this", "http://data.perseus.org/people/smith:eos-1#this", "http://data.perseus.org/people/smith:epeius-1#this", "http://data.perseus.org/people/smith:epicaste-1#this", "http://data.perseus.org/people/smith:eriboea-1#this", "http://data.perseus.org/people/smith:eteocles-1#this", "http://data.perseus.org/people/smith:eteocles-2#this", "http://data.perseus.org/people/smith:eurycleia-1#this", "http://data.perseus.org/people/smith:eurydice-1#this", "http://data.perseus.org/people/smith:euryganeia-1#this", "http://data.perseus.org/people/smith:eurysaces-1#this", "http://data.perseus.org/people/smith:faustulus-1#this", "http://data.perseus.org/people/smith:gaea-1#this", "http://data.perseus.org/people/smith:gens-1#this", "http://data.perseus.org/people/smith:geryon-1#this", "http://data.perseus.org/people/smith:glaucia-1#this", "http://data.perseus.org/people/smith:glaucus-7#this", "http://data.perseus.org/people/smith:haemon-3#this", "http://data.perseus.org/people/smith:hecabe-1#this", "http://data.perseus.org/people/smith:hecate-1#this", "http://data.perseus.org/people/smith:hector-1#this", "http://data.perseus.org/people/smith:helena-1#this", "http://data.perseus.org/people/smith:helenus-1#this", "http://data.perseus.org/people/smith:hera-1#this", "http://data.perseus.org/people/smith:heracles-1#this", "http://data.perseus.org/people/smith:heracles-14#this", "http://data.perseus.org/people/smith:hermione-1#this", "http://data.perseus.org/people/smith:icarius-2#this", "http://data.perseus.org/people/smith:ilia-1#this", "http://data.perseus.org/people/smith:iocaste-1#this", "http://data.perseus.org/people/smith:iphianassa-1#this", "http://data.perseus.org/people/smith:iphigeneia-1#this", "http://data.perseus.org/people/smith:ismene-1#this", "http://data.perseus.org/people/smith:ismene-2#this", "http://data.perseus.org/people/smith:julius-1#this", "http://data.perseus.org/people/smith:labdacus-1#this", "http://data.perseus.org/people/smith:laertes-1#this", "http://data.perseus.org/people/smith:laius-1#this", "http://data.perseus.org/people/smith:lamia-2#this", "http://data.perseus.org/people/smith:laodamas-1#this", "http://data.perseus.org/people/smith:laomedon-1#this", "http://data.perseus.org/people/smith:laonytus-1#this", "http://data.perseus.org/people/smith:laurentia-1#this", "http://data.perseus.org/people/smith:leda-1#this", "http://data.perseus.org/people/smith:mars-1#this", "http://data.perseus.org/people/smith:memnon-1#this", "http://data.perseus.org/people/smith:menelaus-1#this", "http://data.perseus.org/people/smith:menoeceus-1#this", "http://data.perseus.org/people/smith:merope-1#this", "http://data.perseus.org/people/smith:molossus-1#this", "http://data.perseus.org/people/smith:neis-1#this", "http://data.perseus.org/people/smith:nemesis-1#this", "http://data.perseus.org/people/smith:neoptolemus-1#this", "http://data.perseus.org/people/smith:nicostratus-1#this", "http://data.perseus.org/people/smith:numitor-1#this", "http://data.perseus.org/people/smith:odysseus-1#this", "http://data.perseus.org/people/smith:oedipus-1#this", "http://data.perseus.org/people/smith:paeon-3#this", "http://data.perseus.org/people/smith:pan-1#this", "http://data.perseus.org/people/smith:paris-1#this", "http://data.perseus.org/people/smith:patroclus-2#this", "http://data.perseus.org/people/smith:peirithous-1#this", "http://data.perseus.org/people/smith:penelope-1#this", "http://data.perseus.org/people/smith:pergamus-1#this", "http://data.perseus.org/people/smith:periboea-1#this", "http://data.perseus.org/people/smith:periboea-4#this", "http://data.perseus.org/people/smith:phorcys-1#this", "http://data.perseus.org/people/smith:phrastor-1#this", "http://data.perseus.org/people/smith:polybus-1#this", "http://data.perseus.org/people/smith:polydamas-1#this", "http://data.perseus.org/people/smith:polydeuces-1#this", "http://data.perseus.org/people/smith:polygnotus-7#this", "http://data.perseus.org/people/smith:polyneices-1#this", "http://data.perseus.org/people/smith:polyxena-1#this", "http://data.perseus.org/people/smith:poseidon-1#this", "http://data.perseus.org/people/smith:priamus-1#this", "http://data.perseus.org/people/smith:protesilaus-1#this", "http://data.perseus.org/people/smith:protogeneia-1#this", "http://data.perseus.org/people/smith:quintilia-1#this", "http://data.perseus.org/people/smith:remus-1#this", "http://data.perseus.org/people/smith:roma-3#this", "http://data.perseus.org/people/smith:romulus-1#this", "http://data.perseus.org/people/smith:romus-2#this", "http://data.perseus.org/people/smith:sarpedon-2#this", "http://data.perseus.org/people/smith:scamandrius-1#this", "http://data.perseus.org/people/smith:scylla-1#this", "http://data.perseus.org/people/smith:selene-1#this", "http://data.perseus.org/people/smith:silvia-1#this", "http://data.perseus.org/people/smith:sthenelus-1#this", "http://data.perseus.org/people/smith:tarpeia-1#this", "http://data.perseus.org/people/smith:tatius-1#this", "http://data.perseus.org/people/smith:tecmessa-1#this", "http://data.perseus.org/people/smith:telamon-2#this", "http://data.perseus.org/people/smith:telegonus-3#this", "http://data.perseus.org/people/smith:telemachus-1#this", "http://data.perseus.org/people/smith:teleutias-1#this", "http://data.perseus.org/people/smith:teuthras-2#this", "http://data.perseus.org/people/smith:theseus-1#this", "http://data.perseus.org/people/smith:tiberinus-1#this", "http://data.perseus.org/people/smith:tithonus-1#this", "http://data.perseus.org/people/smith:triton-1#this", "http://data.perseus.org/people/smith:tyndareus-1#this", "http://data.perseus.org/people/smith:typhon-1#this", "http://data.perseus.org/people/smith:zeus-1#this", "http://data.snapdrgn.net/ontology/snap#AcknowledgedFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#AdoptedFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#AllianceWith", "http://data.snapdrgn.net/ontology/snap#AncestorOf", "http://data.snapdrgn.net/ontology/snap#AuntOf", "http://data.snapdrgn.net/ontology/snap#Bond", "http://data.snapdrgn.net/ontology/snap#BrotherOf", "http://data.snapdrgn.net/ontology/snap#CasualIntimateRelationshipWith", "http://data.snapdrgn.net/ontology/snap#ChildOf", "http://data.snapdrgn.net/ontology/snap#ChildOfSiblingOf", "http://data.snapdrgn.net/ontology/snap#ClaimedFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#CousinOf", "http://data.snapdrgn.net/ontology/snap#DaughterOf", "http://data.snapdrgn.net/ontology/snap#DescendentOf", "http://data.snapdrgn.net/ontology/snap#EmnityFor", "http://data.snapdrgn.net/ontology/snap#ExtendedFamilyOf", "http://data.snapdrgn.net/ontology/snap#ExtendedHouseholdOf", "http://data.snapdrgn.net/ontology/snap#FamilyOf", "http://data.snapdrgn.net/ontology/snap#FatherOf", "http://data.snapdrgn.net/ontology/snap#FosterFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#FreedSlaveOf", "http://data.snapdrgn.net/ontology/snap#FreedmanOf", "http://data.snapdrgn.net/ontology/snap#FreedwomanOf", "http://data.snapdrgn.net/ontology/snap#FriendshipFor", "http://data.snapdrgn.net/ontology/snap#GrandchildOf", "http://data.snapdrgn.net/ontology/snap#GranddaughterOf", "http://data.snapdrgn.net/ontology/snap#GrandfatherOf", "http://data.snapdrgn.net/ontology/snap#GrandmotherOf", "http://data.snapdrgn.net/ontology/snap#GrandparentOf", "http://data.snapdrgn.net/ontology/snap#GrandsonOf", "http://data.snapdrgn.net/ontology/snap#GreatGrandfatherOf", "http://data.snapdrgn.net/ontology/snap#GreatGrandmotherOf", "http://data.snapdrgn.net/ontology/snap#GreatGrandparentOf", "http://data.snapdrgn.net/ontology/snap#HalfFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#HereditaryFamilyOf", "http://data.snapdrgn.net/ontology/snap#HouseSlaveOf", "http://data.snapdrgn.net/ontology/snap#HouseholdOf", "http://data.snapdrgn.net/ontology/snap#InLawFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#IntimateRelationshipWith", "http://data.snapdrgn.net/ontology/snap#KinOf", "http://data.snapdrgn.net/ontology/snap#LegallyRecognisedRelationshipWith", "http://data.snapdrgn.net/ontology/snap#Link", "http://data.snapdrgn.net/ontology/snap#MaternalFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#MotherOf", "http://data.snapdrgn.net/ontology/snap#NephewOf", "http://data.snapdrgn.net/ontology/snap#NieceOf", "http://data.snapdrgn.net/ontology/snap#ParentOf", "http://data.snapdrgn.net/ontology/snap#PaternalFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#ProfessionalRelationship", "http://data.snapdrgn.net/ontology/snap#QuAC", "http://data.snapdrgn.net/ontology/snap#QualifierRelationship", "http://data.snapdrgn.net/ontology/snap#SeriousIntimateRelationshipWith", "http://data.snapdrgn.net/ontology/snap#SiblingOf", "http://data.snapdrgn.net/ontology/snap#SiblingOfParentOf", "http://data.snapdrgn.net/ontology/snap#SisterOf", "http://data.snapdrgn.net/ontology/snap#SlaveOf", "http://data.snapdrgn.net/ontology/snap#SonOf", "http://data.snapdrgn.net/ontology/snap#StepFamilyRelationship", "http://data.snapdrgn.net/ontology/snap#UncleOf"];
 	    var self = this;
-
+	    self.ontology = ontology;
 	    this.decodeHTML = function (str) {
 	        var map = { "gt": ">" /* , … */ };
 	        return str.replace(/&(#(?:x[0-9a-f]+|\d+)|[a-z]+);?/gi, function ($0, $1) {
@@ -44084,7 +44262,7 @@
 	        label: function label() {
 	            return function (uri, render) {
 	                var rendered = _this.decodeHTML(render(uri));
-	                return SNAP.label(rendered) || rendered;
+	                return self.ontology.label(rendered) || rendered;
 	            };
 	        } };
 	    this.partials = {
@@ -44158,116 +44336,6 @@
 	    };
 	};
 
-	var namespaces$1 = [{
-	    uri: "http://www.w3.org/ns/oa#",
-	    prefix: "oa:"
-	}];
-
-	var expandMap$1 = {
-	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(selector) {
-	        return _$1.chain(["prefix", "exact", "suffix"]).map(function (pos) {
-	            return selector[pos] ? {
-	                g: { type: "uri", value: "http://data.perseus.org/graphs/persons" },
-	                s: { type: "uri", value: selector.id },
-	                p: { type: "uri", value: 'http://www.w3.org/ns/oa#' + pos },
-	                o: { type: "literal", value: selector[pos] }
-	            } : undefined;
-	        }).concat({
-	            g: { type: "uri", value: "http://data.perseus.org/graphs/persons" },
-	            s: { type: "uri", value: selector.id },
-	            p: { type: "uri", value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" },
-	            o: { type: "uri", value: "http://www.w3.org/ns/oa#TextQuoteSelector" }
-	        }).compact().value();
-	    },
-	    "default": function _default(obj) {
-	        var ns = obj.replace ? _$1.find(namespaces$1, function (ns) {
-	            return expandMap$1[ns.uri + obj.replace(ns.prefix, '')];
-	        }) : undefined;
-	        var resolved = ns ? expandMap$1[ns.uri + obj.replace(ns.prefix, '')] : undefined;
-	        return resolved ? resolved : function (x) {
-	            return x;
-	        };
-	    }
-	};
-
-	var simplifyMap$1 = {
-	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(selectorTriples) {
-	        // planned: rename to bindings
-	        var selectorObject = {};
-	        selectorObject.type = _$1.find(selectorTriples, function (t) {
-	            return t.p.value.endsWith("type");
-	        }).o.value;
-	        selectorObject.prefix = _$1.find(selectorTriples, function (t) {
-	            return t.p.value.endsWith("prefix");
-	        }).o.value;
-	        selectorObject.exact = _$1.find(selectorTriples, function (t) {
-	            return t.p.value.endsWith("exact");
-	        }).o.value;
-	        selectorObject.suffix = _$1.find(selectorTriples, function (t) {
-	            return t.p.value.endsWith("suffix");
-	        }).o.value;
-	        return selectorObject;
-	    },
-	    "default": function _default(obj) {
-	        var ns = obj.replace ? _$1.find(namespaces$1, function (ns) {
-	            return simplifyMap$1[obj.replace(ns.prefix, ns.uri)];
-	        }) : undefined;
-	        var resolved = ns ? simplifyMap$1[obj.replace(ns.prefix, ns.uri)] : undefined;
-	        return resolved ? resolved : function (x) {
-	            return x;
-	        };
-	    }
-	};
-
-	var createMap = {
-	    "http://www.w3.org/ns/oa#TextQuoteSelector": function httpWwwW3OrgNsOaTextQuoteSelector(element, selection) {
-	        return TextQuoteAnchor$1.fromRange(element.tagName ? element : element.get(0), selection.getRangeAt(0)).toSelector();
-	    },
-	    "default": function _default() {} // planned: figure out sane default
-	};
-
-	var queryMap = {
-	    "byIdentifier": function byIdentifier(id) {
-	        var id_phrase = id ? "BIND(<" + id + "> AS ?id)" : "?id rdf:type oa:Annotation .";
-	        return ["PREFIX oa: <http://www.w3.org/ns/oa#>", "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>", "SELECT DISTINCT ?id ?g ?s ?p ?o", "WHERE {", id_phrase, "{", "?id oa:hasTarget ?s .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasTarget/oa:hasSelector ?s .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasBody ?g .", "GRAPH ?g {?s ?p ?o}", "}", "UNION", "{", "?id oa:hasTarget ?t .", "?s oa:hasTarget ?t .", "GRAPH ?g {?s ?p ?o}", "}", "}"].join("\n");
-	    },
-	    "http://www.w3.org/ns/oa#hasSelector": function httpWwwW3OrgNsOaHasSelector(id) {
-	        return ["SELECT ?id ?g ?s ?p ?o", "WHERE {", "GRAPH ?g {", (id || "?id") + ' <http://www.w3.org/ns/oa#hasTarget> ?target .', "?target <http://www.w3.org/ns/oa#hasSelector> ?s .", "?s ?p ?o", "}}"].join("\n");
-	    },
-	    "http://www.w3.org/ns/oa#hasBody": function httpWwwW3OrgNsOaHasBody(id) {
-	        return ["SELECT ?id ?subject ?predicate ?object ?graph", "WHERE {", "GRAPH ?g {?id <http://www.w3.org/ns/oa#hasBody> ?graph } .", "GRAPH ?graph {?subject ?predicate ?object}", "}"].join("\n");
-	    }
-	};
-
-	var OA = function () {
-	    function OA() {
-	        classCallCheck(this, OA);
-	    }
-
-	    createClass(OA, null, [{
-	        key: 'expand',
-	        value: function expand(type) {
-	            return expandMap$1[type] || expandMap$1.default(type);
-	        }
-	    }, {
-	        key: 'simplify',
-	        value: function simplify(type) {
-	            return simplifyMap$1[type] || simplifyMap$1.default(type);
-	        }
-	    }, {
-	        key: 'create',
-	        value: function create(type) {
-	            return createMap[type] || createMap.default(type);
-	        }
-	    }, {
-	        key: 'query',
-	        value: function query(type) {
-	            return queryMap[type];
-	        }
-	    }]);
-	    return OA;
-	}();
-
 	var getFunction = Symbol();
 
 	var Editor = function Editor(app) {
@@ -44286,7 +44354,7 @@
 	    var labels = SNAP.labels;
 
 	    // UI ELEMENTS
-	    var template = new Templates(labels);
+	    var template = new Templates(app.ontology, labels);
 	    var button = $$1('<div class="btn btn-primary edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>');
 	    var modal = $$1('<div id="edit_modal" class="modal fade in" style="display: none; ">\n            <div class="well"><div class="modal-header">\n                <a class="close" data-dismiss="modal">×</a>\n                <h3>Annotation Editor</h3>\n            </div>\n            <div class="modal-body"></div>\n            <div class="modal-footer">\n            <button type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button>\n            </div>\n        </div>').appendTo(jqParent);
 	    var body = modal.find('.modal-body');
@@ -44294,8 +44362,11 @@
 
 	    // FUNCTIONS
 	    modal.update = function (data, newSelector) {
-	        // planned: apply ontology-specific transformations
-	        var graphs = app.ontology.simplify()(data);
+	        var graphs = _$1.mapValues(data, function (v, k) {
+	            return _$1.flatten(OA.getBodies(v).map(function (b) {
+	                return app.ontology.simplify(b, k);
+	            }));
+	        });
 	        selector = newSelector;
 	        template.init(body, { annotations: Object.keys(graphs).map(function (k) {
 	                return { g: k, triples: graphs[k] };
@@ -44360,7 +44431,7 @@
 	            })).map(function (zipped) {
 	                return { g: zipped[0], s: zipped[1], p: zipped[2], o: zipped[3] };
 	            }).map(function (gspo) {
-	                return app.ontology.expand()(gspo, annotations);
+	                return app.ontology.expand(gspo, annotations);
 	            }));
 	            dT.remove();
 	            return delete_triples;
@@ -44397,7 +44468,7 @@
 	            }).map(function (t) {
 	                return { g: cite, s: t[0], p: t[1], o: t[2] };
 	            }).map(function (t) {
-	                return app.ontology.expand()(t, annotations);
+	                return app.ontology.expand(t, annotations);
 	            }));
 	            _$1.assign(selector, { id: cite + "#sel-" + Utils$1.hash(JSON.stringify(selector)).slice(0, 4) });
 	            var selector_triples = OA.expand(selector.type)(_$1.mapValues(selector, function (v) {
@@ -44438,9 +44509,9 @@
 	        }).then(function (res) {
 	            acc.push(res);
 	            return annotator.update(_$1.flatten(update_triples.map(function (t) {
-	                return app.ontology.expand()({ g: t[0], s: t[1], p: t[2], o: t[3] }, annotations);
+	                return app.ontology.expand({ g: t[0], s: t[1], p: t[2], o: t[3] }, annotations);
 	            })), _$1.flatten(update_triples.map(function (t) {
-	                return app.ontology.expand()({ g: t[0], s: t[4], p: t[5], o: t[6] }, annotations);
+	                return app.ontology.expand({ g: t[0], s: t[4], p: t[5], o: t[6] }, annotations);
 	            })));
 	        }).then(function (res) {
 	            acc.push(res);
@@ -44552,10 +44623,16 @@
 	                var grouped = elements.reduce(function (object, element) {
 	                    return _$1.merge(object, element.data('annotations'));
 	                }, {});
-	                var snap = SNAP.simplify()(grouped); // planned: move into nodelink, specify API for document plugins
-	                var input = _$1.flatMap(snap, function (v, k) {
+	                var snap = _$1.mapValues(grouped, function (v, k) {
+	                    return OA.getBodies(v).map(function (b) {
+	                        return app.ontology.simplify(b, k);
+	                    });
+	                }); // planned: move into nodelink, specify API for document plugins
+	                var input = _$1.flatMapDeep(snap, function (v, k) {
 	                    return v.map(function (o) {
-	                        return Object.assign(o, { g: k });
+	                        return o.map(function (p) {
+	                            return Object.assign(p, { g: k });
+	                        });
 	                    });
 	                });
 	                _this.nodelink.add(input);
@@ -45005,7 +45082,7 @@
 	    }], [{
 	        key: 'get',
 	        value: function get(uri) {
-	            var query = '\n            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n            PREFIX pmeta: <http://data.perseids.org/meta#>\n            SELECT ?prefix ?resource ?label WHERE {\n                GRAPH <http://data.perseids.org/namespaces> {\n                    BIND(<' + uri + '> AS ?uri)\n                    ?uri rdf:type pmeta:namespace .\n                    ?uri pmeta:prefix ?prefix .\n                    ?uri pmeta:member ?resource .\n  \t                ?resource rdfs:label ?label\n                }\n            }\n        ';
+	            var query = '\n            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n            PREFIX pmeta: <http://data.perseids.org/meta#>\n            SELECT DISTINCT ?prefix ?resource ?label WHERE {\n                GRAPH <http://data.perseids.org/namespaces> {\n                    BIND(<' + uri + '> AS ?uri)\n                    ?uri rdf:type pmeta:namespace .\n                    ?uri pmeta:prefix ?prefix .\n                    ?uri pmeta:member ?resource .\n  \t                ?resource rdfs:label ?label\n                }\n            }\n        ';
 	            return {
 	                from: function from(endpoint) {
 	                    return sparqlQuery(endpoint, query).then(function (data) {
@@ -45037,12 +45114,14 @@
 
 	// todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
 	var simplification = function simplification(rules) {
-	    return function (id, v) {
+	    return function (v, id) {
 	        return _$1.reduce(rules, function (result, rule) {
-	            return result[pmetaMap[rule.target]] = _$1.find(v, function (o) {
-	                return o[pmetaMap[rule.constraint]] === rule.value;
-	            })[pmetaMap[rule.source]].value;
-	        });
+	            var found = _$1.find(v, function (o) {
+	                return (o[pmetaMap[rule.constraint]].value || o[pmetaMap[rule.constraint]]) === rule.value;
+	            });
+	            result[pmetaMap[rule.target]] = found[pmetaMap[rule.source]].value;
+	            return result;
+	        }, {});
 	    };
 	};
 
@@ -45083,29 +45162,32 @@
 	        });
 	    }
 
+	    // todo: grouped is expected to be a dictionary of annotations
+
+
 	    createClass(Transformation, [{
 	        key: 'simplify',
-	        value: function simplify(grouped) {
-	            var _this = this;
-
+	        value: function simplify(body, id) {
 	            // todo: fix mapping - possibly decide which rule to use
 	            // grouped has graph uris as keys and bindings as values
 	            // need to determine which rules to use
-	            return _$1.mapValues(grouped, function (v, k) {
-	                return _this[_simplify](k, v);
-	            });
+	            return body ? this[_simplify].map(function (s) {
+	                return s(body, id);
+	            }) : this[_simplify];
 	        }
 	    }, {
 	        key: 'expand',
 	        value: function expand(gspo, graphs) {
 	            // grouped has graph uris as keys and bindings as values
 	            // need to determine which rules to use
-	            return this[_expand](gspo, graphs);
+	            return gspo ? this[_expand].map(function (e) {
+	                return e(gspo, graphs);
+	            }) : this[_expand];
 	        }
 	    }], [{
 	        key: 'get',
 	        value: function get(uri) {
-	            var query = '\n            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n            prefix pmeta: <http://data.perseids.org/meta#>\n            \n            SELECT ?transformation ?target ?constraint ?value ?source WHERE {\n              GRAPH <http://data.perseids.org/namespaces> {\n                BIND(<' + uri + '> AS ?uri)\n                ?uri rdf:type pmeta:namespace .\n                ?uri pmeta:hasTransformation ?transformation.\n                ?transformation pmeta:hasTarget ?t .\n                ?t rdf:type ?target .\n                ?t pmeta:hasConstraint ?c .\n                ?c rdf:type ?constraint .\n                ?c pmeta:hasURI ?value .\n                ?t pmeta:hasSource ?source \n              }\n            }\n        ';
+	            var query = '\n            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n            prefix pmeta: <http://data.perseids.org/meta#>\n            \n            SELECT DISTINCT ?transformation ?target ?constraint ?value ?source WHERE {\n              GRAPH <http://data.perseids.org/namespaces> {\n                BIND(<' + uri + '> AS ?uri)\n                ?uri rdf:type pmeta:namespace .\n                ?uri pmeta:hasTransformation ?transformation.\n                ?transformation pmeta:hasTarget ?t .\n                ?t rdf:type ?target .\n                ?t pmeta:hasConstraint ?c .\n                ?c rdf:type ?constraint .\n                ?c pmeta:hasURI ?value .\n                ?t pmeta:hasSource ?source \n              }\n            }\n        ';
 	            return {
 	                from: function from(endpoint) {
 	                    return sparqlQuery(endpoint, query).then(function (data) {
@@ -45157,8 +45239,8 @@
 
 	    createClass(Ontology, [{
 	        key: 'simplify',
-	        value: function simplify(id, graph) {
-	            this[transformation].simplify(id, graph);
+	        value: function simplify(body, id) {
+	            return this[transformation].simplify(body, id);
 	        }
 
 	        /**
@@ -45199,9 +45281,21 @@
 	        value: function test(resource) {
 	            var _this = this;
 
-	            return _$1.chain(typeof resource === 'Array' ? resource : [resource]).map(_$1.values).reduce(function (result, obj) {
-	                return result || _this[vocabulary].test(obj);
-	            }, false).value();
+	            var coefficients = { g: 0, s: 1, p: 3, o: 1 };
+	            switch (JSON.stringify(resource)[0]) {
+	                case "[":
+	                    return resource.map(function (x) {
+	                        return _this.test(x);
+	                    });
+	                    break;
+	                case "{":
+	                    return _$1.map(resource, function (v, k) {
+	                        return _this.test(v.value || v) ? coefficients[k] : 0;
+	                    });
+	                    break;
+	                default:
+	                    return this[vocabulary].test(resource);
+	            }
 	        }
 
 	        /**
@@ -45271,13 +45365,17 @@
 	var all = Symbol();
 	var scoring = Symbol();
 	var endpoint = Symbol();
+	var self$1;
 
 	var OntologySet = function () {
 	    function OntologySet(ontologies) {
 	        classCallCheck(this, OntologySet);
 
-	        this[all] = ontologies;
-	        this[scoring] = function (matrix) {
+	        self$1 = this;
+	        self$1[all] = _$1.map(ontologies, function (x) {
+	            return x;
+	        });
+	        self$1[scoring] = function (matrix) {
 	            var elements = _$1.chain(matrix).flattenDeep();
 	            return elements.sum().value() / elements.value().length;
 	        };
@@ -45294,38 +45392,43 @@
 	    createClass(OntologySet, [{
 	        key: 'test',
 	        value: function test(data, keepEnum) {
-	            var _this = this;
-
-	            return _$1.chain(this[all]).map(function (o) {
+	            /*let res = _.chain(self[all])
+	                .map((o) => o.test(data)) // run individual tests
+	                .zip(self[all]) // align with ontologies
+	                .sortBy((a) => self[scoring](a[0])) // rank with a scoring function
+	                .head() // get the highest ranked result
+	                .value() // return*/
+	            var flt = _$1.filter(self$1[all], function (o) {
+	                return o.simplify().length;
+	            });
+	            var tst = _$1.map(flt, function (o) {
 	                return o.test(data);
-	            }) // run individual tests
-	            .zip(this[all]) // align with ontologies
-	            .sortBy(function (a) {
-	                return _this[scoring](a[0]);
-	            }) // rank with a scoring function
-	            .head() // get the highest ranked result
-	            .map(function (res) {
-	                return keepEnum || !res ? res : res[1];
-	            }) // remove the test result ?
-	            .value(); // return
+	            });
+	            var zpd = _$1.zip(tst, flt);
+	            var srt = _$1.sortBy(zpd, function (a) {
+	                return self$1[scoring](a[0]);
+	            });
+	            var res = _$1.head(srt);
+	            return keepEnum || !res ? res : res[1]; // remove the test result ?
 	        }
 
 	        /**
 	         * Simplify a graph from a general, indirect form into a human-readable one
-	         * @param data
+	         * todo: decide on the i/o data types
+	         * @param data Annotations in 'grouped' format
 	         * @param ontology
 	         * @returns {*}
 	         */
 
 	    }, {
 	        key: 'simplify',
-	        value: function simplify(data, ontology) {
-	            var simplifier = ontology && this[all].filter(function (o) {
+	        value: function simplify(body, id, ontology) {
+	            var simplifier = ontology && self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            }).length ? _$1.head(this[all].filter(function (o) {
+	            }).length ? _$1.head(self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            })) : test(data);
-	            return simplifier.simplify(data);
+	            })) : self$1.test(body);
+	            return simplifier ? simplifier.simplify(body, id) : body;
 	        }
 
 	        /**
@@ -45338,12 +45441,12 @@
 	    }, {
 	        key: 'expand',
 	        value: function expand(data, ontology) {
-	            var expander = ontology && this[all].filter(function (o) {
+	            var expander = ontology && self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            }).length ? _$1.head(this[all].filter(function (o) {
+	            }).length ? _$1.head(self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            })) : test(data);
-	            return expander.expand(data);
+	            })) : self$1.test(data);
+	            return expander ? expander.expand(data) : data;
 	        }
 
 	        /**
@@ -45356,12 +45459,12 @@
 	    }, {
 	        key: 'label',
 	        value: function label(data, ontology) {
-	            var labeler = ontology && this[all].filter(function (o) {
+	            var labeler = ontology && self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            }).length ? _$1.head(this[all].filter(function (o) {
+	            }).length ? _$1.head(self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            })) : test(data);
-	            return labeler.label(data);
+	            })) : self$1.test(data);
+	            return labeler ? labeler.label(data) : data;
 	        }
 
 	        /**
@@ -45373,7 +45476,7 @@
 	        key: 'namespaces',
 	        value: function namespaces(ontology) {
 	            // todo: check for ontology, else return:
-	            _$1.chain(this[all]).filter(function (o) {
+	            _$1.chain(self$1[all]).filter(function (o) {
 	                return !ontology || o.name === ontology;
 	            }).map('namespace').flatten().value();
 	        }
@@ -45388,7 +45491,7 @@
 	        value: function resources(ontology) {
 	            // todo: check for ontology, else return:
 
-	            _$1.chain(this[all]).filter(function (o) {
+	            _$1.chain(self$1[all]).filter(function (o) {
 	                return !ontology || o.name === ontology;
 	            }).map('resources').flatten().value();
 	        }
@@ -45401,13 +45504,13 @@
 	    }], [{
 	        key: 'from',
 	        value: function from(ep) {
-	            var _this2 = this;
+	            var _this = this;
 
 	            this[endpoint] = ep;
-	            var query = '\n            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            prefix pmeta: <http://data.perseids.org/meta#>\n            \n            SELECT ?uri WHERE {\n              GRAPH <http://data.perseids.org/namespaces> {\n                ?uri rdf:type pmeta:namespace \n              }\n            }\n        ';
-	            sparqlQuery(this[endpoint], query).then(function (data) {
+	            var query = '\n            prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n            prefix pmeta: <http://data.perseids.org/meta#>\n            \n            SELECT DISTINCT ?uri WHERE {\n              GRAPH <http://data.perseids.org/namespaces> {\n                ?uri rdf:type pmeta:namespace \n              }\n            }\n        ';
+	            return sparqlQuery(this[endpoint], query).then(function (data) {
 	                return $$1.when.apply($$1, toConsumableArray(data.results.bindings.map(function (binding) {
-	                    return Ontology.get(binding.uri.value).from(_this2[endpoint]);
+	                    return Ontology.get(binding.uri.value).from(_this[endpoint]);
 	                })));
 	            }).then(function () {
 	                return new OntologySet(arguments);
