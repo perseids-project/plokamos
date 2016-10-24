@@ -20,7 +20,7 @@ class Editor {
         var labels = SNAP.labels
 
         // UI ELEMENTS
-        var template = new Templates(labels)
+        var template = new Templates(app.ontology,labels)
         var button = $('<div class="btn btn-primary edit_btn" data-toggle="modal" data-target="#edit_modal"><span class="glyphicon glyphicon-cog"></span></div>')
         var modal = $(`<div id="edit_modal" class="modal fade in" style="display: none; ">
             <div class="well"><div class="modal-header">
