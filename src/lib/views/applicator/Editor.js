@@ -37,8 +37,7 @@ class Editor {
 
         // FUNCTIONS
         modal.update = (data, newSelector) => {
-            // planned: apply ontology-specific transformations
-            var graphs = app.ontology.simplify(data)
+            var graphs = _.mapValues(data, (v,k) => _.flatten(OA.getBodies(v).map((b) => app.ontology.simplify(b,k))))
             selector = newSelector
             template.init(body,{annotations:Object.keys(graphs).map((k) => { return {g:k,triples:graphs[k]}})})
         }
