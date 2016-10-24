@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import OA from '../../models/ontologies/OA'
 
 class Tooltip {
     constructor(app) {
@@ -8,11 +9,12 @@ class Tooltip {
             $(document.getElementById(id)).click()
             $('#popover-selection').popover('hide')
         })
+
         this.register = (jqElement) => {
             // planned: stringify should check ontology and select simplifier or stringify raw (.value)
             function stringify(obj) {
-                var simplified = _.mapValues(obj,app.ontology.simplify)
-                return "<span class='popover-source' data-source-id='"+jqElement.attr('id')+"'></span><div class='popover-list'>"+_.flatten(
+                var simplified = _.mapValues(obj,(graph,id) => OA.getBodies(graph).map((body) => app.ontology.simplify(body,id)))
+                return "<span class='popover-source' data-source-id='"+jqElement.attr('id')+"'></span><div class='popover-list'>"+_.flattenDeep(
                     _.values(simplified)).map((o) =>
                 `<span class='tt-label tt-subject' title='${o.s}'>${app.ontology.label(o.s)}</span> 
                 <span class='tt-label tt-predicate' title='${o.p}'>${app.ontology.label(o.p)}</span> 
