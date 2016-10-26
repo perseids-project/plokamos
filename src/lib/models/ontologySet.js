@@ -67,9 +67,9 @@ class OntologySet {
      * @param ontology
      * @returns {*}
      */
-    expand(data, ontology) {
-        let expander = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(data)
-        return expander ? expander.expand(data) : data
+    expand(gspo, graphs, ontology) {
+        let expander = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(gspo)
+        return expander ? expander.expand(gspo, graphs) : gspo
     }
 
     /**

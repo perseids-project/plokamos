@@ -44,7 +44,7 @@ class Ontology {
      * @param graphs The complete list of graphs.
      */
     expand(gspo, graphs){
-        this[transformation].expand(gspo, graphs)
+        return this[transformation].expand(gspo, graphs)
     }
 
     // vocab:
