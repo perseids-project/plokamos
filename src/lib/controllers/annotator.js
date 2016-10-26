@@ -62,11 +62,11 @@ class Annotator {
                 _.uniq(insertions.map((i) => i.g.value || i.g)).map((annotationId) => [
                     {
                         "p": { "type":"uri", "value":"http://www.w3.org/ns/oa#annotatedAt" },
-                        "g": { "type":"uri", "value": this[defaultGraph]},
+                        "g": { "type":"uri", "value": defaultGraph},
                         "s": { "type":"uri", "value":annotationId }, //
                         "o": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp", "type":"literal", "value": (new Date()).toISOString()}
                     }, {"p": { "type":"uri", "value":"http://www.w3.org/ns/oa#annotatedBy" },
-                        "g": { "type":"uri", "value": this[defaultGraph] },
+                        "g": { "type":"uri", "value": defaultGraph },
                         "s": { "type":"uri", "value": annotationId },
                         "o": { "type":"uri", "value": this[userId] }}
                 ])
@@ -89,7 +89,7 @@ class Annotator {
             var predicate = _.find(bindings, (binding) => binding.s.value === bond && binding.p.value.endsWith("bond-with")).o.value
             var title = [
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://purl.org/dc/terms/title"},
                     "o": {"type": "literal", "value": `${object} identifies ${object.replace('http://data.perseus.org/people/smith:','').split('-')[0]} as ${predicate} in ${this[urn]}`}
@@ -99,31 +99,31 @@ class Annotator {
             var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
             var oa = [
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
                     "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#Annotation"}
                 },
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://purl.org/dc/terms/source"},
                     "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"}
                 },
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#serializedBy"},
                     "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"} // todo: add version
                 },
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#motivatedBy"},
                     "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#identifying"}
                 },
                 {
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasBody"},
                     "o": {"type": "uri", "value": annotationId}
@@ -133,25 +133,25 @@ class Annotator {
             var target = [
                 {
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasTarget"},
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "o": {"type": "uri", "value": targetId}
                 },
                 {
                     "p": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": targetId},
                     "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#SpecificResource"}
                 }, // planned: figure out alternatives for non-text targets
                 {
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasSource"},
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": targetId},
                     "o": {"type": "uri", "value": this[urn]}
                 },
                 {
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasSelector"},
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": targetId},
                     "o": {"type": "uri", "value": selectorId}
                 }
@@ -159,7 +159,7 @@ class Annotator {
 
             var date = [{
                 "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#annotatedAt"},
-                "g": {"type": "uri", "value": this[defaultGraph]},
+                "g": {"type": "uri", "value": defaultGraph},
                 "s": {"type": "uri", "value": annotationId},
                 "o": {
                     "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
@@ -172,7 +172,7 @@ class Annotator {
             var user = [
                 {
                     "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#annotatedBy"},
-                    "g": {"type": "uri", "value": this[defaultGraph]},
+                    "g": {"type": "uri", "value": defaultGraph},
                     "s": {"type": "uri", "value": annotationId},
                     "o": {"type": "uri", "value": this[userId]}
                 } // NOTE: describe <o> query
