@@ -108,7 +108,7 @@ class Editor {
                 _.assign(selector,{id:cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)})
                 var selector_triples = OA.expand(selector.type)(_.mapValues(selector,(v) => v.replace(new RegExp('\n','ig'),'')))
                 var create_triples = new_triples.length ? _.concat(new_triples,selector_triples) : []
-                return create_triples
+                return _.flatten(create_triples)
             }
         }
 
