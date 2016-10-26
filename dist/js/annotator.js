@@ -43902,7 +43902,7 @@
 
 	var Mustache = interopDefault(mustache);
 
-	var Utils$1 = function () {
+	var Utils = function () {
 	    function Utils() {
 	        classCallCheck(this, Utils);
 	    }
@@ -44102,7 +44102,7 @@
 	                        return quad.p.value.endsWith('has-bond') && quad.s.value === gspo.s || quad.p.value.endsWith('type') && quad.o.value === gspo.p || quad.p.value.endsWith('bond-with') && quad.o.value === gspo.o;
 	                    }) : [];
 
-	                    var bond_id = bindings.length % 3 || !annotation ? gspo.g + "-bond-" + Utils$1.hash(JSON.stringify(gspo)).slice(0, 4) : undefined; // planned: get bonds and check bond sizes individually
+	                    var bond_id = bindings.length % 3 || !annotation ? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined; // planned: get bonds and check bond sizes individually
 
 	                    return bond_id ? [{ g: gspo.g, s: bond_id, p: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", o: gspo.p }, { g: gspo.g, s: gspo.s, p: "http://data.snapdrgn.net/ontology/snap#has-bond", o: bond_id }, { g: gspo.g, s: bond_id, p: "http://data.snapdrgn.net/ontology/snap#bond-with", o: gspo.o }].map(function (gspo) {
 	                        return SPARQL.gspoToBinding(gspo);
@@ -44470,12 +44470,12 @@
 	            }).map(function (t) {
 	                return app.ontology.expand(t, annotations);
 	            }));
-	            _$1.assign(selector, { id: cite + "#sel-" + Utils$1.hash(JSON.stringify(selector)).slice(0, 4) });
+	            _$1.assign(selector, { id: cite + "#sel-" + Utils.hash(JSON.stringify(selector)).slice(0, 4) });
 	            var selector_triples = OA.expand(selector.type)(_$1.mapValues(selector, function (v) {
 	                return v.replace(new RegExp('\n', 'ig'), '');
 	            }));
 	            var create_triples = new_triples.length ? _$1.concat(new_triples, selector_triples) : [];
-	            return create_triples;
+	            return _$1.flatten(create_triples);
 	        }
 	    };
 
@@ -44490,7 +44490,7 @@
 
 	        // get prerequisite data
 	        var annotations = origin.data('annotations');
-	        var cite = Utils$1.cite(app.getUser() + app.getUrn(), Math.random().toString());
+	        var cite = Utils.cite(app.getUser() + app.getUrn(), Math.random().toString());
 
 	        // retrieve data
 	        var delete_graphs = _this[getFunction].delete_graphs();
@@ -44790,11 +44790,11 @@
 	            })).map(function (annotationId) {
 	                return [{
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#annotatedAt" },
-	                    "g": { "type": "uri", "value": _this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId }, //
 	                    "o": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp", "type": "literal", "value": new Date().toISOString() }
 	                }, { "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#annotatedBy" },
-	                    "g": { "type": "uri", "value": _this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "o": { "type": "uri", "value": _this[userId] } }];
 	            }))).map(function (gspo) {
@@ -44826,35 +44826,35 @@
 	                    return binding.s.value === bond && binding.p.value.endsWith("bond-with");
 	                }).o.value;
 	                var title = [{
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://purl.org/dc/terms/title" },
 	                    "o": { "type": "literal", "value": object + ' identifies ' + object.replace('http://data.perseus.org/people/smith:', '').split('-')[0] + ' as ' + predicate + ' in ' + this[urn] }
 	                }];
 	                // planned: make independent of selector type
-	                var targetId = annotationId + "#target-" + Utils$1.hash(JSON.stringify(selectorId)).slice(0, 4);
+	                var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4);
 	                var oa = [{
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" },
 	                    "o": { "type": "uri", "value": "http://www.w3.org/ns/oa#Annotation" }
 	                }, {
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://purl.org/dc/terms/source" },
 	                    "o": { "type": "uri", "value": "https://github.com/perseids-project/plokamos" }
 	                }, {
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#serializedBy" },
 	                    "o": { "type": "uri", "value": "https://github.com/perseids-project/plokamos" } // todo: add version
 	                }, {
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#motivatedBy" },
 	                    "o": { "type": "uri", "value": "http://www.w3.org/ns/oa#identifying" }
 	                }, {
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#hasBody" },
 	                    "o": { "type": "uri", "value": annotationId }
@@ -44862,30 +44862,30 @@
 
 	                var target = [{
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#hasTarget" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "o": { "type": "uri", "value": targetId }
 	                }, {
 	                    "p": { "type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": targetId },
 	                    "o": { "type": "uri", "value": "http://www.w3.org/ns/oa#SpecificResource" }
 	                }, // planned: figure out alternatives for non-text targets
 	                {
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#hasSource" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": targetId },
 	                    "o": { "type": "uri", "value": this[urn] }
 	                }, {
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#hasSelector" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": targetId },
 	                    "o": { "type": "uri", "value": selectorId }
 	                }];
 
 	                var date = [{
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#annotatedAt" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "o": {
 	                        "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
@@ -44896,7 +44896,7 @@
 
 	                var user = [{
 	                    "p": { "type": "uri", "value": "http://www.w3.org/ns/oa#annotatedBy" },
-	                    "g": { "type": "uri", "value": this[defaultGraph] },
+	                    "g": { "type": "uri", "value": defaultGraph },
 	                    "s": { "type": "uri", "value": annotationId },
 	                    "o": { "type": "uri", "value": this[userId] }
 	                } // NOTE: describe <o> query
@@ -45253,7 +45253,7 @@
 	    }, {
 	        key: 'expand',
 	        value: function expand(gspo, graphs) {
-	            this[transformation].expand(gspo, graphs);
+	            return this[transformation].expand(gspo, graphs);
 	        }
 
 	        // vocab:
@@ -45440,13 +45440,13 @@
 
 	    }, {
 	        key: 'expand',
-	        value: function expand(data, ontology) {
+	        value: function expand(gspo, graphs, ontology) {
 	            var expander = ontology && self$1[all].filter(function (o) {
 	                return o.name === ontology;
 	            }).length ? _$1.head(self$1[all].filter(function (o) {
 	                return o.name === ontology;
-	            })) : self$1.test(data);
-	            return expander ? expander.expand(data) : data;
+	            })) : self$1.test(gspo);
+	            return expander ? expander.expand(gspo, graphs) : gspo;
 	        }
 
 	        /**
