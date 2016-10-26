@@ -1,3 +1,4 @@
+import Utils from '../../utils'
 import SPARQL from '../sparql'
 import sparqlQuery from '../io/sparqlRetriever'
 import _ from 'lodash'
