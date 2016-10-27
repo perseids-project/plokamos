@@ -5,9 +5,8 @@ class Tooltip {
     constructor(app) {
 
         $(document).on('click', '.popover-footer > .btn', (e) => {
-            var id = $('.popover-source').data('source-id')
-            $(document.getElementById(id)).click()
-            $('#popover-selection').popover('hide')
+            $('.popover').map((i,j) => $(document.querySelectorAll(`[aria-describedby="${j.id}"]`)).click())
+            $('#popover-selection').popover('destroy')
         })
 
         this.register = (jqElement) => {
@@ -32,6 +31,7 @@ class Tooltip {
                 title: jqElement.data('selector').exact,
                 content: content
             })
+            jqElement.click((e) => $('#'+e.target.getAttribute('aria-describedby')).toggleClass('fixed'))
         }
     }
 }
