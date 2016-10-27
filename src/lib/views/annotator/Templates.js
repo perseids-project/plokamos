@@ -6,7 +6,7 @@ import sparqlQuery from '../../models/io/sparqlRetriever'
  * Class for the Editor interface
  */
 class Templates {
-    constructor(labels) {
+    constructor(ontology,labels) {
         var substringMatcher = function(strs) {
             return function findMatches(q, cb) {
                 var matches, substrRegex;
@@ -224,7 +224,7 @@ class Templates {
             "http://data.snapdrgn.net/ontology/snap#UncleOf"
         ]
         var self = this
-
+        self.ontology = ontology
         this.decodeHTML = function(str) {
             var map = {"gt": ">" /* , … */};
             return str.replace(/&(#(?:x[0-9a-f]+|\d+)|[a-z]+);?/gi, function ($0, $1) {
@@ -260,7 +260,7 @@ class Templates {
             label: () => {
                 return (uri,render) => {
                     var rendered = this.decodeHTML(render(uri))
-                    return SNAP.label(rendered) || rendered
+                    return self.ontology.label(rendered) || rendered
                 }
             }}
         this.partials = {

@@ -1,7 +1,5 @@
 import $ from 'jquery'
 import _ from 'lodash'
-import Selectors from '../models/queries/oa_selectors'
-import Annotation from '../models/queries/oabyId'
 import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
@@ -57,7 +55,7 @@ class Applicator {
          * @param id (optional) annotation id to query
          */
         this.load = (id) =>
-            model.execute(Annotation.byIdentifier(id))
+            model.execute(OA.query("byIdentifier")(id)) // todo:
             .then((bindings) =>
                 _.groupBy(_.last(bindings).result,'id.value')
             ).then((grouped) => {
@@ -74,12 +72,12 @@ class Applicator {
                         return span
                     })
 
-                return _.uniq(spans).map((span) => {
+                return _.uniqBy(spans.map((span) => {
                     var data = store[span.getAttribute('id')]
                     var element = document.getElementById(span.getAttribute('id'))
                     element.setAttribute('data-annotations',JSON.stringify(data))
                     return $(element)
-                })
+                }), (j) => j.attr('id'))
                 }
             )
             .then((elements) =>
@@ -91,8 +89,8 @@ class Applicator {
             )
             .then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                    var snap = SNAP.simplify()(grouped) // planned: move into nodelink, specify API for document plugins
-                    var input = _.flatMap(snap,(v,k)=>v.map((o) => Object.assign(o,{g:k})))
+                    var snap = _.mapValues(grouped, (v,k) => OA.getBodies(v).map((b) => app.ontology.simplify(b,k))) // planned: move into nodelink, specify API for document plugins
+                    var input = _.flatMapDeep(snap,(v,k)=>v.map((o) => o.map((p) => Object.assign(p,{g:k}))))
                     this.nodelink.add(input)
                 }
             )
@@ -127,6 +125,7 @@ class Applicator {
         this.delete = new Editor(app)
         this.nodelink = new NodeLink(app)
         this.load().then(() => this.spinner.css('display','none'));
+        // todo: Should I move this to an init function? At least it's not returning the promise
     }
 
     // planned: move plugins into lists for elements (e.g. tooltip) and document (e.g. nodelink)

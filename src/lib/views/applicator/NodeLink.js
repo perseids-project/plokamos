@@ -11,7 +11,7 @@ class NodeLink {
             <span class="glyphicon glyphicon-certificate"/>
           </button>
         `)
-        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"></div></div>');
+        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"><div class="middle-bar"/><table class="table"/></div></div>');
         app.bar.plugins.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');
@@ -27,16 +27,20 @@ class NodeLink {
             $('#global-view').css('display','block')})
         globalViewBtn.keep = false;
 
-        $('#rdftable').html(`
-  <table class="table">
+        $('#rdftable > .table').html(`
     <tr style="font-weight:bold;">
       <td>Subject</td>
       <td>Predicate</td>
       <td>Object</td>
       <td>URN</td>
     </tr>
-  </table>
         `)
+
+        // create set of all labels
+        // make buttons in middle-bar to toggle labels
+        // keep a list of hovered/clicked labels
+        // on hover/click add remove labels from list
+        // change opacity according to lists
 
         this.parent = $('#nodelink').get(0)
 
@@ -48,6 +52,8 @@ class NodeLink {
         this.link={}
         this.nodes = []
         this.links = []
+        this.active = []
+        this.hover = []
 
         this.vis = d3.select(this.parent).append("svg:svg").attr("width","100%").attr("height","100%")
         this.force = d3.layout.force().size([50, 50]).nodes(this.nodes).links(this.links).gravity(1).linkDistance(function(d){return (1-d.weight)*100}).charge(-3000).linkStrength(function(x) {
@@ -197,11 +203,23 @@ class NodeLink {
                 var subjectIdx = _.findIndex(self.nodes,['id',t.s])
                 var objectIdx = _.findIndex(self.nodes,['id',t.o])
                 var predicateIdx = (subjectIdx+1 && objectIdx+1) ? _.findIndex(self.links,{source:subjectIdx,target:objectIdx}) : -1
-                if (subjectIdx+1) {self.nodes[subjectIdx].graphs.push(t.g)} else {subjectIdx = self.nodes.push({id:t.s,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
-                if (objectIdx+1) {self.nodes[objectIdx].graphs.push(t.g)} else {objectIdx = self.nodes.push({id:t.o,graphs:[t.g],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
-                if (predicateIdx+1) {self.links[predicateIdx].graphs.push([t.g,t.p])} else {predicateIdx = self.links.push({source:subjectIdx,target:objectIdx,graphs:[[t.g,t.p]],weight:0.5})-1}
+                if (subjectIdx+1) {
+                    self.nodes[subjectIdx].graphs.push(t.g)
+                    self.nodes[subjectIdx].types.push(t.p)
+                } else {subjectIdx = self.nodes.push({id:t.s,graphs:[t.g],types:[t.p],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
+                if (objectIdx+1) {
+                    self.nodes[objectIdx].graphs.push(t.g)
+                    self.nodes[objectIdx].types.push(t.p)
+                } else {objectIdx = self.nodes.push({id:t.o,graphs:[t.g],types:[t.p],x:Math.floor($(self.parent).width()*Math.random()),y:Math.floor($(self.parent).height()*Math.random())})-1}
+                if (predicateIdx+1) {
+                    self.links[predicateIdx].graphs.push(t.g)
+                    self.links[predicateIdx].types.push(t.p)
+                } else {predicateIdx = self.links.push(
+                    {source:subjectIdx,target:objectIdx,graphs:[t.g],types:[t.p],weight:0.5}
+                    )-1}
             })
 
+            // USE ONTOLOGIES HERE:
             triples.forEach((t) => {
                 $('#rdftable > .table').append(`
                     <tr>
@@ -212,6 +230,8 @@ class NodeLink {
                     </tr>
                 `)
             })
+
+            _.chain(triples).map('p').uniq().value().forEach((p) => $(`<div class="filter-btn">${p}</div>`).appendTo('.middle-bar'))
             // todo
             // planned: take in triples instead of node/links and convert them with self.node indices
             // planned: remember that removing may require re-indexing!
