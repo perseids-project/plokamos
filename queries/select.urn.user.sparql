@@ -1,0 +1,35 @@
+PREFIX oa: <http://www.w3.org/ns/oa#>
+SELECT DISTINCT ?s ?p ?o ?g
+WHERE {
+# bind parameters
+BIND(<urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1:A.ajax_1> AS ?urn)
+BIND(<http://data.perseus.org/sosol/users/fbaumgardt> AS ?user)
+# select annotations
+?annotation oa:hasTarget/oa:hasSource ?urn .
+?annotation oa:annotatedBy ?user .
+# retrieve relevant direct and indirect properties
+{
+?annotation oa:hasTarget ?s .
+GRAPH ?g {?s ?p ?o}
+}
+UNION
+{
+?annotation oa:serializedBy ?s .
+GRAPH ?g {?s ?p ?o}
+}
+UNION
+{
+?annotation oa:hasTarget/oa:hasSelector ?s .
+GRAPH ?g {?s ?p ?o}
+}
+UNION
+{
+?annotation oa:hasBody ?g .
+GRAPH ?g {?s ?p ?o}
+}
+UNION
+{
+BIND(?annotation AS ?s)
+GRAPH ?g {?s ?p ?o}
+}
+}

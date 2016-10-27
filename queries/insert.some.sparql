@@ -1,0 +1,5 @@
+INSERT DATA { GRAPH <http://data.perseus.org/collections/urn:cite:perseus:pdljann.11111a41ca8d013259720ada42b1fd09> {
+<http://data.perseus.org/people/smith:ajax-1#this> <snap:has-bond> <http://data.perseus.org/collections/urn:cite:perseus:pdljann.11111a41ca8d013259720ada42b1fd09#bond-1> .
+<http://data.perseus.org/collections/urn:cite:perseus:pdljann.11111a41ca8d013259720ada42b1fd09#bond-1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <perseusrdf:CompanionOf> .
+<http://data.perseus.org/collections/urn:cite:perseus:pdljann.11111a41ca8d013259720ada42b1fd09#bond-1> <snap:bond-with> <http://data.perseus.org/people/smith:heracles-14#this> .
+}}

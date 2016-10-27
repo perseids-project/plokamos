@@ -1,0 +1,84 @@
+PREFIX dbo:<http://dbpedia.org/ontology/>
+PREFIX dbp:<http://dbpedia.org/property/>
+PREFIX dbpedia:<http://dbpedia.org/resource/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tto:<http://example.org/tuto/ontology#>
+PREFIX ttr:<http://example.org/tuto/resource#>
+PREFIX xsd:<http://www.w3.org/2001/XMLSchema#>
+
+INSERT DATA {
+dbo:Person	rdfs:subClassOf	tto:Creature .
+tto:Animal	rdf:type	rdfs:Class .
+tto:Animal	rdfs:isDefinedBy	tto: .
+tto:Animal	rdfs:label	"animal" .
+tto:Animal	rdfs:subClassOf	tto:Creature .
+tto:Cat	rdf:type	rdfs:Class .
+tto:Cat	rdfs:isDefinedBy	tto: .
+tto:Cat	rdfs:label	"cat" .
+tto:Cat	rdfs:subClassOf	tto:Animal .
+tto:Creature	rdf:type	rdfs:Class .
+tto:Creature	rdfs:isDefinedBy	tto: .
+tto:Creature	rdfs:label	"creature" .
+tto:Dog	rdf:type	rdfs:Class .
+tto:Dog	rdfs:isDefinedBy	tto: .
+tto:Dog	rdfs:label	"dog" .
+tto:Dog	rdfs:subClassOf	tto:Animal .
+tto:Monkey	rdf:type	rdfs:Class .
+tto:Monkey	rdfs:isDefinedBy	tto: .
+tto:Monkey	rdfs:label	"monkey" .
+tto:Monkey	rdfs:subClassOf	tto:Animal .
+tto:pet	rdf:type	rdf:Property .
+tto:pet	rdfs:domain	dbo:Person .
+tto:pet	rdfs:isDefinedBy	tto: .
+tto:pet	rdfs:label	"domestic animal" .
+tto:pet	rdfs:range	tto:Animal .
+tto:sex	rdf:type	rdf:Property .
+tto:sex	rdfs:domain	tto:Creature .
+tto:sex	rdfs:isDefinedBy	tto: .
+tto:sex	rdfs:label	"sex" .
+tto:sex	rdfs:range	xsd:string .
+tto:weight	rdf:type	rdf:Property .
+tto:weight	rdfs:comment	"weight in kilograms" .
+tto:weight	rdfs:domain	tto:Creature .
+tto:weight	rdfs:isDefinedBy	tto: .
+tto:weight	rdfs:label	"weight" .
+tto:weight	rdfs:range	xsd:decimal .
+ttr:Eve	dbo:parent	ttr:William .
+ttr:Eve	dbp:birthDate	"2006-11-03" .
+ttr:Eve	dbp:name	"Eve" .
+ttr:Eve	tto:sex	"female" .
+ttr:Eve	rdf:type	dbo:Person .
+ttr:John	dbp:birthDate	"1942-02-02" .
+ttr:John	dbp:name	"John" .
+ttr:John	tto:pet	ttr:LunaCat .
+ttr:John	tto:pet	ttr:TomCat .
+ttr:John	tto:sex	"male" .
+ttr:John	rdf:type	dbo:Person .
+ttr:LunaCat	dbp:name	"Luna" .
+ttr:LunaCat	tto:color	"violet" .
+ttr:LunaCat	tto:sex	"female" .
+ttr:LunaCat	tto:weight	"4.2" .
+ttr:LunaCat	rdf:type	tto:Cat .
+ttr:RexDog	dbp:name	"Rex" .
+ttr:RexDog	tto:color	"brown" .
+ttr:RexDog	tto:sex	"male" .
+ttr:RexDog	tto:weight	"8.8" .
+ttr:RexDog	rdf:type	tto:Dog .
+ttr:SnuffMonkey	dbp:name	"Snuff" .
+ttr:SnuffMonkey	tto:color	"golden" .
+ttr:SnuffMonkey	tto:sex	"male" .
+ttr:SnuffMonkey	tto:weight	"3.6" .
+ttr:SnuffMonkey	rdf:type	tto:Monkey .
+ttr:TomCat	dbp:name	"Tom" .
+ttr:TomCat	tto:color	"grey" .
+ttr:TomCat	tto:sex	"male" .
+ttr:TomCat	tto:weight	"5.8" .
+ttr:TomCat	rdf:type	tto:Cat .
+ttr:William	dbo:parent	ttr:John .
+ttr:William	dbp:birthDate	"1978-07-20" .
+ttr:William	dbp:name	"William" .
+ttr:William	tto:pet	ttr:RexDog .
+ttr:William	tto:sex	"male" .
+ttr:William	rdf:type	dbo:Person .
+}

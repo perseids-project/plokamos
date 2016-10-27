@@ -1,0 +1,25 @@
+PREFIX oa: <http://www.w3.org/ns/oa#>
+
+SELECT * WHERE {
+  BIND(<http://data.perseus.org/collections/urn:cite:perseus:pdljann.56426b01cc0c0132c49b0ada42b1fd09> AS ?annotation)
+  {
+  	GRAPH ?g { ?annotation oa:hasTarget ?s }
+    GRAPH ?g {?s ?p ?o}
+  }
+  UNION
+  {
+    GRAPH ?g { ?annotation oa:hasBody ?x }
+    GRAPH ?g { ?s oa:hasBody ?x }
+    GRAPH ?g {?s ?p ?o}
+  }
+  UNION
+  {
+  	GRAPH ?g { ?annotation oa:hasTarget/oa:hasSelector ?s }
+    GRAPH ?g {?s ?p ?o}
+  }
+  UNION
+  {
+    GRAPH ?x { ?annotation oa:hasBody ?g }
+    GRAPH ?g {?s ?p ?o}
+  }
+}
