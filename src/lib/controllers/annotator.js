@@ -27,6 +27,51 @@ class Annotator {
         this[model] = app.model;
         this[applicator] = app.applicator;
         this[history] = app.history;
+
+        // todo: this is part of the base module
+        this.modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button></div></div>')
+        app.anchor.append(this.modal)
+
+        app.anchor.mouseup((e) => {
+
+            // Don't use selection inside #global-view
+            if ($(e.target).closest('#global-view').length) return
+
+            // If selection exists, remove it
+            var pos = $('#popover-selection')
+            if (pos) {
+                pos.popover('destroy')
+                pos.replaceWith(pos.text())
+            }
+
+            var selection = document.getSelection();
+
+            // replace starter with
+            if (selection && !selection.isCollapsed && this.modal.css('display')==='none') {
+                // add selector to modal or button
+
+                var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(app.anchor,selection);
+
+                // modal.update({},selector)
+                var span = document.createElement('span')
+                span.setAttribute('id','popover-selection')
+                span.setAttribute('data-annotations','{}')
+                span.setAttribute('data-selector',JSON.stringify(selector))
+                wrapRangeText(span,selection.getRangeAt(0))
+                span = $('#popover-selection')
+                span.popover({
+                    container:"body",
+                    html:"true",
+                    trigger: "manual",
+                    placement: "auto top",
+                    title: selector.exact,
+                    content: "<div class='popover-footer'/>"
+                })
+                span.popover('show')
+            }
+
+        })
+
     }
 
     /**
