@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 class Utils {
     /*
      Copyright (C) 2007, 2008  Alina Friedrichsen <x-alina@gmx.net>
@@ -126,6 +128,27 @@ class Utils {
     static hash(str) {return JSON.stringify(str).split("").reduce((a,b) => {a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString(16).replace("-","0")}
 
     static cite(pre,post) { return "http://data.perseus.org/collections/urn:cite:perseus:pdljann."+this.hash(pre)+this.hash(post) }
+
+    static substringMatcher(strs) {
+        return function findMatches(q, cb) {
+            var matches, substrRegex;
+            matches = [];
+            substrRegex = new RegExp(q, 'i');
+            $.each(strs, function(i, str) { if (substrRegex.test(str)) { matches.push(str); } });
+            cb(matches);
+        };
+    }
+
+    static decodeHTML(str) {
+        var map = {"gt": ">" /* , … */};
+        return str.replace(/&(#(?:x[0-9a-f]+|\d+)|[a-z]+);?/gi, function ($0, $1) {
+            if ($1[0] === "#") {
+                return String.fromCharCode($1[1].toLowerCase() === "x" ? parseInt($1.substr(2), 16) : parseInt($1.substr(1), 10));
+            } else {
+                return map.hasOwnProperty($1) ? map[$1] : $0;
+            }
+        });
+    }
 
 }
 
