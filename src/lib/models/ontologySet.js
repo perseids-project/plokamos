@@ -41,7 +41,7 @@ class OntologySet {
         let tst = _.map(flt,(o) => o.test(data))
         let zpd = _.zip(tst,flt)
         let srt = _.sortBy(zpd,(a) => self[scoring](a[0]))
-        let res = _.head(srt)
+        let res = _.head(srt.reverse())
         return keepEnum || !res ? res : res[1] // remove the test result ?
     }
 
