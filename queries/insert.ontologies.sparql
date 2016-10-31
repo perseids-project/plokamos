@@ -1,0 +1,229 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix snap: <http://data.snapdrgn.net/ontology/snap#>
+prefix pmeta: <http://data.perseids.org/meta#>
+prefix perseusrdf: <http://data.perseus.org/rdfvocab/addons/>
+prefix pchar: <http://data.perseids.org/characterization#>
+
+INSERT DATA {
+  GRAPH <http://data.perseids.org/namespaces> {
+
+    pchar: a pmeta:namespace .
+    pchar: pmeta:prefix "pchar:" .
+
+    pchar: pmeta:hasTransformation [
+        pmeta:hasTarget [
+            a pmeta:Subject;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-CHARACTER>
+            ];
+            pmeta:hasSource pmeta:Subject
+        ];
+        pmeta:hasTarget [
+            a pmeta:Predicate;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-ENGLISH>
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Object;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-GREEK>
+            ];
+            pmeta:hasSource pmeta:Object
+        ]
+    ] .
+
+
+
+
+    snap: pmeta:hasTransformation [
+        pmeta:hasTarget [
+            a pmeta:Subject;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <http://data.snapdrgn.net/ontology/snap#has-bond>
+            ];
+            pmeta:hasSource pmeta:Subject
+        ];
+        pmeta:hasTarget [
+            a pmeta:Predicate;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI rdf:type
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Object;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <http://data.snapdrgn.net/ontology/snap#bond-with>
+            ];
+            pmeta:hasSource pmeta:Object
+        ]
+    ] .
+
+    snap: a pmeta:namespace .
+    snap: pmeta:prefix "snap:" .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#AcknowledgedFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#AdoptedFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#AllianceWith> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#AncestorOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#AuntOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#Bond> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#BrotherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#CasualIntimateRelationshipWith> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ChildOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ChildOfSiblingOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ClaimedFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#CousinOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#DaughterOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#DescendentOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#EmnityFor> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ExtendedFamilyOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ExtendedHouseholdOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FamilyOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FatherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FosterFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FreedSlaveOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FreedmanOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FreedwomanOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#FriendshipFor> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GrandchildOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GranddaughterOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GrandfatherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GrandmotherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GrandparentOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GrandsonOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GreatGrandfatherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GreatGrandmotherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#GreatGrandparentOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#HalfFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#HereditaryFamilyOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#HouseSlaveOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#HouseholdOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#InLawFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#IntimateRelationshipWith> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#KinOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#LegallyRecognisedRelationshipWith> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#Link> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#MaternalFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#MotherOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#NephewOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#NieceOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ParentOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#PaternalFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#ProfessionalRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#QuAC> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#QualifierRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SeriousIntimateRelationshipWith> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SiblingOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SiblingOfParentOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SisterOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SlaveOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#SonOf> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#StepFamilyRelationship> .
+    snap: pmeta:member <http://data.snapdrgn.net/ontology/snap#UncleOf> .
+     snap:AcknowledgedFamilyRelationship rdfs:label "Has Acknowledged Family Relationship With" .
+     snap:AdoptedFamilyRelationship rdfs:label "Has Adopted Family Relationship With" .
+     snap:AllianceWith rdfs:label "Has Alliance With" .
+     snap:AncestorOf rdfs:label "Is Ancestor Of" .
+     snap:AuntOf rdfs:label "Is Aunt Of" .
+     snap:Bond rdfs:label "Has Bond With" .
+     snap:BrotherOf rdfs:label "Is Brother Of" .
+     snap:CasualIntimateRelationshipWith rdfs:label "Has Casual Intimate Relationship With" .
+     snap:ChildOf rdfs:label "Is Child Of" .
+     snap:ChildOfSiblingOf rdfs:label "Is ChildOfSibling Of" .
+     snap:ClaimedFamilyRelationship rdfs:label "Has Claimed Family Relationship With" .
+     snap:CousinOf rdfs:label "Is Cousin Of" .
+     snap:DaughterOf rdfs:label "Is Daughter Of" .
+     snap:DescendentOf rdfs:label "Is Descendent Of" .
+     snap:EmnityFor rdfs:label "Has Emnity For" .
+     snap:ExtendedFamilyOf rdfs:label "Is Extended Family Of" .
+     snap:ExtendedHouseholdOf rdfs:label "Is Extended Household Of" .
+     snap:FamilyOf rdfs:label "Is Family Of" .
+     snap:FatherOf rdfs:label "Is Father Of" .
+     snap:FosterFamilyRelationship rdfs:label "Has Foster Family Relationship With" .
+     snap:FreedSlaveOf rdfs:label "Is Freed Slave Of" .
+     snap:FreedmanOf rdfs:label "Is Freedman Of" .
+     snap:FreedwomanOf rdfs:label "Is Freedwoman Of" .
+     snap:FriendshipFor rdfs:label "Has Friendship For" .
+     snap:GrandchildOf rdfs:label "Is Grandchild Of" .
+     snap:GranddaughterOf rdfs:label "Is Granddaughter Of" .
+     snap:GrandfatherOf rdfs:label "Is Grandfather Of" .
+     snap:GrandmotherOf rdfs:label "Is Grandmother Of" .
+     snap:GrandparentOf rdfs:label "Is Grandparent Of" .
+     snap:GrandsonOf rdfs:label "Is Grandson Of" .
+     snap:GreatGrandfatherOf rdfs:label "Is GreatGrandfather Of" .
+     snap:GreatGrandmotherOf rdfs:label "Is GreatGrandmother Of" .
+     snap:GreatGrandparentOf rdfs:label "Is GreatGrandparent Of" .
+     snap:HalfFamilyRelationship rdfs:label "HalfFamilyRelationship" .
+     snap:HereditaryFamilyOf rdfs:label "Is HereditaryFamily Of" .
+     snap:HouseSlaveOf rdfs:label "Is HouseSlave Of" .
+     snap:HouseholdOf rdfs:label "Is Household Of" .
+     snap:InLawFamilyRelationship rdfs:label "Has In-Law Family Relationship With" .
+     snap:IntimateRelationshipWith rdfs:label "Has Intimate Relationship With" .
+     snap:KinOf rdfs:label "Is Kin Of" .
+     snap:LegallyRecognisedRelationshipWith rdfs:label "Has Legally Recognised Relationship With" .
+     snap:Link rdfs:label "Has Link With" .
+     snap:MaternalFamilyRelationship rdfs:label "Has Maternal Family Relationship With" .
+     snap:MotherOf rdfs:label "Is Mother Of" .
+     snap:NephewOf rdfs:label "Is Nephew Of" .
+     snap:NieceOf rdfs:label "Is Niece Of" .
+     snap:ParentOf rdfs:label "Is Parent Of" .
+     snap:PaternalFamilyRelationship rdfs:label "Has Paternal Family Relationship With" .
+     snap:ProfessionalRelationship rdfs:label "Has Professional Relationship With" .
+     snap:QualifierRelationship rdfs:label "Has Qualifier Relationship With" .
+     snap:SeriousIntimateRelationshipWith rdfs:label "Has Serious Intimate Relationship With" .
+     snap:SiblingOf rdfs:label "Is Sibling Of" .
+     snap:SiblingOfParentOf rdfs:label "Is SiblingOfParent Of" .
+     snap:SisterOf rdfs:label "Is Sister Of" .
+     snap:SlaveOf rdfs:label "Is Slave Of" .
+     snap:SonOf rdfs:label "Is Son Of" .
+     snap:StepFamilyRelationship rdfs:label "Has Step Family Relationship With" .
+     snap:UncleOf rdfs:label "Is Uncle Of" .
+
+    perseusrdf: a pmeta:namespace .
+    perseusrdf: pmeta:prefix "perseusrdf:" .
+
+    perseusrdf: pmeta:hasTransformation [
+        pmeta:hasTarget [
+            a pmeta:Subject;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <http://data.snapdrgn.net/ontology/snap#has-bond>
+            ];
+            pmeta:hasSource pmeta:Subject
+        ];
+        pmeta:hasTarget [
+            a pmeta:Predicate;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI rdf:type
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Object;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <http://data.snapdrgn.net/ontology/snap#bond-with>
+            ];
+            pmeta:hasSource pmeta:Object
+        ]
+    ] .
+
+    perseusrdf: pmeta:member perseusrdf:CompanionOf .
+    perseusrdf: pmeta:member perseusrdf:EnemyOf .
+    perseusrdf: pmeta:member perseusrdf:HusbandOf .
+    perseusrdf: pmeta:member perseusrdf:WifeOf .
+    perseusrdf:CompanionOf rdfs:label "Is Companion Of" .
+    perseusrdf:EnemyOf rdfs:label "Is Enemy Of" .
+    perseusrdf:HusbandOf rdfs:label "Is Husband Of" .
+    perseusrdf:WifeOf rdfs:label "Is Wife Of" .
+    }
+}

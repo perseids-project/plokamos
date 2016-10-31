@@ -33,7 +33,7 @@ var expansion = (rules) => (gspo, graphs) => {
     // if exisiting annotation, get bindings by filtering for rule-conforming triples
     let annotation = (graphs||{})[gspo.g]
     let bindings = annotation ? annotation.filter(
-        (quad) => _.reduce(rules, (result, rule) => result || (quad[pmetaMap[rule.constraint]].value === rule.value && quad[pmetaMap[rule.source]] === rule.target), false)
+        (quad) => _.reduce(rules, (result, rule) => result || (quad[pmetaMap[rule.constraint]].value === rule.value && quad[pmetaMap[rule.source]].value === gspo[pmetaMap[rule.target]]), false)
     ) : []
 
     // what does it mean to have annotation and mismatching length? --> update. valid case or not?

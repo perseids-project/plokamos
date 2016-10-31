@@ -1,0 +1,17 @@
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix pmeta: <http://data.perseids.org/meta#>
+
+SELECT ?transformation ?target ?constraint ?value ?source WHERE {
+  GRAPH <http://data.perseids.org/namespaces> {
+    BIND(<http://data.snapdrgn.net/ontology/snap#> AS ?uri)
+    ?uri rdf:type pmeta:namespace .
+    ?uri pmeta:hasTransformation ?transformation.
+    ?transformation pmeta:hasTarget ?t .
+    ?t rdf:type ?target .
+    ?t pmeta:hasConstraint ?c .
+    ?c rdf:type ?constraint .
+    ?c pmeta:hasURI ?value .
+    ?t pmeta:hasSource ?source
+  }
+}

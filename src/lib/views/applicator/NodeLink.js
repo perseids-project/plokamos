@@ -11,7 +11,7 @@ class NodeLink {
             <span class="glyphicon glyphicon-certificate"/>
           </button>
         `)
-        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"><div class="middle-bar"/><table class="table"/></div></div>');
+        var globalView = $('<div id="global-view" style="position:fixed; z-index:1000;"><div class="upper-half well" id="nodelink"></div><div class="lower-half panel panel-default" id="rdftable"><div class="middle-bar" style="display:none"/><table class="table"/></div></div>');
         app.bar.plugins.append(globalViewBtn);
         body.append(globalView);
         globalView.css('display','none');

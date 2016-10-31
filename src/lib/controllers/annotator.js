@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import SPARQL from '../models/sparql'
 import Utils from '../utils'
+import wrapRangeText from 'wrap-range-text'
+import OA from '../models/ontologies/OA'
 
 // planned: think about api - stacking commands, then executing them, in order to facilitate single step history?
 
@@ -27,6 +29,51 @@ class Annotator {
         this[model] = app.model;
         this[applicator] = app.applicator;
         this[history] = app.history;
+
+        // todo: this is part of the base module
+        this.modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button id="btn-apply" type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button></div></div>')
+        app.anchor.append(this.modal)
+
+        app.anchor.mouseup((e) => {
+
+            // Don't use selection inside #global-view
+            if ($(e.target).closest('#global-view').length) return
+
+            // If selection exists, remove it
+            var pos = $('#popover-selection')
+            if (pos) {
+                pos.popover('destroy')
+                pos.replaceWith(pos.text())
+            }
+
+            var selection = document.getSelection();
+
+            // replace starter with
+            if (selection && !selection.isCollapsed && this.modal.css('display')==='none') {
+                // add selector to modal or button
+
+                var selector = OA.create("http://www.w3.org/ns/oa#TextQuoteSelector")(app.anchor,selection);
+
+                // modal.update({},selector)
+                var span = document.createElement('span')
+                span.setAttribute('id','popover-selection')
+                span.setAttribute('data-annotations','{}')
+                span.setAttribute('data-selector',JSON.stringify(selector))
+                wrapRangeText(span,selection.getRangeAt(0))
+                span = $('#popover-selection')
+                span.popover({
+                    container:"body",
+                    html:"true",
+                    trigger: "manual",
+                    placement: "auto top",
+                    title: selector.exact,
+                    content: "<div class='popover-footer'/>"
+                })
+                span.popover('show')
+            }
+
+        })
+
     }
 
     /**
@@ -53,23 +100,13 @@ class Annotator {
      * @param deletions
      * @param insertions
      */
-    update(deletions, insertions) {
+    update(deletions, insertions, graph) {
         // todo: remove old title, add new title
         return this[model].execute(_.flatten([
             SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo))),
             SPARQL.bindingsToInsert(_.flatten(insertions.concat(
                 // filter for graphs, map to graphid, get uniq
-                _.uniq(insertions.map((i) => i.g.value || i.g)).map((annotationId) => [
-                    {
-                        "p": { "type":"uri", "value":"http://www.w3.org/ns/oa#annotatedAt" },
-                        "g": { "type":"uri", "value": defaultGraph},
-                        "s": { "type":"uri", "value":annotationId }, //
-                        "o": { "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp", "type":"literal", "value": (new Date()).toISOString()}
-                    }, {"p": { "type":"uri", "value":"http://www.w3.org/ns/oa#annotatedBy" },
-                        "g": { "type":"uri", "value": defaultGraph },
-                        "s": { "type":"uri", "value": annotationId },
-                        "o": { "type":"uri", "value": this[userId] }}
-                ])
+                _.uniq(_.flatten(insertions).map((i) => i.g.value || i.g)).map((annotationId) => _.concat(OA.makeAnnotatedAt(annotationId, graph || defaultGraph), OA.makeAnnotatedBy(annotationId, graph || defaultGraph, this[userId])))
             )).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
         ]))
     }
@@ -79,107 +116,26 @@ class Annotator {
      *
      * @param list
      */
-    create (annotationId, bindings) {
+    create (annotationId, bindings, graph) {
         var result = $.Deferred().resolve([]).promise()
         if (bindings.length) {
-            // planned: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?)
+
             var selectorId = _.find(bindings, (binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
-            var object = _.find(bindings, (binding) => binding.p.value.endsWith("bond-with")).o.value
-            var bond = _.find(bindings, (binding) => binding.p.value.endsWith("has-bond")).o.value
-            var predicate = _.find(bindings, (binding) => binding.s.value === bond && binding.p.value.endsWith("bond-with")).o.value
-            var title = [
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://purl.org/dc/terms/title"},
-                    "o": {"type": "literal", "value": `${object} identifies ${object.replace('http://data.perseus.org/people/smith:','').split('-')[0]} as ${predicate} in ${this[urn]}`}
-                }
-            ]
-            // planned: make independent of selector type
             var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
-            var oa = [
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                    "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#Annotation"}
-                },
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://purl.org/dc/terms/source"},
-                    "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"}
-                },
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#serializedBy"},
-                    "o": {"type": "uri", "value": "https://github.com/perseids-project/plokamos"} // todo: add version
-                },
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#motivatedBy"},
-                    "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#identifying"}
-                },
-                {
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasBody"},
-                    "o": {"type": "uri", "value": annotationId}
-                }
-            ]
 
-            var target = [
-                {
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasTarget"},
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "o": {"type": "uri", "value": targetId}
-                },
-                {
-                    "p": {"type": "uri", "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": targetId},
-                    "o": {"type": "uri", "value": "http://www.w3.org/ns/oa#SpecificResource"}
-                }, // planned: figure out alternatives for non-text targets
-                {
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasSource"},
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": targetId},
-                    "o": {"type": "uri", "value": this[urn]}
-                },
-                {
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#hasSelector"},
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": targetId},
-                    "o": {"type": "uri", "value": selectorId}
-                }
-            ]
+            // planned: make independent of selector type
+            var oa = OA.makeCore(annotationId, graph || defaultGraph)
+            var target = OA.makeTarget(annotationId, graph || defaultGraph, targetId, selectorId, this[urn])
+            var date = OA.makeAnnotatedAt(annotationId, graph || defaultGraph)
+            var user = OA.makeAnnotatedBy(annotationId, graph || defaultGraph, this[userId])
 
-            var date = [{
-                "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#annotatedAt"},
-                "g": {"type": "uri", "value": defaultGraph},
-                "s": {"type": "uri", "value": annotationId},
-                "o": {
-                    "datatype": "http://www.w3.org/2001/XMLSchema#dateTimeStamp",
-                    "type": "literal",
-                    "value": (new Date()).toISOString()
-                }
-            }]
-
-
-            var user = [
-                {
-                    "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#annotatedBy"},
-                    "g": {"type": "uri", "value": defaultGraph},
-                    "s": {"type": "uri", "value": annotationId},
-                    "o": {"type": "uri", "value": this[userId]}
-                } // NOTE: describe <o> query
-            ]
             this[model].defaultDataset.push(annotationId)
             this[model].namedDataset.push(annotationId)
-            var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, title, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
+            if (!(this[model].defaultDataset.indexOf(graph || defaultGraph)+1)) {
+                this[model].defaultDataset.push(graph || defaultGraph)
+                this[model].namedDataset.push(graph || defaultGraph)
+            }
+            var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
             result = this[model].execute(insert)
         }
         return result

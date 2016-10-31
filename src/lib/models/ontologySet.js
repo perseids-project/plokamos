@@ -41,7 +41,7 @@ class OntologySet {
         let tst = _.map(flt,(o) => o.test(data))
         let zpd = _.zip(tst,flt)
         let srt = _.sortBy(zpd,(a) => self[scoring](a[0]))
-        let res = _.head(srt)
+        let res = _.head(srt.reverse())
         return keepEnum || !res ? res : res[1] // remove the test result ?
     }
 
@@ -53,10 +53,7 @@ class OntologySet {
      * @returns {*}
      */
     simplify(body, id, ontology) {
-        var simplifier =
-            ontology && self[all].filter((o) => o.name === ontology).length ?
-                _.head(self[all].filter((o) => o.name === ontology)) :
-                self.test(body)
+        var simplifier = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(body)
         return simplifier ? simplifier.simplify(body, id) : body
 
     }
@@ -68,7 +65,7 @@ class OntologySet {
      * @returns {*}
      */
     expand(gspo, graphs, ontology) {
-        let expander = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(gspo)
+        let expander = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(gspo)
         return expander ? expander.expand(gspo, graphs) : gspo
     }
 
@@ -79,7 +76,7 @@ class OntologySet {
      * @returns {*}
      */
     label(data, ontology) {
-        let labeler = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(data)
+        let labeler = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(data)
         return labeler ? labeler.label(data) : data
 
     }
@@ -97,10 +94,12 @@ class OntologySet {
      * Get a list of URIs, e.g. for autocomplete
      * @param ontology
      */
-    resources(ontology) {
+    resources(namespace) {
         // todo: check for ontology, else return:
 
-        _.chain(self[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
+        let fltr = _.filter(self[all],(o) => !namespace || o.namespace().uri === namespace)
+            let mpd = _.map(fltr,(o) => o.resources())
+                return _.flatten(mpd)
     }
 
     /**

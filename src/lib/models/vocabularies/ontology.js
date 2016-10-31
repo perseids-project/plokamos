@@ -108,6 +108,10 @@ class Ontology {
         return resource
     }
 
+    resources() {
+        return this[vocabulary].resources()
+    }
+
     /**
      * Factory function
      * @param uri

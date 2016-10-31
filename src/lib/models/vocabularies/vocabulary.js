@@ -33,6 +33,10 @@ class Vocabulary {
         //todo: retrieve from endpoint
     }
 
+    resources() {
+        return _.keys(this[TERMS])
+    }
+
     static get(uri) {
         let query = `
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>

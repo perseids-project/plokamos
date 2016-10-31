@@ -4,16 +4,10 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
-import Editor from '../views/applicator/Editor'
-import SNAP from '../models/ontologies/SNAP'
+import SocialNetwork from '../views/annotator/SocialNetwork'
+import Characterizations from '../views/annotator/Characterizations'
 import OA from '../models/ontologies/OA'
 
-class Marker {
-
-}
-// I have a list of selector types
-// I have a list of queries to get selector data
-// I have a list of functions to apply
 /**
  * Class for visualization of annotations.
  *
@@ -82,8 +76,9 @@ class Applicator {
             )
             .then((elements) =>
                 elements.map((element) => {
-                    this.tooltip.register(element);
-                    this.delete.register(element);
+                    this.tooltip.register(element); // todo: (though we might want to adjust markers based on existing annotations)
+                    this.socialnetwork.register(element); // todo: this can probably be removed or moved to Annotator
+                    this.characterizations.register(element); // todo: MOVE IT TO ANNOTATOR
                     return element
                 })
             )
@@ -122,7 +117,8 @@ class Applicator {
 
         // var body = $('body');
         this.tooltip = new Tooltip(app)
-        this.delete = new Editor(app)
+        this.socialnetwork = new SocialNetwork(app)
+        this.characterizations = new Characterizations(app)
         this.nodelink = new NodeLink(app)
         this.load().then(() => this.spinner.css('display','none'));
         // todo: Should I move this to an init function? At least it's not returning the promise
