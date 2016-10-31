@@ -12,16 +12,16 @@ var namespaces = [
 ]
 
 var expandMap = {
-    "http://www.w3.org/ns/oa#TextQuoteSelector": (selector) =>
+    "http://www.w3.org/ns/oa#TextQuoteSelector": (selector, defaultGraph) =>
         _.chain(["prefix","exact","suffix"])
             .map((pos) => selector[pos] ? {
-                g:{type:"uri",value:"http://data.perseus.org/graphs/persons"},
+                g:{type:"uri",value:defaultGraph || "http://data.perseus.org/graphs/persons"},
                 s:{type:"uri",value:selector.id},
                 p:{type:"uri",value:`http://www.w3.org/ns/oa#${pos}`},
                 o:{type:"literal",value:selector[pos]}
             } : undefined)
             .concat({
-                g:{type:"uri",value:"http://data.perseus.org/graphs/persons"},
+                g:{type:"uri",value:defaultGraph || "http://data.perseus.org/graphs/persons"},
                 s:{type:"uri",value:selector.id},
                 p:{type:"uri",value:"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
                 o:{type:"uri",value:"http://www.w3.org/ns/oa#TextQuoteSelector"}
