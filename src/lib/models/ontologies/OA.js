@@ -160,7 +160,7 @@ class OA {
             "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#annotatedBy"},
             "g": {"type": "uri", "value": defaultGraph},
             "s": {"type": "uri", "value": annotationId},
-            "o": {"type": "uri", "value": this[userId]}
+            "o": {"type": "uri", "value": userId}
         }] // NOTE: describe <o> query
     }
 
