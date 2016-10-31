@@ -201,6 +201,15 @@
 .tt-input {
     height:40px !important;
 }
+.input-group input.tt-input {
+    height:40px !important;
+    -webkit-border-top-left-radius: 0px;
+    -moz-border-top-left-radius: 0px;
+    border-top-left-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    -moz-border-bottom-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
 
 /**
  * NodeLink
@@ -288,7 +297,7 @@ text.node-label {
     max-height: 45%;
 }
 
-.edit_btn {
+.btn-edit {
     font-size: 0.7em;
     padding: 2px 10px;
 }
