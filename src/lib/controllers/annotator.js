@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import SPARQL from '../models/sparql'
 import Utils from '../utils'
+import wrapRangeText from 'wrap-range-text'
+import OA from '../models/ontologies/OA'
 
 // planned: think about api - stacking commands, then executing them, in order to facilitate single step history?
 
@@ -98,13 +100,13 @@ class Annotator {
      * @param deletions
      * @param insertions
      */
-    update(deletions, insertions) {
+    update(deletions, insertions, graph) {
         // todo: remove old title, add new title
         return this[model].execute(_.flatten([
             SPARQL.bindingsToDelete(_.flatten(deletions).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo))),
             SPARQL.bindingsToInsert(_.flatten(insertions.concat(
                 // filter for graphs, map to graphid, get uniq
-                _.uniq(insertions.map((i) => i.g.value || i.g)).map((annotationId) => _.concat(OA.makeAnnotatedAt(annotationId, defaultGraph), OA.makeAnnotatedBy(annotationId, defaultGraph, this[user])))
+                _.uniq(_.flatten(insertions).map((i) => i.g.value || i.g)).map((annotationId) => _.concat(OA.makeAnnotatedAt(annotationId, graph || defaultGraph), OA.makeAnnotatedBy(annotationId, graph || defaultGraph, this[userId])))
             )).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
         ]))
     }
@@ -114,29 +116,26 @@ class Annotator {
      *
      * @param list
      */
-    create (annotationId, bindings) {
+    create (annotationId, bindings, graph) {
         var result = $.Deferred().resolve([]).promise()
         if (bindings.length) {
-            // todo: Use ontologies to figure out title? == app.ontology.makeTitle(bindings)
-            var object = _.find(bindings, (binding) => binding.p.value.endsWith("bond-with")).o.value
-            var bond = _.find(bindings, (binding) => binding.p.value.endsWith("has-bond")).o.value
-            var predicate = _.find(bindings, (binding) => binding.s.value === bond && binding.p.value.endsWith("bond-with")).o.value
-
-            // todo: figure out default graph for use cases (maybe motivatedBy, by plugin or manual in anchor?) BY PLUGIN
-            var title = OA.makeTitle(annotationId, defaultGraph, object, predicate, this[urn])
 
             var selectorId = _.find(bindings, (binding) => binding.p.value === "http://www.w3.org/ns/oa#exact").s.value
             var targetId = annotationId + "#target-" + Utils.hash(JSON.stringify(selectorId)).slice(0, 4)
 
             // planned: make independent of selector type
-            var oa = OA.makeCore(annotationId, defaultGraph)
-            var target = OA.makeTarget(annotationId, defaultGraph, targetId, selectorId, this[urn])
-            var date = OA.makeAnnotatedAt(annotationId, defaultGraph)
-            var user = OA.makeAnnotatedBy(annotationId, defaultGraph, this[userId])
+            var oa = OA.makeCore(annotationId, graph || defaultGraph)
+            var target = OA.makeTarget(annotationId, graph || defaultGraph, targetId, selectorId, this[urn])
+            var date = OA.makeAnnotatedAt(annotationId, graph || defaultGraph)
+            var user = OA.makeAnnotatedBy(annotationId, graph || defaultGraph, this[userId])
 
             this[model].defaultDataset.push(annotationId)
             this[model].namedDataset.push(annotationId)
-            var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, title, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
+            if (!(this[model].defaultDataset.indexOf(graph || defaultGraph)+1)) {
+                this[model].defaultDataset.push(graph || defaultGraph)
+                this[model].namedDataset.push(graph || defaultGraph)
+            }
+            var insert = SPARQL.bindingsToInsert(_.flatten([oa, date, user, target, bindings]).map((gspo) => gspo.g.value ? gspo : SPARQL.gspoToBinding(gspo)))
             result = this[model].execute(insert)
         }
         return result
