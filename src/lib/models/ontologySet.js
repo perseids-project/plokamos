@@ -94,10 +94,12 @@ class OntologySet {
      * Get a list of URIs, e.g. for autocomplete
      * @param ontology
      */
-    resources(ontology) {
+    resources(namespace) {
         // todo: check for ontology, else return:
 
-        _.chain(self[all]).filter((o) => !ontology || o.name === ontology).map('resources').flatten().value()
+        let fltr = _.filter(self[all],(o) => !namespace || o.namespace().uri === namespace)
+            let mpd = _.map(fltr,(o) => o.resources())
+                return _.flatten(mpd)
     }
 
     /**
