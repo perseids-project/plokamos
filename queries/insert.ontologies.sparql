@@ -2,9 +2,43 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix snap: <http://data.snapdrgn.net/ontology/snap#>
 prefix pmeta: <http://data.perseids.org/meta#>
 prefix perseusrdf: <http://data.perseus.org/rdfvocab/addons/>
+prefix pchar: <http://data.perseids.org/characterization#>
 
 INSERT DATA {
   GRAPH <http://data.perseids.org/namespaces> {
+
+    pchar: a pmeta:namespace .
+    pchar: pmeta:prefix "pchar:" .
+
+    pchar: pmeta:hasTransformation [
+        pmeta:hasTarget [
+            a pmeta:Subject;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-CHARACTER>
+            ];
+            pmeta:hasSource pmeta:Subject
+        ];
+        pmeta:hasTarget [
+            a pmeta:Predicate;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-ENGLISH>
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Object;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI <HAS-GREEK>
+            ];
+            pmeta:hasSource pmeta:Object
+        ]
+    ] .
+
+
+
 
     snap: pmeta:hasTransformation [
         pmeta:hasTarget [

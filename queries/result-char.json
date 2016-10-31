@@ -1,0 +1,423 @@
+{
+  "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d": [
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#target-06ac"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#hasSelector"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#sel-055c"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#target-06ac"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#hasSource"
+      },
+      "o": {
+        "token": "uri",
+        "value": "urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1:A.ajax_1"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#target-06ac"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#SpecificResource"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#sel-055c"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#suffix"
+      },
+      "o": {
+        "token": "literal",
+        "value": ", by Periboea or Eriboea (Apollo"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#sel-055c"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#exact"
+      },
+      "o": {
+        "token": "literal",
+        "value": "Salamis"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#sel-055c"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#prefix"
+      },
+      "o": {
+        "token": "literal",
+        "value": ".  1. A son of Telamon, king of "
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#sel-055c"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#TextQuoteSelector"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d-bond-50b8"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://data.perseids.org/characterization#hasEnglish"
+      },
+      "o": {
+        "token": "uri",
+        "value": "urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1@some"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d-bond-50b8"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://data.perseids.org/characterization#hasCharacter"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://data.perseus.org/people/smith:ajax-1#this"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d-bond-50b8"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://data.perseids.org/characterization#hasGreek"
+      },
+      "o": {
+        "token": "uri",
+        "value": "urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1@new"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://purl.org/dc/terms/title"
+      },
+      "o": {
+        "token": "literal",
+        "value": "http://data.perseus.org/people/smith:ajax-1#this is described as 'some' in urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1@some"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#hasBody"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#hasTarget"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d#target-06ac"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#annotatedAt"
+      },
+      "o": {
+        "token": "literal",
+        "value": "2016-10-30T16:30:01.387Z",
+        "type": "http://www.w3.org/2001/XMLSchema#dateTimeStamp"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://purl.org/dc/terms/source"
+      },
+      "o": {
+        "token": "uri",
+        "value": "https://github.com/perseids-project/plokamos"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#motivatedBy"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#identifying"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#annotatedBy"
+      },
+      "o": {
+        "token": "uri",
+        "value": "undefined"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "o": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#Annotation"
+      }
+    },
+    {
+      "id": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "g": {
+        "token": "uri",
+        "value": "http://data.perseus.org/graphs/characterizations"
+      },
+      "s": {
+        "token": "uri",
+        "value": "http://data.perseus.org/collections/urn:cite:perseus:pdljann.4ffb33ee071bc445d"
+      },
+      "p": {
+        "token": "uri",
+        "value": "http://www.w3.org/ns/oa#serializedBy"
+      },
+      "o": {
+        "token": "uri",
+        "value": "https://github.com/perseids-project/plokamos"
+      }
+    }
+  ]
+}

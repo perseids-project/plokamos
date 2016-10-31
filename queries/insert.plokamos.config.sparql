@@ -3,9 +3,50 @@ prefix snap: <http://data.snapdrgn.net/ontology/snap#>
 prefix pmeta: <http://data.perseids.org/meta#>
 prefix perseusrdf: <http://data.perseus.org/rdfvocab/addons/>
 prefix smith: <http://data.perseus.org/people/smith:>
+prefix pchar: <http://data.perseids.org/characterization#>
 
 INSERT DATA {
   GRAPH <http://data.perseids.org/namespaces> {
+
+    pchar: a pmeta:namespace .
+    pchar: pmeta:prefix "pchar:" .
+
+    pchar: pmeta:hasTransformation [
+        pmeta:hasTarget [
+            a pmeta:Subject;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI pchar:hasCharacter
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Predicate;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI pchar:hasEnglish
+            ];
+            pmeta:hasSource pmeta:Object
+        ];
+        pmeta:hasTarget [
+            a pmeta:Object;
+            pmeta:hasConstraint [
+                a pmeta:Predicate;
+                pmeta:hasURI pchar:hasGreek
+            ];
+            pmeta:hasSource pmeta:Object
+        ]
+    ] .
+
+    pchar: pmeta:member <urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1> .
+    <urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1> rdfs:label "urn:cts:pdlrefwk:viaf88890045.003.perseus-eng1" .
+    pchar: pmeta:member pchar:hasCharacter .
+    pchar:hasCharacter rdfs:label "has Character" .
+    pchar: pmeta:member pchar:hasEnglish .
+    pchar:hasEnglish rdfs:label "has English source" .
+    pchar: pmeta:member pchar:hasGreek .
+    pchar:hasGreek rdfs:label "has Greek source" .
+
 
     snap: pmeta:hasTransformation [
         pmeta:hasTarget [
