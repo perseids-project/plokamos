@@ -133,12 +133,23 @@ class OA {
         return annotatorObj.o.value || annotatorObj.o
     }
 
-    static makeTitle(annotationId, defaultGraph, object, predicate, urn) {
+    static makeTitle(annotationId, defaultGraph, title) {
         return [{
             "g": {"type": "uri", "value": defaultGraph},
             "s": {"type": "uri", "value": annotationId},
             "p": {"type": "uri", "value": "http://purl.org/dc/terms/title"},
-            "o": {"type": "literal", "value": `${object} identifies ${object.replace('http://data.perseus.org/people/smith:','').split('-')[0]} as ${predicate} in ${urn}`}
+            "o": {"type": "literal", "value": title}
+        }]
+    }
+
+    // todo: make these higher-order functions
+
+    static makeMotivation(annotationId, defaultGraph, motivation) {
+        return [{
+            "g": {"type": "uri", "value": defaultGraph},
+            "s": {"type": "uri", "value": annotationId},
+            "p": {"type": "uri", "value": "http://www.w3.org/ns/oa#motivatedBy"},
+            "o": {"type": "literal", "value": motivation}
         }]
     }
 
