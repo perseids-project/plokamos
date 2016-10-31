@@ -53,10 +53,7 @@ class OntologySet {
      * @returns {*}
      */
     simplify(body, id, ontology) {
-        var simplifier =
-            ontology && self[all].filter((o) => o.name === ontology).length ?
-                _.head(self[all].filter((o) => o.name === ontology)) :
-                self.test(body)
+        var simplifier = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(body)
         return simplifier ? simplifier.simplify(body, id) : body
 
     }
@@ -68,7 +65,7 @@ class OntologySet {
      * @returns {*}
      */
     expand(gspo, graphs, ontology) {
-        let expander = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(gspo)
+        let expander = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(gspo)
         return expander ? expander.expand(gspo, graphs) : gspo
     }
 
@@ -79,7 +76,7 @@ class OntologySet {
      * @returns {*}
      */
     label(data, ontology) {
-        let labeler = ontology && self[all].filter((o) => o.name === ontology).length ? _.head(self[all].filter((o) => o.name === ontology)) : self.test(data)
+        let labeler = ontology && self[all].filter((o) => o.namespace().uri === ontology).length ? _.head(self[all].filter((o) => o.namespace().uri === ontology)) : self.test(data)
         return labeler ? labeler.label(data) : data
 
     }
