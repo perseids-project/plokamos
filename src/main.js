@@ -14,7 +14,13 @@ class Plokamos {
     constructor (element) {
         var self = this
         this.anchor = $(element)
-
+        window.onbeforeunload = (e) => {
+            if (!$('#plokamos-commit').attr('disabled')) {
+                msg = "You have uncommitted data. Do you want to commit to the Perseids servers before leaving this page?";
+                e.returnValue=msg;
+                return msg
+            }
+        }
         // todo: this.ui
         this.bar = $(`<div class="plokamos-bar"/>`)
         this.bar.navigation = $(`<div class="plokamos-navigation col-xs-6">`)
