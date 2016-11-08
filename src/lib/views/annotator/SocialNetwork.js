@@ -14,10 +14,24 @@ class View {
         this.decodeHTML = Utils.decodeHTML
 
         this.updateValue = (event, text) => {
+            var map = {
+                subject: ["http://data.perseus.org/people/smith:","smith:"],
+                predicate: ["http://data.snapdrgn.net/ontology/snap#","snap:","http://data.perseus.org/rdfvocab/addons/","perseusrdf:"],
+                object: ["http://data.perseus.org/people/smith:","smith:"]
+            }
             var triple = $(event.target).closest('.triple').get(0)
             var token = $(event.target).closest('.token').data('token')
             triple.setAttribute('data-' + token, text)
             if (triple.dataset[token] != triple.dataset[token + '-original']) $(triple).addClass('update')
+            if (_.reduce (map[token], (acc, x) => acc || text.startsWith(x), false)) {
+                $(event.target).removeClass('invalid')
+                $(event.target).addClass('valid')
+            }
+            else {
+                $(event.target).removeClass('valid')
+                $(event.target).addClass('invalid')
+            }
+            $('#btn-apply').prop('disabled',$('.graph.old').find('.invalid').length||$('.graph.new').find('.typeahead.tt-input.valid').length!=$('.graph.new').find('.typeahead.tt-input').length)
         }
 
         this.view = {
