@@ -14,6 +14,9 @@ class View {
         this.decodeHTML = Utils.decodeHTML
 
         this.updateValue = (event, text) => {
+            if (!text && event.type === "paste") {
+                text = event.target.value + event.originalEvent.clipboardData.getData("text")
+            }
             var triple = $(event.target).closest('.triple').get(0)
             var token = $(event.target).closest('.token').data('token')
             triple.setAttribute('data-' + token, text)
@@ -85,6 +88,7 @@ class View {
                 })
                 el.find('input').each((i,e) => $(e).typeahead({minLength:3,highlight:true},{source:self.substringMatcher(self.names)}))
 
+                el.find('.token').on('paste',self.updateValue)
                 el.find('.token').on('typeahead:selected',self.updateValue)
                 el.find('.token').on('typeahead:autocompleted', self.updateValue)
                 el.find('.token').on('keyup', (e) => { if (e.key.length===1 || e.key==="Backspace") { self.updateValue(e,e.target.value) }})
