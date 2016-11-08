@@ -30151,7 +30151,7 @@
 	var sparqlQuery = function sparqlQuery(endpoint, query, mime) {
 	    query = query || "SELECT * WHERE { GRAPH ? {?s ?p ?o}} LIMIT 1000";
 	    mime = mime || "application/sparql-query";
-	    return $$1.ajax({ url: endpoint, type: 'POST', data: query, contentType: mime, dataType: "json" });
+	    return $$1.ajax({ url: endpoint, method: 'POST', data: query, contentType: mime, headers: { Accept: 'application/sparql-results+json' } });
 	};
 
 	var sparqlSelect = function sparqlSelect(urn, user) {
@@ -44241,10 +44241,25 @@
 	    this.decodeHTML = Utils.decodeHTML;
 
 	    this.updateValue = function (event, text) {
+	        var map = {
+	            subject: ["http://data.perseus.org/people/smith:", "smith:"],
+	            predicate: ["http://data.snapdrgn.net/ontology/snap#", "snap:", "http://data.perseus.org/rdfvocab/addons/", "perseusrdf:"],
+	            object: ["http://data.perseus.org/people/smith:", "smith:"]
+	        };
 	        var triple = $$1(event.target).closest('.triple').get(0);
 	        var token = $$1(event.target).closest('.token').data('token');
 	        triple.setAttribute('data-' + token, text);
 	        if (triple.dataset[token] != triple.dataset[token + '-original']) $$1(triple).addClass('update');
+	        if (_$1.reduce(map[token], function (acc, x) {
+	            return acc || text.startsWith(x);
+	        }, false)) {
+	            $$1(event.target).removeClass('invalid');
+	            $$1(event.target).addClass('valid');
+	        } else {
+	            $$1(event.target).removeClass('valid');
+	            $$1(event.target).addClass('invalid');
+	        }
+	        $$1('#btn-apply').prop('disabled', $$1('.graph.old').find('.invalid').length || $$1('.graph.new').find('.typeahead.tt-input.valid').length != $$1('.graph.new').find('.typeahead.tt-input').length);
 	    };
 
 	    this.view = {
@@ -48360,7 +48375,13 @@
 
 	    var self = this;
 	    this.anchor = $(element);
-
+	    window.onbeforeunload = function (e) {
+	        if (!$('#plokamos-commit').attr('disabled')) {
+	            msg = "You have uncommitted data. Do you want to commit to the Perseids servers before leaving this page?";
+	            e.returnValue = msg;
+	            return msg;
+	        }
+	    };
 	    // todo: this.ui
 	    this.bar = $('<div class="plokamos-bar"/>');
 	    this.bar.navigation = $('<div class="plokamos-navigation col-xs-6">');

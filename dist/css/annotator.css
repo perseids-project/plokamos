@@ -152,6 +152,14 @@
     cursor: text;
     border: 2px solid #0097cf;
 }
+
+.typeahead.valid:focus {
+    border-color: green;
+}
+.typeahead.invalid:focus {
+    border-color: red;
+}
+
 .tt-query {
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
