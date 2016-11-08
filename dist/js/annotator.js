@@ -44574,6 +44574,9 @@
 	    this.decodeHTML = Utils.decodeHTML;
 
 	    this.updateValue = function (event, text) {
+	        if (!text && event.type === "paste") {
+	            text = event.target.value + event.originalEvent.clipboardData.getData("text");
+	        }
 	        var triple = $$1(event.target).closest('.triple').get(0);
 	        var token = $$1(event.target).closest('.token').data('token');
 	        triple.setAttribute('data-' + token, text);
@@ -44625,6 +44628,7 @@
 	                return $$1(e).typeahead({ minLength: 3, highlight: true }, { source: self.substringMatcher(self.names) });
 	            });
 
+	            el.find('.token').on('paste', self.updateValue);
 	            el.find('.token').on('typeahead:selected', self.updateValue);
 	            el.find('.token').on('typeahead:autocompleted', self.updateValue);
 	            el.find('.token').on('keyup', function (e) {
