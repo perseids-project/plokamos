@@ -27,7 +27,7 @@ class View {
                 triple.setAttribute('data-' + token, text)
                 if (triple.dataset[token] != triple.dataset[token + '-original']) $(triple).addClass('update')
             }
-            if (text && _.reduce (self.map[token], (acc, x) => acc || text.startsWith(x), false)) {
+            if (text && validator.validate(token, text)) {
                 $(event.target).removeClass('invalid')
                 $(event.target).addClass('valid')
             }
