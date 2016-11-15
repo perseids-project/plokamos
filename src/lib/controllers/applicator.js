@@ -4,8 +4,8 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
-import SocialNetwork from '../views/annotator/SocialNetwork'
-import Characterizations from '../views/annotator/Characterizations'
+import SocialNetwork from '../views/annotator/SocialNetworkNG'
+import Characterizations from '../views/annotator/CharacterizationsNG'
 import OA from '../models/ontologies/OA'
 
 /**
