@@ -1,4 +1,12 @@
+import _ from 'lodash'
+import $ from 'jquery'
+import Mustache from 'mustache'
+import OA from '../../models/ontologies/OA'
+import Utils from '../../utils'
 
+/**
+ *
+ */
 class View {
     constructor(ontology, activate, map, partials, view) {
         var self = this
