@@ -52,17 +52,11 @@ class View {
 
         self.partials = Object(
             {
-                // todo: do graphs -> components -> gspo
-                component: `
-                  <div class="plokamos-component" title="Graph:{{g}} Subject:{{s}} Predicate:{{p}} Object:{{o}}" data-original-subject="{{s}}" data-original-predicate="{{p}}" data-original-object="{{o}}" data-subject="{{s}}" data-predicate="{{p}}" data-object="{{o}}">
-                    
-                    <div class="btn-delete" title="Delete triple"><span class="glyphicon glyphicon-trash"/></div>
-                  </div>
-                `,
-                graph: `<div class="plokamos-graph old" data-plokamos-graph="{{g}}">{{#components}}{{> component}}{{/component}}</div>`,
-                bodies: `{{#annotations}}{{> graph}}{{/annotations}}`,
+                // todo: do graphs -> components -> gspo (also needs some way of representing different annotation body shapes)
+                graph: `<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
+                graphs: `{{#annotations}}{{> graph}}{{/annotations}}`,
                 // done: add empty graph container to create template and add new triples to it.
-                new: `<div class="plokamos-graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-info btn-circle" title="Add component">+</div></div>`,
+                new: `<div class="graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-info btn-circle" title="Add component">+</div></div>`,
                 anchor: `<div class='anchor'><span class="prefix selector">{{selector.prefix}}</span><span class="exact selector">{{selector.exact}}</span><span class="suffix selector">{{selector.suffix}}</span></div>`
             },
             partials
@@ -79,31 +73,6 @@ class View {
             return activate(jqElement)
         }
 
-    }
-
-    triples() {
-        return `
-               <div class="sentence well container">
-                  <div class="token subject col-xs-12 col-md-4" data-token="subject">
-                  <div class="input-group">
-                      <span class="input-group-addon" title="Person ID" id="basic-addon1"><span class="glyphicon glyphicon-user"></span></span>
-                    <input class="typeahead" placeholder="Character" value="{{#label}}{{s}}{{/label}}">
-                  </div>
-                  </div>
-                  <div class="token predicate col-xs-12 col-md-4" data-token="predicate">
-                  <div class="input-group">
-                      <span class="input-group-addon" title="English URN" id="basic-addon1">aA</span></span>
-                    <input class="typeahead" placeholder="English" value="{{#label}}{{p}}{{/label}}">
-                    </div>
-                  </div>
-                  <div class="token object col-xs-12 col-md-4" data-token="object">
-                  <div class="input-group">
-                      <span class="input-group-addon" title="Greek URN" id="basic-addon1">αΑ</span></span>
-                    <input class="typeahead" placeholder="Greek / Latin" value="{{#label}}{{o}}{{/label}}">
-                    </div>
-                  </div>
-                </div>
-        `
     }
 
 }
