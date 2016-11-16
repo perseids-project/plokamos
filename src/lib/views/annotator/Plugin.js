@@ -211,10 +211,6 @@ class Plugin {
             // init reporter
         })
 
-        this.template = () => {}
-
-        this.button = () => {}
-
         this.apply = (event) => {
 
             // get prerequisite data
