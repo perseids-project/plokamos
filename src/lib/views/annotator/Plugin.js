@@ -36,8 +36,7 @@ class View {
                 $(event.target).addClass('invalid')
             }
 
-            // todo: where does this go? -> Use validation function for $('.graph.old')...
-            $('#btn-apply').prop('disabled',$('.graph.old').find('.invalid').length||$('.graph.new').find('.typeahead.tt-input.valid').length!=$('.graph.new').find('.typeahead.tt-input').length)
+            $('#btn-apply').prop('disabled',validator.validate())
         }
 
         self.view = Object.assign(
