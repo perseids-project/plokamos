@@ -134,7 +134,7 @@ class Reporter {
         return update_triples
     }
 
-    create_triples(annotations, cite, selector) {
+    create_triples(annotations, cite, selector, defaultGraph) {
         var cT = this.annotator().modal.find('.graph.new .triple:not(.delete)')
         var new_triples = _.flatten(
             _.zip(
@@ -142,14 +142,13 @@ class Reporter {
                 cT.map((i,el) => $(el).attr('data-predicate')),
                 cT.map((i,el) => $(el).attr('data-object'))
             )
-            .filter((t)=> t[0] && t[1] && t[2])
             .map((t) => {return {g:cite,s:t[0],p:t[1],o:t[2]}})
-            .map((t) => this.ontologies.expand(t,annotations))
+            .map((t) => this.ontologies.expand(t,annotations, this.namespace))
         )
         selector.id = cite+"#sel-"+Utils.hash(JSON.stringify(selector)).slice(0, 4)
         let selector_triples = OA.expand(selector.type)(
             _.mapValues(selector,(v) => v.replace(new RegExp('\n','ig'),'')),
-            SocialNetwork.uri()
+            defaultGraph
         )
         let create_triples = new_triples.length ? _.concat(new_triples,selector_triples, this.title(_.flatten(new_triples),cite)) : []
         return _.flatten(create_triples)
