@@ -253,6 +253,10 @@ class Plugin {
 
     }
 
+    static icon () {
+        return "cog"
+    }
+
     static ns () {
         return "http://data.perseids.org/characterization#" /* todo: ns*/
     }
