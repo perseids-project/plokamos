@@ -19,11 +19,11 @@ class View {
      */
     constructor(ontology, activate, partials, view, validator) {
         var self = this
+        self.activate = activate(self)
         self.substringMatcher = Utils.substringMatcher
         self.names = ontology.resources()
         self.ontology = ontology
         self.decodeHTML = Utils.decodeHTML
-        self.map = map || {} // todo: load map
 
         self.updateValue = (event, text) => {
             var triple, token
