@@ -83,18 +83,8 @@ class Reporter {
         this.urn = urn
         this.ontologies = ontologies
         this.annotator = annotator
-    }
-
-    title(bindings, annotationId) {
-
-        // todo: this part is plugin specific
-        var object = _.find(bindings, (binding) => binding.p.value.endsWith("bond-with")).o.value
-        var bond = _.find(bindings, (binding) => binding.p.value.endsWith("has-bond")).o.value
-        var predicate = _.find(bindings, (binding) => binding.s.value === bond && binding.p.value.endsWith("bond-with")).o.value
-
-        let title = `${object} identifies ${object.replace('http://data.perseus.org/people/smith:','').split('-')[0]} as ${predicate} in ${this.urn}`
-
-        return OA.makeTitle(annotationId, SocialNetwork.uri(),title)
+        this.title = titleFn
+        this.namespace = namespace
     }
 
     delete_graphs() {
