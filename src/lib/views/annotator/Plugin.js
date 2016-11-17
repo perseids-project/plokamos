@@ -258,10 +258,10 @@ class Plugin {
     }
 
     static ns () {
-        return "http://data.perseids.org/characterization#" /* todo: ns*/
+        return ""
     }
 
     static uri () {
-        return "http://data.perseus.org/graphs/characterizations" /* todo: defaultGraph*/
+        return "http://data.perseus.org/graphs/default"
     }
 }
