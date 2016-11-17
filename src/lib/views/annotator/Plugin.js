@@ -25,6 +25,11 @@ class View {
         self.ontology = ontology
         self.decodeHTML = Utils.decodeHTML
 
+        /**
+         * This function registers data change events in the editor, propagates them to the embedded state and runs the validator
+         * @param event The change event
+         * @param text The data that's been entered (except in case of paste event)
+         */
         self.updateValue = (event, text) => {
             var triple, token
             if (!text && event.type === "paste") {
@@ -236,7 +241,7 @@ class Plugin {
                 })
                 .then((res) => {
                     acc.push(res)
-                    // todo: annotator is ontology agnostic, receives list of gspo
+                    // todo: make sure annotator is ontology agnostic, receives list of gspo
                     return annotator.update(
                         _.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations,this.constructor.ns())})), // todo: use correct ontology
                         _.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations,this.constructor.ns())})), // todo: use correct ontology
