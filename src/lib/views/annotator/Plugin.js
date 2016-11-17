@@ -190,10 +190,10 @@ class Plugin {
         this.origin = {}
         this.selector = {}
 
-        var button = `<div class="btn btn-primary btn-${this.constructor.name()} btn-edit" data-toggle="modal" data-target="#edit_modal" title="Edit ${this.constructor.name()}"><span class="glyphicon glyphicon-${this.constructor.icon()}"></span></div>`
+        var button = `<div class="btn btn-primary btn-${this.constructor.name} btn-edit" data-toggle="modal" data-target="#edit_modal" title="Edit ${this.constructor.name}"><span class="glyphicon glyphicon-${this.constructor.icon()}"></span></div>`
         $('body').on('shown.bs.popover',(e) => $('#'+e.target.getAttribute('aria-describedby')).find('.popover-footer').append(button))
-        $('body').on('click','.btn-'+this.constructor.name(),(e) => {
-            self.annotator().modal.find('.modal-header > h3').html(this.constructor.name())
+        $('body').on('click','.btn-'+this.constructor.name,(e) => {
+            self.annotator().modal.find('.modal-header > h3').html(this.constructor.name)
             let id = $(e.target).closest('.popover').attr('id')
             self.origin = $(document.querySelectorAll(`[aria-describedby="${id}"]`))
 
@@ -240,12 +240,12 @@ class Plugin {
                     return annotator.update(
                         _.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[1], p:t[2], o:t[3] },annotations,this.constructor.ns())})), // todo: use correct ontology
                         _.flatten(update_triples.map((t) => { return app.ontology.expand({ g:t[0], s:t[4], p:t[5], o:t[6] },annotations,this.constructor.ns())})), // todo: use correct ontology
-                        this.constructor.defaultGraph()
+                        this.constructor.uri()
                     )
                 })
                 .then((res) => {
                     acc.push(res)
-                    return annotator.create(cite,create_triples, this.constructor.defaultGraph())
+                    return annotator.create(cite,create_triples, this.constructor.uri())
                 })
                 .then((res) => annotator.apply(_.flatten(acc.concat(res))))
 
