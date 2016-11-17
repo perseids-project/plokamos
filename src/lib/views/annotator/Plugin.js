@@ -265,3 +265,5 @@ class Plugin {
         return "http://data.perseus.org/graphs/default"
     }
 }
+
+export default Plugin
