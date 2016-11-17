@@ -8,7 +8,16 @@ import Utils from '../../utils'
  *
  */
 class View {
-    constructor(ontology, activate, map, partials, view) {
+    /**
+     *
+     * @param ontology The apps ontologySet
+     * @param activate A function that sets up event handlers in the editor
+     * @param map This is validation -->
+     * @param partials A collection of Mustache templates to assemble the interface for editing annotation bodies
+     * @param view Additions to partials, e.g. macros
+     * @param vaalidator A configured validator instance to provide UI feedback to data entries
+     */
+    constructor(ontology, activate, partials, view, validator) {
         var self = this
         self.substringMatcher = Utils.substringMatcher
         self.names = ontology.resources()
@@ -63,23 +72,27 @@ class View {
         )
 
         /**
-         *
+         * This function embeds an editor into jqElement and populates it with data
          * @param jqElement Container for editor interface
          * @param data Annotations to render in annotations -> components -> gspo format
          * @return {*}
          */
         self.init = (jqElement, data) => {
-            jqElement.html(Mustache.render("{{> graphs}}{{> new}}{{> anchor}}",Object.assign({},data,self.view),self.partials))
-            return activate(jqElement)
+            var res = Mustache.render("{{> graphs}}{{> new}}{{> anchor}}",Object.assign({},data,self.view),self.partials)
+            jqElement.html(res)
+            return self.activate(jqElement)
         }
 
     }
 
 }
 
+/**
+ * The Reporter class communicates input from the interface layer to
+ */
 class Reporter {
 
-    constructor(ontologies, annotator, urn, title){
+    constructor(ontologies, annotator, urn, titleFn, namespace){
         this.urn = urn
         this.ontologies = ontologies
         this.annotator = annotator
@@ -104,7 +117,7 @@ class Reporter {
                 dT.map((i,el) => $(el).data('original-object'))
             )
                 .map((zipped) => {return {g:zipped[0],s:zipped[1],p:zipped[2],o:zipped[3]}})
-                .map((gspo) => this.ontologies.expand(gspo, annotations))
+                .map((gspo) => this.ontologies.expand(gspo, annotations, this.namespace))
         )
         dT.remove()
         return delete_triples
@@ -166,14 +179,14 @@ class Validator {
 // i.e. Plugin is instantiable and does pure gspo handling
 class Plugin {
 
-    constructor(app) {
+    constructor(app,config) {
         var self = this
         this.annotator = () => app.annotator
-        this.validator = new Validator(app.ontology)
+        this.validator = new Validator(config.validateMp, config.validateFn)
         // ontology, activate, map, partials, view
-        this.view = new View(app.ontology)
+        this.view = new View(app.ontology, config.activateFn, config.partials, config.view, this.validator)
         // ontologies, annotator, urn, title
-        this.reporter = new Reporter(app.ontology, this.annotator)
+        this.reporter = new Reporter(app.ontology, this.annotator, config.urn, config.titleFn, this.constructor.ns())
         this.origin = {}
         this.selector = {}
 
@@ -210,7 +223,7 @@ class Plugin {
             let delete_graphs = self.reporter.delete_graphs()
             let delete_triples = self.reporter.delete_triples(annotations)
             let update_triples = self.reporter.update_triples()
-            let create_triples = self.reporter.create_triples(annotations, cite, self.selector)
+            let create_triples = self.reporter.create_triples(annotations, cite, self.selector, this.constructor.uri())
 
             // send to annotator
             var acc = []
