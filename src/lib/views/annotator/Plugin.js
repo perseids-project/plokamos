@@ -39,7 +39,7 @@ class View {
             $('#btn-apply').prop('disabled',validator.validate())
         }
 
-        self.view = Object.assign(
+        self.view = Object.assign({},
             {
                 label: () => {
                     return (uri, render) => {
@@ -50,7 +50,7 @@ class View {
             },
             view)
 
-        self.partials = Object(
+        self.partials = Object.assign({},
             {
                 // todo: do graphs -> components -> gspo (also needs some way of representing different annotation body shapes)
                 graph: `<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
