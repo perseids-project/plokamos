@@ -7,6 +7,15 @@ import $ from 'jquery'
 class SocialNetwork extends Plugin {
 
 
+
+    static uri () {
+        return "http://data.perseus.org/graphs/persons"
+    }
+
+    static icon () {
+        return "user"
+    }
+
 }
 
 export default SocialNetwork
