@@ -17,6 +17,7 @@ class History {
         this.index = 0
 
 
+        // resets model and reruns all to the previous index
         this.undo = () => {
             this.index -= 1
             this.model.reset()
@@ -33,6 +34,7 @@ class History {
                 })
         }
 
+        // resets model and reruns all to the next index
         this.redo = () => {
             this.index += 1
             this.model.reset()
@@ -58,6 +60,8 @@ class History {
             return this.commands
         }
 
+        // used after a commit
+        // resets chain of commands to the one after the last commited (if any) so that they can be redone 
         this.reset = (remaining) => {
             this.commands = remaining || [];
             this.index = 0
@@ -71,6 +75,9 @@ class History {
             var endpoint = this.app.getEndpoint().write
             var mime = "application/sparql-update"
             var commands = _.chain(this.commands.slice(0,this.index)).map((v,k) => v.map((w) => {return {i:k,sparql:w}})).flatten().value()
+            // reverses the commands in order to do them in the same order as done in the editor
+            // we use a copy of the commands, so that we can iterate through them, without changing the iterable structure
+            // but as we perform them we want to pop them off the sequence, so that any that fail remain in the history
             var sequence = commands.slice().reverse()
             // todo: add parent-level index to commands before flattening, use to group in case of failure
             // todo: possibly aggregate the responses

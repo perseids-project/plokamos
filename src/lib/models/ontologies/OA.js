@@ -108,6 +108,7 @@ var queryMap = {
 
 class OA {
 
+    // xs is an array of triples that make up a complete annotation
     static getBodies(xs) {
         let ids = xs.filter((x) => (x.p.value || x.p).replace("oa:","http://www.w3.org/ns/oa#") === "http://www.w3.org/ns/oa#hasBody").map((x) => (x.o.value || x.o))
         let annotation = xs.filter((x) => ((x.o.value || x.o) === "http://www.w3.org/ns/oa#Annotation")).map((x) => (x.s.value || x.s))

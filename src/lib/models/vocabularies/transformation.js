@@ -14,7 +14,10 @@ var pmetaMap = {
 }
 
 // todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
+// applies the rules and creates a function that performs the simplification
 var simplification = (rules) =>
+    // v is annotation body
+    // id is annotation id
     (v,id) =>
         _.reduce(
             rules,
@@ -28,6 +31,7 @@ var simplification = (rules) =>
             {}
         )
 
+// applies the rules and creates a function that performs the expansion
 var expansion = (rules) => (gspo, graphs) => {
 
     // if exisiting annotation, get bindings by filtering for rule-conforming triples
@@ -41,6 +45,8 @@ var expansion = (rules) => (gspo, graphs) => {
     let id = (bindings.length%rules.length || !annotation) ? gspo.g + "-bond-" + Utils.hash(JSON.stringify(gspo)).slice(0, 4) : undefined
 
     // if new annotation, get bindings by creating them with rule
+    // creates an array with an object (one triple) for every rule in the bundle
+    // and for every rule takes constraint and target and fills those positions, and the 3rd position gets the id
     return id ? rules.map((rule) => {
         let res = {g:gspo.g, s:id, p:id, o:id} // avoid figuring out where to place id by overwriting it below
         res[pmetaMap[rule.constraint]] = rule.value
@@ -52,6 +58,8 @@ var expansion = (rules) => (gspo, graphs) => {
 
 class Transformation {
 
+    // rulesList contains bundles of rules
+    // a target ,source, constraint == a rule
     constructor(rulesList) {
         this[simplify] = rulesList.map((rules) => simplification(rules))
         this[expand] = rulesList.map((rules) => expansion(rules))

@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import OA from '../../models/ontologies/OA'
 
+// applies a bootstrap popover as a tooltip
 class Tooltip {
     constructor(app) {
 
@@ -23,6 +24,7 @@ class Tooltip {
             }
             var graphs = jqElement.data('annotations')
             var content = stringify(graphs)//attr(field)
+            // this is a bootstrap function
             jqElement.popover({
                 container:"body",
                 html:"true",
@@ -31,6 +33,7 @@ class Tooltip {
                 title: jqElement.data('selector').exact,
                 content: content
             })
+            // applies style change when the popover is fixed (i.e. clicked and anchored vs just hovered)
             jqElement.click((e) => $('#'+e.target.getAttribute('aria-describedby')).toggleClass('fixed'))
         }
     }

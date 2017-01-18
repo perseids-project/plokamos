@@ -13,6 +13,12 @@ const endpoint = Symbol()
 var self;
 
 
+/**
+ * role of ontologyset is to help you figure out which ontology
+ * to use in a given instance
+ * scores predicate highest -- whenever a predicate namespace matches it chooses that
+ * if predicate doesn't match anything, but sub/obj, then chooses that one
+ */
 class OntologySet {
 
     constructor(ontologies) {
