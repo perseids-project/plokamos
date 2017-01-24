@@ -15,9 +15,9 @@ const applicator = Symbol()
 const history = Symbol()
 
 /**
- * Class for creation of annotations
- * Creates Modal for creation of annotations
- * and supplies CRUD methods for annotation data
+ * Class for creation of annotations.
+ *
+ * It builds a model UI element and supplies CRUD methods for annotation data
  */
 class Annotator {
 

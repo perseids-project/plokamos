@@ -14,10 +14,10 @@ var self;
 
 
 /**
- * role of ontologyset is to help you figure out which ontology
- * to use in a given instance
- * scores predicate highest -- whenever a predicate namespace matches it chooses that
- * if predicate doesn't match anything, but sub/obj, then chooses that one
+ * The role of the ontologySet class is to handle the caller the correct ontology
+ * for a given annotation instance. 
+ * It scores the predicate highest, followed by subject/object matches. 
+ * (A better name for this class might be OntologyManager.)
  */
 class OntologySet {
 

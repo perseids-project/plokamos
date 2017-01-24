@@ -14,7 +14,7 @@ var pmetaMap = {
 }
 
 // todo: do we need to check for id? if so, we can check for it anywhere, e.g. reduce (values == id) with OR
-// applies the rules and creates a function that performs the simplification
+// simplification applies the rules and creates a function that performs the simplification
 var simplification = (rules) =>
     // v is annotation body
     // id is annotation id
@@ -31,7 +31,7 @@ var simplification = (rules) =>
             {}
         )
 
-// applies the rules and creates a function that performs the expansion
+// expansion applies the rules and creates a function that performs the expansion
 var expansion = (rules) => (gspo, graphs) => {
 
     // if exisiting annotation, get bindings by filtering for rule-conforming triples
@@ -46,9 +46,27 @@ var expansion = (rules) => (gspo, graphs) => {
 
     // if new annotation, get bindings by creating them with rule
     // creates an array with an object (one triple) for every rule in the bundle
-    // and for every rule takes constraint and target and fills those positions, and the 3rd position gets the id
     return id ? rules.map((rule) => {
-        let res = {g:gspo.g, s:id, p:id, o:id} // avoid figuring out where to place id by overwriting it below
+        // avoid figuring out where to place id by overwriting it below
+        // this maps a rule structure like:
+        // {
+        //   constraint:"<http://data.perseids.org/meta#Predicate|http://data.perseids.org/meta#Subject|http://data.perseids.org/meta#Object>"
+        //   value: "<uri>"
+        //   target:"<http://data.perseids.org/meta#Predicate|http://data.perseids.org/meta#Subject|http://data.perseids.org/meta#Object>"
+        //   source:"<http://data.perseids.org/meta#Predicate|http://data.perseids.org/meta#Subject|http://data.perseids.org/meta#Object>"
+        // }
+        // to a resource like this
+        //  {
+        //    g:"<annotation_graph>"
+        //    s:"<uri_from_annotation>|<rule_value>"
+        //    p:"<uri_from_annotation>|<rule_value>"
+        //    o:"<uri_from_annotation>|<rule_value>"
+        //  }
+        //
+        // whichever the rule constraint applies to (s|o|p) will be replaced with the corresponding rule value
+        // whichever the rule source applies to (s|o|p) will be replaced with the value of the rule target (s|o|p) from the annotation graph
+        // leaving the remaining element (s|o|p) filled with the uri from the annotation
+        let res = {g:gspo.g, s:id, p:id, o:id} 
         res[pmetaMap[rule.constraint]] = rule.value
         res[pmetaMap[rule.source]] = gspo[pmetaMap[rule.target]]
         return SPARQL.gspoToBinding(res)

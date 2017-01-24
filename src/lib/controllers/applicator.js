@@ -10,7 +10,9 @@ import OA from '../models/ontologies/OA'
 
 /**
  * Class for visualization of annotations.
- * The Applicator moves the data from the model into the data attributes in the front-end element holding the applications
+ *
+ * The Applicator moves the data from the model into the data attributes of the 
+ * front-end HTML element holding the Plokamos application.
  */
 class Applicator {
 
@@ -27,7 +29,7 @@ class Applicator {
         this.spinner.css('display','inline-block')
         /**
          * Mark selector positions with span tag and add quads to data
-         * this is a map of functions keyed by selector type
+         * This is a map of functions keyed by selector type,
          * future proofing to support other types of selectors
          * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
          */
@@ -62,12 +64,12 @@ class Applicator {
                         var selectorType = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value // planned: replace as many endsWith as possible with tests on qualified names
                         var selectorObject = OA.simplify(selectorType)(selectorTriples)
                         var idFromSelector = Id.fromSelector(selectorObject)
-                        var span = document.getElementById(idFromSelector) || this.mark[selectorType](selectorObject) 
+                        var span = document.getElementById(idFromSelector) || this.mark[selectorType](selectorObject)
                         if (!store[idFromSelector]) {store[idFromSelector] = {}}
                         store[idFromSelector][k] = v
                         return span
                     })
-                // aggregates multiple annotations for a target into a single span
+                // aggregates multiple annotations for a target into a single span element
                 return _.uniqBy(spans.map((span) => {
                     var data = store[span.getAttribute('id')]
                     var element = document.getElementById(span.getAttribute('id'))
@@ -76,18 +78,17 @@ class Applicator {
                 }), (j) => j.attr('id'))
                 }
             )
-            // now we have the marks in the html where have annotations
+            // at this point we have the marks in the html at the selector resolution points
+            // so we loop through them registering tooltips
             .then((elements) =>
                 elements.map((element) => {
-                    // registered tooltip on marked elements
                     this.tooltip.register(element); // todo: (though we might want to adjust markers based on existing annotations)
-                    // these lines will go
                     this.socialnetwork.register(element); // todo: this can probably be removed or moved to Annotator
                     this.characterizations.register(element); // todo: MOVE IT TO ANNOTATOR
                     return element
                 })
             )
-            // this is for doing stuff on the whole page
+            // after applying annotations individually, we apply page level features
             .then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
                     // this is the network diagram
@@ -104,7 +105,7 @@ class Applicator {
          */
         this.unload = (id) => {
             var p = id ? [document.getElementById(id)] : document.getElementsByClassName('perseids-annotation');
-            // removes the spans containing the annotation data and replaces with original text
+            // removes the spans containing the annotation data and replaces them with the original text
             while(p.length) {
                 var parent = p[ 0 ].parentNode;
                 while( p[ 0 ].firstChild ) {

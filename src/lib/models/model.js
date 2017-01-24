@@ -16,21 +16,17 @@ class Model {
          * Runs one or more sparql queries (in order) against the local rdfstore
          * and returns an array with result of the shape
          * [{sparql:"original query",error:"error or undefined",result:"result or undefined"},...]
-         * @param sparql
+         * @param sparql (these queries may have dependencies which require results of one for the next to function properly)
          * @returns {*} promise for ordered list
          */
-        // the method may receive chained queries which depend upon each other
-        // this is why it's important to run them as a chained sequence of promises
-        // as well as the accumulation of the resuts
-        // whenever you are running a query, for whatever reason, execute is called
         this.execute = (sparql) => {
             console.log((new Date()).getTime())
             var data = sparql.constructor === Array ? sparql : [sparql]
             var start = $.Deferred()
-            // creates a sequence of deferred object, one for each sparql query
+            // create a sequence of deferred objects, one for each sparql query
             var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
-            // executes each sparql command and pushes the objects with the command and error or result
-            // into accumulated object
+            // execute each sparql command and pushes the objects with the command and error or result
+            // into accumulated object so that each query may have access to the accumulated results of the prior
             var last = _.reduce(
                 seq,
                 (previous,current) => {
@@ -44,7 +40,7 @@ class Model {
                     return current.deferred.promise()},
                 start.promise()
             )
-            // starts the execution of the queries
+            // this actually starts the execution of the queries
             start.resolve([])
             return last.then((result) => {
                 var deferred = $.Deferred()
@@ -62,13 +58,13 @@ class Model {
             // whoever is calling function receives outer
             var outer = $.Deferred();
             // inner is what is triggering the call on execute
-            // has to wait until the rdfstore is ready
+            // which has to wait until the rdfstore is ready
             var inner = $.Deferred();
             rdfstore.create((err,store) => {
                 this.store = store;
                 inner.resolve();
             })
-            // this gets executed when the rdfstore is finished being created
+            // this gets executed only when the rdfstore is fully created
             inner.promise()
                 .then(() => this.execute(_.flattenDeep(this.upstream)))
                 // the following code stores the labels of any new named graphs
