@@ -10,7 +10,8 @@ class Vocabulary {
     constructor(uri,prefix,terms) {
         this[URI] = uri
         this[PREFIX] = prefix 
-        this[TERMS] = terms // map between resources and labels for resources
+        // map between resources and labels for resources
+        this[TERMS] = terms 
     }
 
     namespace() {

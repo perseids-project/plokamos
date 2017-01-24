@@ -32,7 +32,7 @@ class View {
          */
         self.updateValue = (event, text) => {
             var triple, token
-            // this is to make sure re react appropriately to paste events as well as action on the typeahead
+            // react appropriately to paste events as well as keyboard action on the typeahead
             if (!text && event.type === "paste") {
                 text = event.target.value + event.originalEvent.clipboardData.getData("text")
             }
@@ -54,7 +54,7 @@ class View {
             $('#btn-apply').prop('disabled',validator.validate())
         }
 
-        // contains functions that are performed during the render process
+        // view contains functions that are performed during the render process
         // uses the ontology to convert resource ids into human readable labels
         self.view = Object.assign({},
             {
@@ -67,16 +67,16 @@ class View {
             },
             view)
 
-        // contains markup
+        // partials are the markup for the views
         self.partials = Object.assign({},
             {
                 // todo: do graphs -> components -> gspo (also needs some way of representing different annotation body shapes)
-                // graph is a container for annotations that existed before
+                // graph old is a container for annotations that existed before
                 // if there are changes in graph old, it means we need to do an update
                 graph: `<div class="graph old" data-graph="{{g}}">{{#triples}}{{> triple}}{{/triples}}</div>`,
                 graphs: `{{#annotations}}{{> graph}}{{/annotations}}`,
                 // done: add empty graph container to create template and add new triples to it.
-                // this is for new annotations
+                // grap new is for new annotations
                 new: `<div class="graph new"/><div style="text-align: center; z-index:5;"><div id="new_button" class="btn btn-info btn-circle" title="Add component">+</div></div>`,
                 anchor: `<div class='anchor'><span class="prefix selector">{{selector.prefix}}</span><span class="exact selector">{{selector.exact}}</span><span class="suffix selector">{{selector.suffix}}</span></div>`
             },
@@ -203,13 +203,13 @@ class Plugin {
         this.selector = {}
 
         var button = `<div class="btn btn-primary btn-${this.constructor.name} btn-edit" data-toggle="modal" data-target="#edit_modal" title="Edit ${this.constructor.name}"><span class="glyphicon glyphicon-${this.constructor.icon()}"></span></div>`
-        // shown.bs.popover event is issues by bootstrap whenever a popover is shown
-        // appends plugin-specific button to the popover
+        // shown.bs.popover event is issues by bootstrap whenever a bootstrap popover is shown
+        // we append plugin-specific buttons to the popover
         $('body').on('shown.bs.popover',(e) => $('#'+e.target.getAttribute('aria-describedby')).find('.popover-footer').append(button))
         $('body').on('click','.btn-'+this.constructor.name,(e) => {
             self.annotator().modal.find('.modal-header > h3').html(this.constructor.name)
             let id = $(e.target).closest('.popover').attr('id')
-            // reference to previous annotations 
+            // origin holds a reference to previous annotations 
             self.origin = $(document.querySelectorAll(`[aria-describedby="${id}"]`))
 
             var data = _.pickBy(self.origin.data('annotations'),(v) => _.find(v, (o) => (o.g.value || o.g) === this.constructor.uri()))
@@ -235,6 +235,7 @@ class Plugin {
             // get prerequisite data
             let annotations = self.origin.data('annotations')
             // this is creation of a new cite urn
+            // it will only be used if we actually are creating a new annotation
             let cite = Utils.cite(app.getUser()+app.getUrn(),Math.random().toString())
             // retrieve data
             let delete_graphs = self.reporter.delete_graphs()

@@ -24,7 +24,7 @@ class Tooltip {
             }
             var graphs = jqElement.data('annotations')
             var content = stringify(graphs)//attr(field)
-            // this is a bootstrap function
+            // popover is a bootstrap function
             jqElement.popover({
                 container:"body",
                 html:"true",
