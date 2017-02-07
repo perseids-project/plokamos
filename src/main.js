@@ -15,7 +15,7 @@ class Plokamos {
         var self = this
         this.anchor = $(element)
         window.onbeforeunload = (e) => {
-            if (!$('#plokamos-commit').attr('disabled')) {
+            if ($('#plokamos-commit').length && !$('#plokamos-commit').attr('disabled')) {
                 msg = "You have uncommitted data. Do you want to commit to the Perseids servers before leaving this page?";
                 e.returnValue=msg;
                 return msg
