@@ -40,15 +40,17 @@ class Plokamos {
         this.getUrn = () => self.anchor.data('urn')
         this.getUser = () => self.anchor.data('user')
 
-        this.initialize = () => {
+        this.initialize = (config) => {
 
             self.model
                 .load(self.getEndpoint(), self.getUrn(), self.getUser())
+                // following setup should depend on configuration
                 .then((success) => OntologySet.from(self.getEndpoint().config))
                 .then((ontology) => self.ontology = ontology)
-                .then((success) => self.applicator = new Applicator(self))
-                .then((success) => self.history = new History(self))
-                .then((success) => self.annotator = new Annotator(self))
+                .then((success) => { if (config.applicator) self.applicator = new Applicator(self) })
+                .then((success) => { if (config.history) self.history = new History(self) })
+                .then((success) => { if (config.annotator) self.annotator = new Annotator(self) })
+                .then((success) => { if (config.corpusdiagram) self.globalview = new CorpusDiagram(self) })
         }
 
     }
