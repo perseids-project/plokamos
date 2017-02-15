@@ -20,6 +20,7 @@ class View {
     constructor(ontology, activate, partials, view, validator) {
         var self = this
         self.activate = activate(self)
+        self.validator = validator
         self.substringMatcher = Utils.substringMatcher
         self.names = ontology.resources()
         self.ontology = ontology
@@ -40,6 +41,7 @@ class View {
                 token = $(event.target).closest('.token').data('token')
                 triple.setAttribute('data-' + token, text)
                 if (triple.dataset[token] != triple.dataset[token + '-original']) $(triple).addClass('update')
+                else $(triple).removeClass('update')
             }
             if (text && validator.validate(token, text)) {
                 $(event.target).removeClass('invalid')
