@@ -2,7 +2,7 @@ import $ from 'jquery'
 import _ from 'lodash'
 import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
-import NodeLink from '../views/applicator/NodeLink'
+//import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
 import SocialNetwork from '../views/annotator/SocialNetworkNG'
 import Characterizations from '../views/annotator/CharacterizationsNG'
@@ -16,15 +16,14 @@ class Applicator {
 
     constructor (app) {
 
+        var base = app.anchor.raw
+
         var Id = {
             fromSelector: (selector) => ((selector.prefix||"")+selector.exact+(selector.suffix||"")) // planned: remove TQS specific code, use Utils & OA, but make sure it's consistent between marking and retrieving spans
         }
 
         var model = app.model;
 
-        this.spinner = $(`<div class="spinner"><span class="glyphicon glyphicon-refresh glyphicon-spinning"></span><br><span>Loading ...</span></div>`).appendTo(app.anchor)
-        // planned: move this to an utility class, note: var escape = (s) => s.replace(/[-/\\^$*+?.()（）|[\]{}]/g, '\\$&').replace(/\$/g, '$$$$');
-        this.spinner.css('display','inline-block')
         /**
          * Mark selector positions with span tag and add quads to data
          * @type {{[http://www.w3.org/ns/oa#TextQuoteSelector]: ((p1:*, p2:*))}}
@@ -35,7 +34,7 @@ class Applicator {
                 span.setAttribute("id",Id.fromSelector(selector))
                 span.classList.add("perseids-annotation")
                 span.setAttribute("data-selector",JSON.stringify(selector))
-                var textquote = TextQuoteAnchor.fromSelector(document.getElementById("annotator-main"),selector)
+                var textquote = TextQuoteAnchor.fromSelector(base,selector)
                 var range = textquote.toRange()
                 wrapRangeText(span,range)
                 return span;
@@ -53,8 +52,9 @@ class Applicator {
             .then((bindings) =>
                 _.groupBy(_.last(bindings).result,'id.value')
             ).then((grouped) => {
+                app.loadMessage("Apply annotation marks ...")
                 var store = {}
-                    var spans = _.map(grouped, (v, k) => {
+                var spans = _.map(grouped, (v, k) => {
                         var selectorURI = _.find(v, (obj) => obj.p.value.endsWith("hasSelector")).o.value
                         var selectorTriples = v.filter((obj) => obj.s.value === selectorURI)
                         var selectorType = _.find(selectorTriples,(t) => t.p.value.endsWith("type")).o.value // planned: replace as many endsWith as possible with tests on qualified names
@@ -77,18 +77,17 @@ class Applicator {
             .then((elements) =>
                 elements.map((element) => {
                     this.tooltip.register(element); // todo: (though we might want to adjust markers based on existing annotations)
-                    this.socialnetwork.register(element); // todo: this can probably be removed or moved to Annotator
-                    this.characterizations.register(element); // todo: MOVE IT TO ANNOTATOR
+                    app.loadMessage()
                     return element
                 })
             )
-            .then((elements) => {
+            /*.then((elements) => {
                     var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
                     var snap = _.mapValues(grouped, (v,k) => OA.getBodies(v).map((b) => app.ontology.simplify(b,k))) // planned: move into nodelink, specify API for document plugins
                     var input = _.flatMapDeep(snap,(v,k)=>v.map((o) => o.map((p) => Object.assign(p,{g:k}))))
                     this.nodelink.add(input)
                 }
-            )
+            )*/
 
         /**
          * Remove annotation markers from frontend
@@ -104,23 +103,21 @@ class Applicator {
                 }
                 if (parent) parent.removeChild( p[ 0 ] );
             }
-            if(!id) {this.nodelink.reset()}
+            // if(!id) {this.nodelink.reset()}
             // todo: generalize to reset all plugins
             // note: is this superfluous if we reset on edit anyways?
         };
 
         this.reset = () => {
-            this.spinner.css('display','inline-block')
+            app.loadMessage("Resetting Applicator ...")
             this.unload()
-            this.load().then(() => this.spinner.css('display','none'))
+            this.load()
         }
 
         // var body = $('body');
         this.tooltip = new Tooltip(app)
-        this.socialnetwork = new SocialNetwork(app)
-        this.characterizations = new Characterizations(app)
-        this.nodelink = new NodeLink(app)
-        this.load().then(() => this.spinner.css('display','none'));
+        // this.nodelink = new CorpusDiagram(app)// nodelink = new NodeLink(app)
+        this.load()
         // todo: Should I move this to an init function? At least it's not returning the promise
     }
 
@@ -139,9 +136,9 @@ class Applicator {
         this.load();
     }
 
-    nodelink() {
+    /*nodelink() {
         return this.nodelink
-    }
+    }*/
 }
 
 export default Applicator
