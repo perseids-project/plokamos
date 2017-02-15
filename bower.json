@@ -14,9 +14,10 @@
     "lodash": "^4.13.0",
     "rdfstore": "^0.9.0",
     "typeahead.js": "^0.11.0",
-    "d3": "^3.5.15",
+    "d3": "^4.2.2",
     "mustache": "^2.2.1",
     "crypto-js": "^3.1.6",
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "bootstrap-multiselect": "^0.9.13"
   }
 }
