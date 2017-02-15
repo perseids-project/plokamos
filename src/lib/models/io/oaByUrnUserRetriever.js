@@ -11,12 +11,12 @@ var sparqlSelect = (urn,user) =>  `
             }
             UNION
             {
-                BIND(?annotation AS ?s)
+                ?annotation oa:serializedBy ?s .
                 GRAPH ?g {?s ?p ?o}
             }
             UNION
             {
-                ?annotation oa:serializedBy ?s .
+                ?annotation oa:hasBody ?g .
                 GRAPH ?g {?s ?p ?o}
             }
             UNION
@@ -26,7 +26,8 @@ var sparqlSelect = (urn,user) =>  `
             }
             UNION
             {
-                ?annotation oa:hasBody ?g .
+                ?annotation oa:hasBody ?q .
+                ?s oa:hasBody ?q .
                 GRAPH ?g {?s ?p ?o}
             }
             # select annotations
