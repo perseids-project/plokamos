@@ -4,13 +4,13 @@ class History {
 
     constructor(app) {
         this.app = app
-        this.backBtn = $(`<button id="plokamos-back" class="btn" title="Undo" disabled><span class="glyphicon glyphicon-chevron-left"/></button>`)
-        this.forwardBtn = $(`<button id="plokamos-forward" class="btn" title="Redo" disabled><span class="glyphicon glyphicon-chevron-right"/></button>`)
-        this.commitBtn = $(`<button id="plokamos-commit" class="btn" title="Commit" disabled><span class="glyphicon glyphicon-cloud-upload"/></button>`)
+        this.backBtn = $(`<button id="plokamos-back" class="btn btn-primary" title="Undo one step" disabled><span class="glyphicon glyphicon-chevron-left"/></button>`)
+        this.forwardBtn = $(`<button id="plokamos-forward" class="btn btn-primary" title="Redo one step" disabled><span class="glyphicon glyphicon-chevron-right"/></button>`)
+        this.commitBtn = $(`<button id="plokamos-commit" class="btn btn-danger" title="Commit current state to Perseids servers." disabled><span class="glyphicon glyphicon-cloud-upload"/></button>`)
         this.backBtn.click((e) => this.undo())
         this.forwardBtn.click((e) => this.redo())
         this.commitBtn.click((e) => this.commit())
-        this.app.bar.navigation.append(this.backBtn,this.forwardBtn,this.commitBtn)
+        this.app.ui.navigation.append(this.backBtn,this.forwardBtn,this.commitBtn)
         this.model = app.model;
         this.applicator = app.applicator;
         this.commands = [];

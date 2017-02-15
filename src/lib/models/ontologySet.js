@@ -106,7 +106,7 @@ class OntologySet {
      * Do async initialization of individual ontologies
      * @returns {*} Promise that resolves when ontologies are ready
      */
-    static from(ep) {
+    static from(app, ep) {
         this[endpoint] = ep
         let query = `
             prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -118,9 +118,18 @@ class OntologySet {
               }
             }
         `
+        app.loadMessage("Loading namespaces from server ...")
         return sparqlQuery(this[endpoint], query)
-            .then((data) => $.when(...data.results.bindings.map((binding) => Ontology.get(binding.uri.value).from(this[endpoint]))))
-            .then(function() {return new OntologySet(arguments)})
+            .then((data) => {
+            app.loadMessage("Loading ontologies from server ...")
+            return $.when(...data.results.bindings.map((binding) => Ontology.get(binding.uri.value).from(this[endpoint])))
+            })
+            .then(function() {
+                app.loadMessage("Creating Ontology Set ...")
+                let ontologyset = new OntologySet(arguments)
+                app.loadMessage()
+                return ontologyset
+            })
     }
 
 }
