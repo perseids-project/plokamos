@@ -23,15 +23,15 @@ class Annotator {
     // API: create(fragment), update(fragments), delete(fragment), drop(graph)
 
     constructor(app) {
-        this[userId] = app.anchor.data('user')
-        this[urn] = app.anchor.data('urn')
+        this[userId] = app.getUser()
+        this[urn] = app.getUrn()
         this[anchor] = app.anchor
         this[model] = app.model;
         this[applicator] = app.applicator;
         this[history] = app.history;
 
         // todo: this is part of the base module
-        this.modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button id="btn-apply" type="button" class="btn btn-primary" data-dismiss="modal" title="Apply changes">Apply</button></div></div>')
+        this.modal = $('<div id="edit_modal" class="modal fade in" style="display: none; "><div class="well"><div class="modal-header"><a class="close" data-dismiss="modal">×</a><h3>Annotation Editor</h3></div><div class="modal-body"></div><div class="modal-footer"><button id="btn-apply" type="button" class="btn btn-primary" data-dismiss="modal" disabled title="Apply changes to text.">Apply</button></div></div>')
         app.anchor.append(this.modal)
 
         app.anchor.mouseup((e) => {

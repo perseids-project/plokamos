@@ -19,9 +19,9 @@ export default {
                 ]
         }),
         bowerResolve({
-            skip: ['rdfstore'],
+            skip: ['rdfstore', 'jquery'],
             override: {
-                jquery: 'dist/jquery.js',
+                //jquery: 'dist/jquery.js',
                 lodash: 'dist/lodash.js',
                 'typeahead.js': 'dist/typeahead.bundle.js',
                 bootstrap: 'dist/js/bootstrap.js'

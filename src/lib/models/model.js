@@ -20,7 +20,7 @@ class Model {
          * @returns {*} promise for ordered list
          */
         this.execute = (sparql) => {
-            console.log((new Date()).getTime())
+            this.app.loadMessage("Executing SPARQL in local model ...")
             var data = sparql.constructor === Array ? sparql : [sparql]
             var start = $.Deferred()
             var seq = _.map(data,(x) => {return {sparql:x,deferred:$.Deferred()}})
@@ -43,11 +43,13 @@ class Model {
                     this.namedDataset = _.uniq(_.map(g,(x) => x.nominalValue))
                     this.defaultDataset = this.namedDataset
                     deferred.resolve(result)
+                    this.app.loadMessage()
                 })
                 return deferred.promise()
             })
         }
         this.reset = () => {
+            this.app.loadMessage("Resetting model ...")
             var outer = $.Deferred();
             var inner = $.Deferred();
             rdfstore.create((err,store) => {
@@ -68,6 +70,7 @@ class Model {
     }
 
     load(endpoints, urn, user) {
+        this.app.loadMessage("Retrieving annotations from server ...")
         var source = endpoints.read || endpoints.query || "/"
         var promise = source.slice(-5)==='.json' ? $.getJSON(source) : oaByUrnUserRetriever(source, urn, user)
         // planned: should be done in its own class, resulting in promise for store, which gets assigned to this.store
