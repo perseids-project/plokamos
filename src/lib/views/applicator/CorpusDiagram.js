@@ -12,12 +12,13 @@ class CorpusDiagram {
         self = this
         self.anchor = $(`<div id="global-view" class="well" style="position:fixed; z-index:1000;"/>`)
         $('body').append(self.anchor)
-        var globalViewBtn = $(`
+        /* var globalViewBtn = $(`
           <button id="global-view-btn" class="btn">
             <span class="glyphicon glyphicon-certificate"/>
           </button>
         `)
-        app.ui.plugins.append(globalViewBtn)
+        app.ui.plugins.append(globalViewBtn)*/
+        var globalViewBtn = $('.plokamos-button')
         self.anchor.css('display','none');
         globalViewBtn.mouseleave(function(e) {
             if (!globalViewBtn.keep) {
@@ -28,10 +29,18 @@ class CorpusDiagram {
             //if (!globalViewBtn.keep) {self.force.start()}
             $('#global-view').css('display','block')
         });
+        globalViewBtn.keep = false;
         globalViewBtn.click(function(e) {
             globalViewBtn.keep = !globalViewBtn.keep
             $('#global-view').css('display','block')})
-        globalViewBtn.keep = false;
+            if (globalViewBtn.keep) {
+                globalViewBtn.addClass('keep')
+                $(".plokamos-button img").attr("src","/plokamos/assets/img/plokamos-clicked.svg")
+            }
+            else {
+                globalViewBtn.removeClass('keep')
+                $(".plokamos-button img").attr("src","/plokamos/assets/img/plokamos.svg")
+            }
 
     init = (anchor) => {
         anchor.html(`
@@ -41,18 +50,14 @@ class CorpusDiagram {
             <li class="active"><a data-toggle="tab" href="#Plokamos-vis">Visualization</a></li>
             <li><a data-toggle="tab" href="#Social">Social Network</a></li>
         <li><a data-toggle="tab" href="#Characterizations">Characterizations</a></li>
-            <div id="filterContainer" style="float:right">
+            <!--div id="filterContainer" style="float:right">
             <select id="linkFilters" multiple="multiple"></select>
-            </div>
+            </div-->
             </ul>
             <div class="tab-content">
-            <div id="Plokamos-vis" class="tab-pane fade in active">
-
-            </div>
-            <div id="Social" class="tab-pane fade">
-            </div>
-            <div id="Characterizations" class="tab-pane fade">
-            </div>
+                <div id="Plokamos-vis" class="tab-pane fade in active"></div>
+                <div id="Social" class="tab-pane fade"></div>
+                <div id="Characterizations" class="tab-pane fade"></div>
             </div>
             </div>
             </div>`
