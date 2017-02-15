@@ -189,9 +189,10 @@
     box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
 .tt-suggestion {
+    font-size: 14px;
     padding: 3px 20px;
-    font-size: 18px;
     line-height: 24px;
+    overflow-wrap: break-word;
 }
 .tt-suggestion:hover {
     cursor: pointer;
@@ -246,36 +247,6 @@ text.node-label {
     color: #337ab7;
 }
 
-.upper-half {
-    position:fixed;
-    border-bottom-left-radius:0px;
-    border-bottom-right-radius:0px;
-    bottom: 50%;
-    top: 5%;
-    left: 5%;
-    right: 5%;
-    margin-bottom: 0px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-.middle-bar {
-    height: 50px;
-    width: 100%;
-    background-color: #e3e3e3;
-}
-.lower-half {
-    overflow: scroll;
-    position: fixed;
-    top: 50%;
-    left: 5%;
-    right: 5%;
-    max-height: 45%;
-    border-top-left-radius:0px;
-    border-top-right-radius:0px;
-    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-    box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
 .filter-btn {
     float: left;
     padding: 2px;
@@ -313,6 +284,7 @@ text.node-label {
 .triple {
     padding: 0px;
     margin: 10px;
+    display:flex;
 }
 .sentence {
     padding: 3px;
@@ -326,21 +298,25 @@ text.node-label {
     padding: 2px !important;
 }
 .btn-delete {
-    padding-top:3px;
     cursor: pointer;
     text-align:center;
+    display:flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    /*padding-top:3px;
     background-color: #e3e3e3;
     color: #337ab7;
     width:100%;
     margin-top:0px;
     border: 1px solid #e3e3e3;
     border-bottom-left-radius:4px;
-    border-bottom-right-radius:4px;
-}
+    border-bottom-right-radius:4px;*/
+}/*
 .btn-delete:hover {
     background-color: #ddd;
     color: crimson;
-}
+}*/
 .modal-footer {
     background-color: #f9f9f9;
     padding: 8px 15px;
@@ -370,12 +346,50 @@ text.node-label {
 
 .plokamos-bar {
     position: fixed;
-    bottom: 0px;
-    width: 100%;
-    height: 50px;
-    padding: 8px;
+    bottom: 10px;
+    left: 0px;
+    width: 170px;
+    display: flex;
+    flex-direction: column-reverse;
+    /*padding: 8px;
     border-top: 2px solid #aaa;
-    background-color: #444;
+    background-color: #444;*/
+}
+
+.plokamos-button {
+    height: 140px;
+    width: 140px;
+    margin-bottom: 5px;
+    margin-left: 15px;
+    border-radius: 70px;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,0.45);
+    /*background-color: #E90000;*/
+}
+
+.plokamos-button:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0,0,0,0.65);
+}
+
+.plokamos-button.keep {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0,0,0,0.99);
+}
+
+.plokamos-button img {
+    /*width: 110px;*/
+    height: 90px;
+    margin: 20px;
+}
+
+.plokamos-bar .plokamos-container {
+    height: 50px;
+    width: 100%;
+    margin-right: 25px;
+    display: flex;
+    justify-content: flex-end;
+    flex-basis: 100%;
 }
 
 .plokamos-bar .btn {
@@ -383,11 +397,23 @@ text.node-label {
 }
 
 .plokamos-navigation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     overflow-x: auto;
+    flex-basis: 100%;
+}
+
+.plokamos-container .btn:disabled {
+    background-color: rgba(0,0,0,0);
+    color: rgba(0,0,0,0.65);
+    border: 1px solid rgba(0,0,0,0.65)
 }
 
 .plokamos-plugins {
     text-align: right;
+    flex-basis: 0%;
 }
 
 .spinner {
@@ -422,4 +448,65 @@ text.node-label {
         -webkit-transform: rotate(359deg);
         transform: rotate(359deg);
     }
+}
+#plokamos-vis-list .tab-pane {
+    /*min-height: 400px;*/
+    flex-basis: auto;
+    height: 100%;
+    width: 100%;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background: #fafafa; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#fff, #fafafa); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#fff, #fafafa); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#fff, #fafafa); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#fff, #fafafa); /* Standard syntax */
+}
+#Plokamos-vis svg {
+    height: 100%;
+    width: 100%;
+}
+#Plokamos-vis circle:hover {
+    cursor: all-scroll;
+}
+#Plokamos-vis text:hover {
+    cursor: pointer;
+}
+.dropdown-menu {
+    left:auto;
+    right:0px;
+}
+
+#plokamos-vis-main {
+    height: 100%;
+    padding-bottom: 15px;
+    display: flex;
+}
+
+#plokamos-vis-list {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    flex-basis: auto;
+}
+
+.tab-content {
+    height: 100%;
+    display: flex;
+}
+
+#Social, #Characterizations {
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+#global-view {
+    top: 5%;
+    bottom: 170px;
+    left: 5%;
+    right: 5%;
+    padding-bottom: 25px;
 }
