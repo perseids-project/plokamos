@@ -35076,15 +35076,10 @@ var Applicator = function () {
                     app.loadMessage();
                     return element;
                 });
+            }).then(function (elements) {
+                if (app.globalview) app.globalview.reset();
             });
         };
-        /*.then((elements) => {
-                var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                var snap = _.mapValues(grouped, (v,k) => OA.getBodies(v).map((b) => app.ontology.simplify(b,k))) // planned: move into nodelink, specify API for document plugins
-                var input = _.flatMapDeep(snap,(v,k)=>v.map((o) => o.map((p) => Object.assign(p,{g:k}))))
-                this.nodelink.add(input)
-            }
-        )*/
 
         /**
          * Remove annotation markers from frontend
@@ -35111,9 +35106,7 @@ var Applicator = function () {
             _this.load();
         };
 
-        // var body = $('body');
         this.tooltip = new Tooltip(app);
-        // this.nodelink = new CorpusDiagram(app)// nodelink = new NodeLink(app)
         this.load();
         // todo: Should I move this to an init function? At least it's not returning the promise
     }
@@ -35136,11 +35129,6 @@ var Applicator = function () {
             this.unload();
             this.load();
         }
-
-        /*nodelink() {
-            return this.nodelink
-        }*/
-
     }]);
     return Applicator;
 }();
@@ -52403,8 +52391,8 @@ var CorpusDiagram = function CorpusDiagram(app) {
         var svg = d3$1.select("#Plokamos-vis").append("svg").attr("width", "100%").attr("height", "100%").call(d3$1.zoom().on("zoom", function () {
             svg.attr("transform", d3$1.event.transform);
         })).append("g");
-        var width = +svg.attr("width"),
-            height = +svg.attr("height");
+        var width = window.innerWidth * 0.85,
+            height = window.innerHeight * 0.85; // todo: this is a dirty hack, should be more like: +svg.attr("width"), height = +svg.attr("height");
 
         //.scaleExtent([1, 40])
         //.translateExtent([[-100, -100], [width + 90, height + 100]])
@@ -52636,8 +52624,7 @@ var CorpusDiagram = function CorpusDiagram(app) {
         });
     };
 
-    init(self$2.anchor);
-    load(app.model).then(function (xs) {
+    apply = function apply(xs) {
 
         var filterByLinks = function filterByLinks(list) {
             if (list && list.length) {
@@ -52745,11 +52732,11 @@ var CorpusDiagram = function CorpusDiagram(app) {
             return '<option value="' + t + '">' + t.replace("http://data.snapdrgn.net/ontology/snap#", "").replace("http://data.perseus.org/rdfvocab/addons/", "") + '</option>';
         }).join("\n") + "</select>");
         /*$('#linkFilters').multiselect({
-        //ms.Multiselect("#linkFilters",{
-            onChange: () => {
-                filterByLinks($('#linkFilters option:selected').map((i, e) => e.value).toArray())
-            }
-        })*/
+         //ms.Multiselect("#linkFilters",{
+         onChange: () => {
+         filterByLinks($('#linkFilters option:selected').map((i, e) => e.value).toArray())
+         }
+         })*/
         //$('#nodeFilters').html(
         //        socialNodes.map((n) => `<input name="${n.uri.replace("http://data.perseus.org/people/smith:","").replace("#this","")}" value="${n.uri}" type="checkbox">`).join("\n")
         //)
@@ -52770,7 +52757,14 @@ var CorpusDiagram = function CorpusDiagram(app) {
         }).flatten().filter('target').value();
         var edges = _$1.concat(socialEdges, characterizationEdges);
         activateForceLayout(nodes, edges);
-    });
+    };
+    init(self$2.anchor);
+    load(app.model).then(apply);
+
+    this.reset = function () {
+        init(self$2.anchor);
+        load(app.model).then(apply);
+    };
 };
 
 var typeahead_bundle = createCommonjsModule(function (module, exports) {
@@ -55328,7 +55322,7 @@ var Plokamos = function Plokamos(element) {
     this.spinner = $('<div class="spinner well" style="display: none;"><h2>Plokamos is loading</h2><div class="progress">\n  <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">\n    <span class="sr-only">100% Complete</span>\n  </div>\n</div></div>').appendTo(this.body);
     this.spinner.message = $('<span>Loading ...</span>').appendTo(this.spinner);
     this.loadMessage = function (message) {
-        if (message) {
+        if (message && !self.silent) {
             self.spinner.message.html(message);
             self.spinner.css('display', 'inline-block');
         } else {
@@ -55356,6 +55350,7 @@ var Plokamos = function Plokamos(element) {
 
     this.initialize = function (cfg) {
         var config = cfg || { applicator: true, history: true, annotator: ["social-network", "characterizations"], corpusdiagram: true };
+        if (!config.annotator) self.silent = true;
         if (self.getUser()) self.model.load(self.getEndpoint(), self.getUrn(), self.getUser())
         // following setup should depend on configuration
         .then(function (success) {
