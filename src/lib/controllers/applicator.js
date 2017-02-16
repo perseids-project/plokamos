@@ -4,8 +4,8 @@ import TextQuoteAnchor from 'dom-anchor-text-quote'
 import wrapRangeText from 'wrap-range-text'
 //import NodeLink from '../views/applicator/NodeLink'
 import Tooltip from '../views/applicator/Tooltip'
-import SocialNetwork from '../views/annotator/SocialNetworkNG'
-import Characterizations from '../views/annotator/CharacterizationsNG'
+import SocialNetwork from '../views/annotator/SocialNetwork'
+import Characterizations from '../views/annotator/Characterizations'
 import OA from '../models/ontologies/OA'
 
 /**
@@ -80,14 +80,9 @@ class Applicator {
                     app.loadMessage()
                     return element
                 })
-            )
-            /*.then((elements) => {
-                    var grouped = elements.reduce((object, element) => _.merge(object,element.data('annotations')), {})
-                    var snap = _.mapValues(grouped, (v,k) => OA.getBodies(v).map((b) => app.ontology.simplify(b,k))) // planned: move into nodelink, specify API for document plugins
-                    var input = _.flatMapDeep(snap,(v,k)=>v.map((o) => o.map((p) => Object.assign(p,{g:k}))))
-                    this.nodelink.add(input)
-                }
-            )*/
+            ).then((elements) => {
+                    if (app.globalview) app.globalview.reset()
+                })
 
         /**
          * Remove annotation markers from frontend
@@ -114,9 +109,7 @@ class Applicator {
             this.load()
         }
 
-        // var body = $('body');
         this.tooltip = new Tooltip(app)
-        // this.nodelink = new CorpusDiagram(app)// nodelink = new NodeLink(app)
         this.load()
         // todo: Should I move this to an init function? At least it's not returning the promise
     }
@@ -136,9 +129,6 @@ class Applicator {
         this.load();
     }
 
-    /*nodelink() {
-        return this.nodelink
-    }*/
 }
 
 export default Applicator
