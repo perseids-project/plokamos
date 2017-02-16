@@ -75,7 +75,7 @@ class CorpusDiagram {
                 svg.attr("transform", d3.event.transform)
             }))
             .append("g");
-        var width = +svg.attr("width"), height = +svg.attr("height");
+        var width = window.innerWidth*0.85, height=window.innerHeight*0.85 // todo: this is a dirty hack, should be more like: +svg.attr("width"), height = +svg.attr("height");
 
         //.scaleExtent([1, 40])
         //.translateExtent([[-100, -100], [width + 90, height + 100]])
@@ -300,122 +300,127 @@ class CorpusDiagram {
             })
     }
 
-        init(self.anchor)
-        load(app.model)
-            .then((xs) => {
+    apply = (xs) => {
 
-                var filterByLinks = (list) => {
-                    if (list && list.length) {
-                        var links = {}
-                        list.forEach((v) => links[v]=true)
-                        var nodes = {}
-                        link.style("opacity",(d) => {
-                            if (links[d.type]) {
-                                nodes[d.source.uri]=true
-                                nodes[d.target.uri]=true
-                                return 1
-                            } else {
-                                return 0.1
-                            }
-                        })
-                        linkLabel.style("opacity",(d) => ((d.group && links[d.type]) || (!d.group && nodes[d.source.uri])) ? 1 : 0.1)
-                        node.style("opacity",(d) => nodes[d.uri] ? 1 : 0.1)
-                        nodeLabel.style("opacity",(d) => nodes[d.uri] ? 1 : 0.1)
+        var filterByLinks = (list) => {
+            if (list && list.length) {
+                var links = {}
+                list.forEach((v) => links[v]=true)
+                var nodes = {}
+                link.style("opacity",(d) => {
+                    if (links[d.type]) {
+                        nodes[d.source.uri]=true
+                        nodes[d.target.uri]=true
+                        return 1
                     } else {
-                        node.style("opacity",1)
-                        link.style("opacity",1)
-                        nodeLabel.style("opacity",1)
-                        linkLabel.style("opacity",1)
+                        return 0.1
                     }
-                }
-
-                var filterByNodes = (list) => {
-                    if (list && list.length) {
-                        var nodes = {}
-                        var extended = {}
-                        list.forEach((v) => {nodes[v]=true})
-                        link.style("opacity",(d) => {
-                            if (nodes[d.source.uri] || nodes[d.target.uri]) {
-                                extended[d.source.uri] = true;
-                                extended[d.target.uri] =true;
-                                return 1
-                            } else {return 0.1}
-                        } )
-                        linkLabel.style("opacity",(d) => ((d.group && (nodes[d.target.uri] || nodes[d.source.uri])) || (!d.group && extended[d.source.uri])) ? 1 : 0.1)
-                        node.style("opacity",(d) => extended[d.uri] ? 1 : 0.1)
-                        nodeLabel.style("opacity",(d) => extended[d.uri] ? 1 : 0.1)
-                    } else {
-                        node.style("opacity",1)
-                        link.style("opacity",1)
-                        nodeLabel.style("opacity",1)
-                        linkLabel.style("opacity",1)
-                    }
-                }
-
-                $("#Social").html(
-                    `<table class="table table-hover"><thead><tr><th>Subject</th><th>Relationship</th><th>Object</th></tr></thead><tbody>\n` +
-                    _.sortBy(xs.SocialNetwork, ['source', 'target']).map((x) => `<tr><td title="${x.source}">${x.source.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</td><td title="${x.type}">${x.type.replace("http://data.snapdrgn.net/ontology/snap#", "").replace("http://data.perseus.org/rdfvocab/addons/", "")}</td><td title="${x.target}">${x.target.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</td></tr>`).join("\n") +
-                    `</tbody></table>`)
-                $("#Characterizations").html(
-                    `<table class="table table-hover"><thead><tr><th>Name</th><th>English</th><th>Greek</th></tr></thead><tbody>\n` +
-                    _.sortBy(xs.Characterizations, 'name').map((x) => {
-                        var eng = x.eng && x.eng.split("@")[1] ? x.eng.split("@")[1] : (x.eng ? x.eng : "---")
-                        var grc = x.grc && x.grc.split("@")[1] ? x.grc.split("@")[1] : (x.grc ? x.grc : "---")
-                        return `<tr><td title="${x.name}"><a href="${x.name}" target="_blank">${x.name.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</a></td><td title="${x.eng}"><a href="${x.eng}" target="_blank">${eng}</a></td><td title="${x.grc}"><a href="${x.grc}" target="_blank">${grc}</a></td></tr>`
-                    }).join("\n") +
-                    `</tbody></table>`)
-
-                var socialNodes = _.chain(xs.SocialNetwork || []).map((x) => [x.source, x.target]).concat((xs.Characterizations || []).map((y) => y.name)).flatten().uniq().map((x, i) => {
-                    return {
-                        name: x.replace("http://data.perseus.org/people/smith:", "").replace("#this", ""),
-                        uri: x,
-                        type: "person"
-                    }
-                }).value()
-                var characterizationNodes = _.chain(xs.Characterizations || []).map((x) => {
-                    return {name: "", uri: x.grc && x.grc.split("@")[1] ? x.grc : x.eng, type: "characterization"};
-                }).value()
-                var nodes = _.chain(socialNodes).concat(characterizationNodes).map((x, i) => Object.assign(x, {id: i})).value()
-                var nodeMap = nodes.reduce((acc, x) => {
-                    acc[x.uri] = x.id;
-                    return acc
-                }, {})
-                var socialEdges = (xs.SocialNetwork || []).map((x) => {
-                    return {target: nodeMap[x.target], type: x.type, group: "social", source: nodeMap[x.source]}
                 })
+                linkLabel.style("opacity",(d) => ((d.group && links[d.type]) || (!d.group && nodes[d.source.uri])) ? 1 : 0.1)
+                node.style("opacity",(d) => nodes[d.uri] ? 1 : 0.1)
+                nodeLabel.style("opacity",(d) => nodes[d.uri] ? 1 : 0.1)
+            } else {
+                node.style("opacity",1)
+                link.style("opacity",1)
+                nodeLabel.style("opacity",1)
+                linkLabel.style("opacity",1)
+            }
+        }
 
-                $('#filterContainer').html(
-                    "<select id='linkFilters' multiple='multiple'>" +
-                    _.uniq(socialEdges.map((e) => e.type)).map((t) => `<option value="${t}">${t.replace("http://data.snapdrgn.net/ontology/snap#", "").replace("http://data.perseus.org/rdfvocab/addons/", "")}</option>`).join("\n") +
-                    "</select>"
-                )
-                /*$('#linkFilters').multiselect({
-                //ms.Multiselect("#linkFilters",{
-                    onChange: () => {
-                        filterByLinks($('#linkFilters option:selected').map((i, e) => e.value).toArray())
-                    }
-                })*/
-                //$('#nodeFilters').html(
-                //        socialNodes.map((n) => `<input name="${n.uri.replace("http://data.perseus.org/people/smith:","").replace("#this","")}" value="${n.uri}" type="checkbox">`).join("\n")
-                //)
-                var characterizationEdges = _.chain(xs.Characterizations || []).map((x) => {
-                    var edges = []
-                    var grc = x.grc && x.grc.split("@")[1] ? x.grc.split("@")[1] : ""
-                    var eng = x.eng && x.eng.split("@")[1] ? x.eng.split("@")[1] : ""
-                    if (x.eng) edges.push({
-                        source: nodeMap[x.name],
-                        type: "characterization",
-                        grcuri: x.grc,
-                        enguri: x.eng,
-                        grc: grc,
-                        eng: eng,
-                        target: nodeMap[x.grc && x.grc.split("@")[1] ? x.grc : x.eng]
-                    })
-                    return edges
-                }).flatten().filter('target').value()
-                var edges = _.concat(socialEdges, characterizationEdges)
-                activateForceLayout(nodes, edges)
+        var filterByNodes = (list) => {
+            if (list && list.length) {
+                var nodes = {}
+                var extended = {}
+                list.forEach((v) => {nodes[v]=true})
+                link.style("opacity",(d) => {
+                    if (nodes[d.source.uri] || nodes[d.target.uri]) {
+                        extended[d.source.uri] = true;
+                        extended[d.target.uri] =true;
+                        return 1
+                    } else {return 0.1}
+                } )
+                linkLabel.style("opacity",(d) => ((d.group && (nodes[d.target.uri] || nodes[d.source.uri])) || (!d.group && extended[d.source.uri])) ? 1 : 0.1)
+                node.style("opacity",(d) => extended[d.uri] ? 1 : 0.1)
+                nodeLabel.style("opacity",(d) => extended[d.uri] ? 1 : 0.1)
+            } else {
+                node.style("opacity",1)
+                link.style("opacity",1)
+                nodeLabel.style("opacity",1)
+                linkLabel.style("opacity",1)
+            }
+        }
+
+        $("#Social").html(
+            `<table class="table table-hover"><thead><tr><th>Subject</th><th>Relationship</th><th>Object</th></tr></thead><tbody>\n` +
+            _.sortBy(xs.SocialNetwork, ['source', 'target']).map((x) => `<tr><td title="${x.source}">${x.source.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</td><td title="${x.type}">${x.type.replace("http://data.snapdrgn.net/ontology/snap#", "").replace("http://data.perseus.org/rdfvocab/addons/", "")}</td><td title="${x.target}">${x.target.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</td></tr>`).join("\n") +
+            `</tbody></table>`)
+        $("#Characterizations").html(
+            `<table class="table table-hover"><thead><tr><th>Name</th><th>English</th><th>Greek</th></tr></thead><tbody>\n` +
+            _.sortBy(xs.Characterizations, 'name').map((x) => {
+                var eng = x.eng && x.eng.split("@")[1] ? x.eng.split("@")[1] : (x.eng ? x.eng : "---")
+                var grc = x.grc && x.grc.split("@")[1] ? x.grc.split("@")[1] : (x.grc ? x.grc : "---")
+                return `<tr><td title="${x.name}"><a href="${x.name}" target="_blank">${x.name.replace("http://data.perseus.org/people/smith:", "").replace("#this", "")}</a></td><td title="${x.eng}"><a href="${x.eng}" target="_blank">${eng}</a></td><td title="${x.grc}"><a href="${x.grc}" target="_blank">${grc}</a></td></tr>`
+            }).join("\n") +
+            `</tbody></table>`)
+
+        var socialNodes = _.chain(xs.SocialNetwork || []).map((x) => [x.source, x.target]).concat((xs.Characterizations || []).map((y) => y.name)).flatten().uniq().map((x, i) => {
+            return {
+                name: x.replace("http://data.perseus.org/people/smith:", "").replace("#this", ""),
+                uri: x,
+                type: "person"
+            }
+        }).value()
+        var characterizationNodes = _.chain(xs.Characterizations || []).map((x) => {
+            return {name: "", uri: x.grc && x.grc.split("@")[1] ? x.grc : x.eng, type: "characterization"};
+        }).value()
+        var nodes = _.chain(socialNodes).concat(characterizationNodes).map((x, i) => Object.assign(x, {id: i})).value()
+        var nodeMap = nodes.reduce((acc, x) => {
+            acc[x.uri] = x.id;
+            return acc
+        }, {})
+        var socialEdges = (xs.SocialNetwork || []).map((x) => {
+            return {target: nodeMap[x.target], type: x.type, group: "social", source: nodeMap[x.source]}
+        })
+
+        $('#filterContainer').html(
+            "<select id='linkFilters' multiple='multiple'>" +
+            _.uniq(socialEdges.map((e) => e.type)).map((t) => `<option value="${t}">${t.replace("http://data.snapdrgn.net/ontology/snap#", "").replace("http://data.perseus.org/rdfvocab/addons/", "")}</option>`).join("\n") +
+            "</select>"
+        )
+        /*$('#linkFilters').multiselect({
+         //ms.Multiselect("#linkFilters",{
+         onChange: () => {
+         filterByLinks($('#linkFilters option:selected').map((i, e) => e.value).toArray())
+         }
+         })*/
+        //$('#nodeFilters').html(
+        //        socialNodes.map((n) => `<input name="${n.uri.replace("http://data.perseus.org/people/smith:","").replace("#this","")}" value="${n.uri}" type="checkbox">`).join("\n")
+        //)
+        var characterizationEdges = _.chain(xs.Characterizations || []).map((x) => {
+            var edges = []
+            var grc = x.grc && x.grc.split("@")[1] ? x.grc.split("@")[1] : ""
+            var eng = x.eng && x.eng.split("@")[1] ? x.eng.split("@")[1] : ""
+            if (x.eng) edges.push({
+                source: nodeMap[x.name],
+                type: "characterization",
+                grcuri: x.grc,
+                enguri: x.eng,
+                grc: grc,
+                eng: eng,
+                target: nodeMap[x.grc && x.grc.split("@")[1] ? x.grc : x.eng]
             })
+            return edges
+        }).flatten().filter('target').value()
+        var edges = _.concat(socialEdges, characterizationEdges)
+        activateForceLayout(nodes, edges)
+    }
+        init(self.anchor)
+        load(app.model).then(apply)
+
+        this.reset = () =>{
+            init(self.anchor)
+            load(app.model).then(apply)
+        }
     }
 
 }

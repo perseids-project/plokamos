@@ -44,7 +44,7 @@ class Plokamos {
 </div></div>`).appendTo(this.body)
         this.spinner.message = $('<span>Loading ...</span>').appendTo(this.spinner)
         this.loadMessage = (message) => {
-            if (message) {
+            if (message && !self.silent) {
                 self.spinner.message.html(message)
                 self.spinner.css('display','inline-block')
             } else {
@@ -66,6 +66,7 @@ class Plokamos {
 
         this.initialize = (cfg) => {
             var config = cfg || {applicator: true, history: true, annotator: ["social-network", "characterizations"], corpusdiagram: true}
+            if (!config.annotator) self.silent = true;
             if (self.getUser())
             self.model
                 .load(self.getEndpoint(), self.getUrn(), self.getUser())
