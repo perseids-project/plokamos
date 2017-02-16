@@ -75,7 +75,7 @@ class CorpusDiagram {
                 svg.attr("transform", d3.event.transform)
             }))
             .append("g");
-        var width = +svg.attr("width"), height = +svg.attr("height");
+        var width = window.innerWidth*0.85, height=window.innerHeight*0.85 // todo: this is a dirty hack, should be more like: +svg.attr("width"), height = +svg.attr("height");
 
         //.scaleExtent([1, 40])
         //.translateExtent([[-100, -100], [width + 90, height + 100]])
