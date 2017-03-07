@@ -12,14 +12,18 @@ class Tooltip {
         this.register = (jqElement) => {
             // planned: stringify should check ontology and select simplifier or stringify raw (.value)
             function stringify(obj) {
-                var simplified = _.mapValues(obj,(graph,id) => OA.getBodies(graph).map((body) => app.ontology.simplify(body,id)))
+                var simplified = _.mapValues(obj,(graph,id) => OA.getBodies(graph).map((body) => { if (body.length > 0) { return app.ontology.simplify(body,id) } } ))
                 return "<span class='popover-source' data-source-id='"+jqElement.attr('id')+"'></span><div class='popover-list'>"+_.flattenDeep(
                     _.values(simplified)).map((o) =>
-                `<span class='tt-label tt-subject' title='${o.s}'>${app.ontology.label(o.s)}</span> 
-                <span class='tt-label tt-predicate' title='${o.p}'>${app.ontology.label(o.p)}</span> 
-                <span class='tt-label tt-object' title='${o.o}'>${app.ontology.label(o.o)}</span>`)
-                        .join("<br>")+
-                "</div><div class='popover-footer'/>"
+                { 
+                    if (o && o.p && o.s && o.o) {
+                       `<span class='tt-label tt-subject' title='${o.s}'>${app.ontology.label(o.s)}</span> 
+                        <span class='tt-label tt-predicate' title='${o.p}'>${app.ontology.label(o.p)}</span> 
+                        <span class='tt-label tt-object' title='${o.o}'>${app.ontology.label(o.o)}</span>`
+                    } else {
+                        return '<span class=\'tt-label\'>(Invalid Annotation Found)</span>';
+                    }
+                }).join("<br>")+ "</div><div class='popover-footer'/>"
             }
             var graphs = jqElement.data('annotations')
             var content = stringify(graphs)//attr(field)

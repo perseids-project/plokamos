@@ -22,7 +22,9 @@ var simplification = (rules) =>
                  var found = _.find(v, (o) =>
                      (o[pmetaMap[rule.constraint]].value || o[pmetaMap[rule.constraint]]) === rule.value
                     )
-                result[pmetaMap[rule.target]] = found[pmetaMap[rule.source]].value
+                if (found) {
+                    result[pmetaMap[rule.target]] = found[pmetaMap[rule.source]].value
+                }
                 return result
             },
             {}
